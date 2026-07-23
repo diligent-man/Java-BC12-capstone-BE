@@ -1,0 +1,28 @@
+package com.ndt.capstone.exception.auth;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.ExpiredJwtException;
+
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+
+import com.ndt.capstone.enums.exception.AuthError;
+import com.ndt.capstone.exception.BaseExceptionHandler;
+import com.ndt.capstone.payload.response.ApiErrorResponse;
+
+
+@RestControllerAdvice
+public class AuthExceptionHandler implements BaseExceptionHandler {
+    @ExceptionHandler({
+        ExpiredJwtException.class,
+        JwtException.class,
+        IllegalArgumentException.class,
+        Exception.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleAuthException() {
+        return buildApiErrorResponse(AuthError.FAIL);
+    }
+}

@@ -1,0 +1,23 @@
+spring:
+    application:
+        name: capstone
+
+    config:
+        import: "optional:file:.env[.properties]"
+
+    datasource:
+        url: jdbc:mysql://localhost:${MYSQL_PORT}/${MYSQL_DATABASE}
+        username: ${MYSQL_USER}
+        password: ${MYSQL_PASSWORD}
+
+    jpa:
+        generate-ddl: true
+        hibernate.ddl-auto: none
+
+    devtools:
+        restart:
+            enabled: true
+
+jwt:
+    secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
+    expiration: 600000
