@@ -4,6 +4,8 @@ import com.ndt.capstone.dto.UserDto;
 import com.ndt.capstone.enums.exception.JwtError;
 import com.ndt.capstone.payload.request.jwt.GenTokenRequest;
 import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.response.jwt.GenKeyResponse;
+import com.ndt.capstone.payload.response.jwt.GenTokenResponse;
 import com.ndt.capstone.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -27,11 +29,12 @@ public class JwtController {
 
     @GetMapping("/gen-key")
     public ResponseEntity<ApiResponse> generateKey() {
+        GenKeyResponse genKeyResponse = GenKeyResponse.builder().secreteKey(JwtService.genSecretKey()).build();
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code("200")
+                .code(String.valueOf(JwtError.KEY_CREATION_SUCCESS.getHttpStatus().value()))
                 .status(JwtError.KEY_CREATION_SUCCESS.getMessage())
-                .data(JwtService.genSecretKey())
+                .data(genKeyResponse)
                 .build()
         );
     }
@@ -39,15 +42,17 @@ public class JwtController {
 
     @PostMapping("/gen-token")
     public ResponseEntity<ApiResponse> generateToken(@RequestBody GenTokenRequest request) {
-        System.out.println(request);
         UserDto user = userService.getUserByEmail(request.getEmail());
-        System.out.println(user);
+
+        GenTokenResponse genTokenResponse = GenTokenResponse.builder()
+            .token(jwtService.genAccessToken(user))
+            .build();
 
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code("200")
+                .code(String.valueOf(JwtError.TOKEN_CREATION_SUCCESS.getHttpStatus().value()))
                 .status(JwtError.TOKEN_CREATION_SUCCESS.getMessage())
-                .data(jwtService.genAccessToken(user))
+                .data(genTokenResponse)
                 .build()
         );
     }

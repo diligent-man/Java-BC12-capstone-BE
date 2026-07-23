@@ -14,7 +14,7 @@ import com.ndt.capstone.exception.BaseError;
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 public enum JwtError implements BaseError {
-    KEY_CREATION_SUCCESS(HttpStatus.OK, "Create secret key successfully"),
+    KEY_CREATION_SUCCESS(HttpStatus.NOT_FOUND, "Create secret key successfully"),
     KEY_CREATION_FAIL(HttpStatus.OK, "Fail to create secret key"),
 
     TOKEN_CREATION_SUCCESS(HttpStatus.OK, "Create token successfully"),

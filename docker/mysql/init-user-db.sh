@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-mysql --user=root --password="$MYSQL_ROOT_PASSWORD" < uniclub.sql
+
+mysql --user=root --password="$MYSQL_ROOT_PASSWORD" < uniclub_schema.sql
+mysql --user=root --password="$MYSQL_ROOT_PASSWORD" < uniclub_mock_data.sql
 
 mysql --user=root --password="$MYSQL_ROOT_PASSWORD" -e "
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';

@@ -12,14 +12,14 @@ import com.ndt.capstone.service.AuthService;
 import com.ndt.capstone.enums.exception.AuthError;
 import com.ndt.capstone.payload.response.ApiResponse;
 import com.ndt.capstone.payload.request.auth.LoginRequest;
-import com.ndt.capstone.payload.response.AuthResponse;
+import com.ndt.capstone.payload.response.auth.AuthResponse;
 
 
 @CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthenController {
+public class AuthController {
     private final AuthService authenService;
 
 
@@ -29,7 +29,9 @@ public class AuthenController {
     ) {
         String accessToken = authenService.doLogin(request);
 
-        AuthResponse authResponse = new AuthResponse(accessToken);
+        AuthResponse authResponse = AuthResponse.builder()
+            .accessToken(accessToken)
+            .build();
 
         ApiResponse response = ApiResponse.builder()
             .code(AuthError.SUCCESS.getHttpStatus().toString())
