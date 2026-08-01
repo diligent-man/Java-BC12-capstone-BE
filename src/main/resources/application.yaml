@@ -18,6 +18,18 @@ spring:
         restart:
             enabled: true
 
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: ${MAIL_USERNAME}    # Thay bằng email của người gửi trong .env
+        password: ${MAIL_PASSWORD}     # Thay bằng App Password trong .env
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
     expiration: 600000
