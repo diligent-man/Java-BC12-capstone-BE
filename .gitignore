@@ -34,3 +34,5 @@ build/
 
 !scripts/**
 .env**
+
+kafka_data/

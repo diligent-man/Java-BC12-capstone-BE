@@ -16,6 +16,10 @@ import com.ndt.capstone.payload.response.ApiErrorResponse;
 
 @RestControllerAdvice
 public class AuthExceptionHandler implements BaseExceptionHandler {
+    @ExceptionHandler({AuthException.class})
+    public ResponseEntity<ApiErrorResponse> handleAuthException(AuthException ex) {
+        return buildApiErrorResponse(ex.getError());
+    }
     @ExceptionHandler({
         ExpiredJwtException.class,
         JwtException.class,

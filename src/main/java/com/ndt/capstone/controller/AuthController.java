@@ -42,10 +42,26 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(@RequestHeader("Authorization") String authHeader) {
+        // Cắt bỏ "Bearer " (7 ký tự đầu)
+        String token = authHeader.substring(7);
+        authenService.doLogout(token);
+
+        ApiResponse response = ApiResponse.builder()
+                .code(AuthError.SUCCESS.getHttpStatus().toString())
+                .status(AuthError.SUCCESS.toString())
+                .data("Đăng xuất thành công")
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
         authenService.doSignup(request);
 
         return ResponseEntity.ok("Đăng ký thành công. Vui lòng kiểm tra email");
     }
+
+
 }

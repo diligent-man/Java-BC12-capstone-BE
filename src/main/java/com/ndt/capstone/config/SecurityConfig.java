@@ -33,7 +33,7 @@ public class SecurityConfig {
                 authorizer -> {
                     authorizer.requestMatchers("/api/jwt/*").permitAll();
                     authorizer.requestMatchers(HttpMethod.POST, "/api/auth/*").permitAll();
-
+                    authorizer.requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN");
                     // tất cả các request còn lại đều phải chứng thực
                     authorizer.anyRequest().authenticated();
                 }
