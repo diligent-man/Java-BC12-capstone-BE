@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 @Configuration
@@ -32,7 +37,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 authorizer -> {
                     authorizer.requestMatchers("/api/jwt/*").permitAll();
-                    authorizer.requestMatchers(HttpMethod.POST, "/auth/*").permitAll();
+                    authorizer.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    authorizer.requestMatchers(HttpMethod.GET,"/product/**").permitAll();
+                    authorizer.requestMatchers("/file/**").permitAll(); // Cho phép truy cập các API liên quan đến file
+                    authorizer.requestMatchers("/error").permitAll(); // Cho phép Spring Boot hiển thị đúng mã lỗi thực sự (VD: 400, 500) thay vì bị chặn thành 403
+                    authorizer.requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN");
 
                     // tất cả các request còn lại đều phải chứng thực
                     authorizer.anyRequest().authenticated();
@@ -46,4 +55,24 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // domain dc cấp phép truy cập vào BE
+        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500",
+                "http://localhost:3979",    // ← thêm cổng Vite FE của bạn
+                "http://localhost:5173" ));    // ← phòng khi đổi cổng mặc định Vite));
+        //những phương thức được phép sử dụng để truy cập vào BE
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // cho phép tâ cả header được phép truy cập, đi làm sẽ customize lại vd chỉ cho pheép header authentication
+        configuration.setAllowedHeaders(List.of("*"));
+        //không sử dụng cookie thì set false
+        configuration.setAllowCredentials(false);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 }
+

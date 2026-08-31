@@ -16,13 +16,22 @@ import com.ndt.capstone.payload.response.ApiErrorResponse;
 
 @RestControllerAdvice
 public class AuthExceptionHandler implements BaseExceptionHandler {
+
+    // THÊM METHOD NÀY: Bắt AuthException từ doLogin()
+    @ExceptionHandler({
+            AuthException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleAuthException(AuthException ex) {
+        return buildApiErrorResponse(ex.getError());
+    }
+
     @ExceptionHandler({
         ExpiredJwtException.class,
         JwtException.class,
         IllegalArgumentException.class,
-        Exception.class
     })
-    public ResponseEntity<ApiErrorResponse> handleAuthException() {
+    public ResponseEntity<ApiErrorResponse> handleJwtException() {
+
         return buildApiErrorResponse(AuthError.FAIL);
     }
 }

@@ -1,63 +1,162 @@
 services:
-    mysql:
-        build:
-            context: docker/mysql
-            dockerfile: Dockerfile
-            platforms:
-                - "linux/amd64"
-            tags:
-                - "java_bc12_capstone/mysql:1.0.0"
+  mysql:
+    build:
+      context: docker/mysql
+      dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+      tags:
+        - "java_bc12_capstone/mysql:1.0.0"
 
-        container_name: java_bc12_capstone_be_mysql
+    container_name: java_bc12_capstone_be_mysql
 
-        environment:
-            MYSQL_HOST: ${MYSQL_HOST}
-            MYSQL_PORT: ${MYSQL_PORT}
-            
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
 
-        networks:
-            - mysql
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
-        ports:
-            - "${MYSQL_PORT}:${MYSQL_PORT}"
+    networks:
+      - mysql
 
-        volumes:
-            - mysql:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
 
-        restart: on-failure
+    volumes:
+      - mysql:/var/lib/mysql
 
-        healthcheck:
-            test: [ "CMD-SHELL", "/usr/bin/mysql --user=root --password=${MYSQL_ROOT_PASSWORD} --execute \"SHOW DATABASES;\" || exit 1" ]
-            interval: 5s
-            timeout: 3s
-            retries: 3
+    restart: on-failure
 
-        deploy:
-            mode: global
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
-            restart_policy:
-                condition: on-failure
-                delay: 5s
-                window: 120s
-                max_attempts: 3
+    deploy:
+      mode: global
 
-            resources:
-                limits:
-                    cpus: "4"
-                    memory: 4096M
-                reservations:
-                    cpus: "4"
-                    memory: 2048M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 120s
+        max_attempts: 3
+
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4096M
+        reservations:
+          cpus: "4"
+          memory: 2048M
+
+
+  kafka:
+    image: confluentinc/cp-kafka:7.9.1
+    hostname: kafka
+    container_name: java_bc12_capstone_be_kafka
+
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: "Mk30EYBSD34fcwNTJENDM2Qk"
+      KAFKA_MESSAGE_MAX_BYTES: 10485760
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485760
+      KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"
+
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+    networks:
+      - kafka-network
+
+    restart: on-failure
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: java_bc12_capstone_be_kafka_ui
+
+    ports:
+      - "8085:8080"
+
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+    networks:
+      - kafka-network
+
+    depends_on:
+      - kafka
+
+    restart: on-failure
+  redis:
+    image: redis:8.8.1-trixie
+    container_name: java_bc12_capstone_be_redis
+    environment:
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - mysql
+      - redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - "admin123"
+    restart: on-failure
+    volumes:
+      - redis:/data
+
+  redisinsight:
+    image: redis/redisinsight:3.8
+    container_name: java_bc12_capstone_be_redisinsight
+    ports:
+      - "${REDIS_UI_PORT}:${REDIS_UI_PORT}"
+    restart: on-failure
+    volumes:
+      - redisinsight:/data
+    networks:
+      - redis
 
 volumes:
-    mysql:
-        driver: local
-        labels:
-            com.ndt.capstone.description: "Backend Database"
+  mysql:
+    driver: local
+  kafka-data:
+  redis:
+    driver: local
+  redisinsight:
+    driver: local
+
+
 
 networks:
-    mysql:
-        driver: bridge
+  mysql:
+    driver: bridge
+  kafka-network:
+    driver: bridge
+  #    redis-network:
+  #        driver: bridge
+  redis:
+    driver: bridge

@@ -1,5 +1,6 @@
 package com.ndt.capstone.controller;
 
+import com.ndt.capstone.payload.request.auth.SignupRequest;
 import lombok.RequiredArgsConstructor;
 
 
@@ -17,7 +18,7 @@ import com.ndt.capstone.payload.response.auth.AuthResponse;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authenService;
@@ -25,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(
-        @RequestBody LoginRequest request
+        LoginRequest request
     ) {
         String accessToken = authenService.doLogin(request);
 
@@ -39,5 +40,27 @@ public class AuthController {
             .data(authResponse)
             .build();
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+        // Cắt bỏ "Bearer " (7 ký tự đầu)
+        String token = authHeader.substring(7);
+        authenService.doLogout(token);
+
+        ApiResponse response = ApiResponse.builder()
+                .code(AuthError.SUCCESS.getHttpStatus().toString())
+                .status(AuthError.SUCCESS.toString())
+                .data("Đăng xuất thành công")
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signUp(@RequestBody SignupRequest signupRequest){
+        authenService.doSignUp(signupRequest);
+        return ResponseEntity.ok("Đăng ký thành công, vui lòng kiểm tra mail");
     }
 }

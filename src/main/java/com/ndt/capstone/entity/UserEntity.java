@@ -21,7 +21,11 @@ public class UserEntity {
 
     private String fullName;
 
+    private String status ;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private RoleEntity role;
+
+
 }

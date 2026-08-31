@@ -97,6 +97,7 @@ CREATE TABLE user
     password  varchar(255),
     full_name varchar(255),
     role_id      int,
+    status    varchar(20) default 'ACTIVE',   -- ★ THÊM DÒNG NÀY
 
     primary key (id)
 );
@@ -220,6 +221,7 @@ CREATE TABLE country
     primary key (id)
 );
 
+ALTER TABLE user ADD COLUMN status VARCHAR(20) DEFAULT 'ACTIVE';
 
 ALTER TABLE variant
     ADD CONSTRAINT FK_id_product_variant FOREIGN KEY (id_product) REFERENCES product (id);
