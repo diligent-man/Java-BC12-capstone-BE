@@ -42,7 +42,6 @@ public class AuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final LoginAttemptService loginAttemptService;
 
-
     @Override
     protected void doFilterInternal(
         @NonNull HttpServletRequest request,
@@ -63,7 +62,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
             String email = claims.get("email", String.class);
 
-            // KIỂM TRA SINGLE SESSION
+            // ===== KIỂM TRA SINGLE SESSION =====
             String activeToken = loginAttemptService.getActiveSession(email);
 
             if (activeToken == null || !token.equals(activeToken)) {
@@ -76,6 +75,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 );
                 return; // KHÔNG cho đi tiếp
             }
+            // ===== KẾT THÚC KIỂM TRA =====
 
             Integer userId = Integer.parseInt(claims.getSubject());
             String role = claims.get("role", String.class);

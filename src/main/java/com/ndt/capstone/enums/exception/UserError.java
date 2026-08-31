@@ -15,7 +15,6 @@ import com.ndt.capstone.exception.BaseError;
 @ToString(onlyExplicitlyIncluded = true)
 public enum UserError implements BaseError {
     NOT_FOUND(HttpStatus.OK, "User not found"),
-
     ;
 
     private final HttpStatusCode httpStatus;
