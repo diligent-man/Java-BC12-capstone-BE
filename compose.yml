@@ -52,12 +52,52 @@ services:
                     cpus: "4"
                     memory: 2048M
 
+    redis:
+        image: redis:8.8.1-alpine
+        container_name: java_bc12_capstone_be_redis
+        environment:
+            REDIS_PORT: ${REDIS_PORT}
+        networks:
+            - mysql
+            - redis
+        ports:
+            - "${REDIS_PORT}:${REDIS_PORT}"
+        command:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --requirepass
+            - ${REDIS_PASSWORD}"
+        restart: on-failure
+        volumes:
+            - redis:/data
+
+    redisinsight:
+        image: redis/redisinsight:3.8
+        container_name: java_bc12_capstone_be_redisinsight
+        ports:
+            - "${REDIS_UI_PORT}:${REDIS_UI_PORT}"
+        restart: on-failure
+        volumes:
+            - redisinsight:/data
+        networks:
+            - redis
 volumes:
     mysql:
         driver: local
         labels:
             com.ndt.capstone.description: "Backend Database"
+    redis:
+        driver: local
+        labels:
+            com.ndt.capstone.description: "Redis Cache Database"
+    redisinsight:
+        driver: local
+        labels:
+            com.ndt.capstone.description: "Redis Cache Database"
 
 networks:
     mysql:
+        driver: bridge
+    redis:
         driver: bridge
