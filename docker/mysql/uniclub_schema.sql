@@ -285,3 +285,5 @@ ALTER TABLE product_brand
 
 ALTER TABLE user
     ADD CONSTRAINT FK_role_id_user_role FOREIGN KEY (role_id) REFERENCES role (id);
+ALTER TABLE user
+    ADD COLUMN status VARCHAR(20) DEFAULT 'ACTIVE';
