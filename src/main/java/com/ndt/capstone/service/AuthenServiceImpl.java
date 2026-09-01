@@ -8,25 +8,24 @@ import com.ndt.capstone.entity.RoleEntity;
 import com.ndt.capstone.enums.exception.AuthError;
 import com.ndt.capstone.exception.auth.AuthException;
 import com.ndt.capstone.payload.request.auth.SignupRequest;
-import io.jsonwebtoken.Claims;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
+import io.jsonwebtoken.Claims;
 import com.ndt.capstone.entity.UserEntity;
 import com.ndt.capstone.repository.UserRepository;
 import com.ndt.capstone.payload.request.auth.LoginRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
 public class AuthenServiceImpl implements AuthService {
+
     @Autowired
     private UserRepository userRepo;
 
@@ -45,44 +44,44 @@ public class AuthenServiceImpl implements AuthService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
+
+
     @Override
     public String doLogin(LoginRequest request) {
-
         String email = request.getEmail();
 
-        // 1. Kiểm tra khoá tài khoản
-        String lockType = loginAttemptService.getLockType(email);
-
-        if ("PERMANENT".equals(lockType)) {
+        //đầu tiên lấy locktype rồi kiểm tra xem email này có đang bị khóa hay không
+        String lockType = loginAttemptService.getLockType( email); //Lụm ra locktype
+        if("PERMANENT".equals(lockType)){
             throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
         }
-
         if ("TEMP".equals(lockType)) {
             throw new AuthException(AuthError.ACCOUNT_TEMP_LOCKED);
         }
 
-        // 2.Tìm user trong DB
+        //Nếu không bị dính khóa, tiếp tục luồng đăng nhập
+        //B1 lấy thông tin user trong DB
         Optional<UserEntity> opUser = userRepo.findByEmail(email);
-
-        if (opUser.isEmpty()) {
-            // Vẫn ghi nhận lần sai (chống brute-force dò email)
+        if (opUser.isEmpty()) { //*Nếu email sai
+            // nếu nhập sai email nó vẫn tăng 1 lần sai, để chống việc mấy thg hacker nó xài tool dò email
             loginAttemptService.recordFailedAttempt(email);
             throw new AuthException(AuthError.INVALID_CREDENTIALS);
         }
-
         UserEntity user = opUser.get();
-        if("PERMANETLY_LOCKED".equals(user.getStatus())){
+        // lấy được user thì kiểm tra ngay status trong DB ( phòng trường hợp redis bị crash ất key)
+        if ("PERMANENTLY_LOCKED".equals(user.getStatus())) {
             throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
         }
 
-        // 3. Kiểm tra mật khẩu
-        // Nếu mk sai
+
+        //*Nếu mk sai
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            //kích hoạt hàm recordFailedAttempt để tăng lên 1 lần sai
             int remaining = loginAttemptService.recordFailedAttempt(email);
 
-            // Sau khi record, kiểm tra lại xem có bị khoá chưa
-            String newLockType = loginAttemptService.getLockType(email);
-
+            // Sau khi tăng lên thì kiểm tra lại xem có bị khoá chưa,
+            // vì khi hàm recordFailedAttempt được kích hoạt, nếu thỏa >3 nhập sai, nó sẽ tạo ra các key để block log
+            String newLockType = loginAttemptService.getLockType(email); //lấy key để kiểm tra
             if ("PERMANENT".equals(newLockType)) {
                 throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
             }
@@ -92,10 +91,12 @@ public class AuthenServiceImpl implements AuthService {
             }
 
             // Chưa bị khoá → thông báo sai MK (remaining chứa số lần còn lại)
+            System.out.println("so lan con lại " + remaining);
             throw new AuthException(AuthError.INVALID_CREDENTIALS);
+
         }
 
-        // 4. Nếu mật khẩu đúng → Kiểm tra Single Session
+        //*Nếu MK đúng -> kiểm tra single session để xem có trình duyệt nào khác đang xài không
         String existingSession = loginAttemptService.getActiveSession(email);
 
         if (existingSession != null) {
@@ -103,7 +104,7 @@ public class AuthenServiceImpl implements AuthService {
             throw new AuthException(AuthError.ACCOUNT_ACTIVE_SESSION);
         }
 
-        // 5. Đăng nhập thành công
+        // ========== BƯỚC 5: Đăng nhập thành công ==========
         // Reset bộ đếm sai
         loginAttemptService.resetFailedAttempts(email);
 
@@ -116,30 +117,35 @@ public class AuthenServiceImpl implements AuthService {
         return accessToken;
     }
 
+
     @Transactional
     @Override
-    public void doSignup(SignupRequest request) {
-        //Kiểm tra email có trùng hay không
+    public void doSignUp(SignupRequest request) {
         Optional<UserEntity> opUser = userRepo.findByEmail(request.getEmail());
-        if (opUser.isPresent()) {
-            System.out.println("email đã tồn tại");
-        } else {
-            //Nếu không thì lưu vào database
-            String encodedPassword = passwordEncoder.encode(request.getPassword());
+        if(opUser.isEmpty()){ //neu kiemtra khong thay user
             UserEntity newUser = new UserEntity();
-            newUser.setEmail(request.getEmail());
-            newUser.setPassword(encodedPassword);
-            newUser.setFullName(request.getFullname());
             RoleEntity role = new RoleEntity();
+
+
+            String encodedPassword = passwordEncoder.encode(request.getPassword());
+            newUser.setEmail(request.getEmail());
+
+            newUser.setPassword(encodedPassword);
+
+            newUser.setFullName(request.getFullName());
+
+            newUser.setStatus("ACTIVE");
+
             role.setId(3);
             newUser.setRole(role);
-            newUser.setStatus("ACTIVE");
+            
             userRepo.save(newUser);
 
-            //Bắn sự kiện lên Kafka để hệ thống tự gửi mail sau
-            kafkaProducerService.sendRegistrationEmailEvent(newUser.getEmail());
-        }
+            kafkaProducerService.sendRegistrationEmailEvent(request.getEmail());
 
+        } else {
+            System.out.println("email da ton tai");
+        }
     }
 
     @Override
@@ -148,9 +154,9 @@ public class AuthenServiceImpl implements AuthService {
         Claims claims = jwtService.extractClaims(token);
         String email = claims.get("email", String.class);
 
-        if (email != null) {
-            // Xóa session trong Redis, giải phóng tài khoản để đăng nhập ở nơi khác
-            loginAttemptService.removeSession(email);
-        }
+        // Xoá session trong Redis
+        loginAttemptService.removeSession(email);
     }
+
+
 }
