@@ -7,13 +7,15 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+
 @Setter
 @Getter
-@Entity(name="size")
+@Entity(name = "size")
 public class SizeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
 }

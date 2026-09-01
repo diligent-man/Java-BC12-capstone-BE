@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -22,48 +23,52 @@ public class ProductController {
 
 
     @GetMapping("/paging")
-    public ResponseEntity<?> getAllProductByPage(GetProductRequest request){ //phương thuc GET khong duoc su dung @RequestBody
+    public ResponseEntity<?> getAllProductByPage(GetProductRequest request) { // phương thuc GET khong duoc su dung @RequestBody
         ApiResponse baseResponse = ApiResponse.builder()
-                .code(HttpStatus.OK.toString())
-                .status("get all product success")
-                .data(productService.getAllProductByPage(request.getPageNumber(), request.getPageSize()))
-                .build();
+            .code(HttpStatus.OK.toString())
+            .status("get all product success")
+            .data(productService.getAllProductByPage(request.getPageNumber(), request.getPageSize()))
+            .build();
 
         return ResponseEntity.ok(baseResponse);
     }
+
 
     @GetMapping
-    public ResponseEntity<?> getAllProduct(){
+    public ResponseEntity<?> getAllProduct() {
         ApiResponse baseResponse = ApiResponse.builder()
-                .code(HttpStatus.OK.toString())
-                .status("get all product success")
-                .data(productService.getAllProduct())
-                .build();
+            .code(HttpStatus.OK.toString())
+            .status("get all product success")
+            .data(productService.getAllProduct())
+            .build();
 
         return ResponseEntity.ok(baseResponse);
     }
+
 
     @PostMapping("/insert")
-    public ResponseEntity<?> insertProduct(InsertProductRequest request){
+    public ResponseEntity<?> insertProduct(InsertProductRequest request) {
         productService.insertProduct(request);
-        
+
         ApiResponse baseResponse = ApiResponse.builder()
-                .code(HttpStatus.OK.toString())
-                .status("insert created")
-                .build();
+            .code(HttpStatus.OK.toString())
+            .status("insert created")
+            .build();
 
         return ResponseEntity.ok(baseResponse);
     }
+
+
     @GetMapping("/search")
     public ResponseEntity<?> searchProduct(GetProductRequest request) {
         ApiResponse baseResponse = ApiResponse.builder()
-                .code(HttpStatus.OK.toString())
-                .status("search product success")
-                .data(productService.searchProductByName(
-                        request.getKeyword(),
-                        request.getPageNumber(),
-                        request.getPageSize()))
-                .build();
+            .code(HttpStatus.OK.toString())
+            .status("search product success")
+            .data(productService.searchProductByName(
+                request.getKeyword(),
+                request.getPageNumber(),
+                request.getPageSize()))
+            .build();
 
         return ResponseEntity.ok(baseResponse);
     }

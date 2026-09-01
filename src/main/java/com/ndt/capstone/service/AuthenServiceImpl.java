@@ -45,22 +45,21 @@ public class AuthenServiceImpl implements AuthService {
     private long jwtExpiration;
 
 
-
     @Override
     public String doLogin(LoginRequest request) {
         String email = request.getEmail();
 
-        //đầu tiên lấy locktype rồi kiểm tra xem email này có đang bị khóa hay không
-        String lockType = loginAttemptService.getLockType( email); //Lụm ra locktype
-        if("PERMANENT".equals(lockType)){
+        // đầu tiên lấy locktype rồi kiểm tra xem email này có đang bị khóa hay không
+        String lockType = loginAttemptService.getLockType(email); // Lụm ra locktype
+        if ("PERMANENT".equals(lockType)) {
             throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
         }
         if ("TEMP".equals(lockType)) {
             throw new AuthException(AuthError.ACCOUNT_TEMP_LOCKED);
         }
 
-        //Nếu không bị dính khóa, tiếp tục luồng đăng nhập
-        //B1 lấy thông tin user trong DB
+        // Nếu không bị dính khóa, tiếp tục luồng đăng nhập
+        // B1 lấy thông tin user trong DB
         Optional<UserEntity> opUser = userRepo.findByEmail(email);
         if (opUser.isEmpty()) { //*Nếu email sai
             // nếu nhập sai email nó vẫn tăng 1 lần sai, để chống việc mấy thg hacker nó xài tool dò email
@@ -76,12 +75,12 @@ public class AuthenServiceImpl implements AuthService {
 
         //*Nếu mk sai
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            //kích hoạt hàm recordFailedAttempt để tăng lên 1 lần sai
+            // kích hoạt hàm recordFailedAttempt để tăng lên 1 lần sai
             int remaining = loginAttemptService.recordFailedAttempt(email);
 
             // Sau khi tăng lên thì kiểm tra lại xem có bị khoá chưa,
             // vì khi hàm recordFailedAttempt được kích hoạt, nếu thỏa >3 nhập sai, nó sẽ tạo ra các key để block log
-            String newLockType = loginAttemptService.getLockType(email); //lấy key để kiểm tra
+            String newLockType = loginAttemptService.getLockType(email); // lấy key để kiểm tra
             if ("PERMANENT".equals(newLockType)) {
                 throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
             }
@@ -122,7 +121,7 @@ public class AuthenServiceImpl implements AuthService {
     @Override
     public void doSignUp(SignupRequest request) {
         Optional<UserEntity> opUser = userRepo.findByEmail(request.getEmail());
-        if(opUser.isEmpty()){ //neu kiemtra khong thay user
+        if (opUser.isEmpty()) { // neu kiemtra khong thay user
             UserEntity newUser = new UserEntity();
             RoleEntity role = new RoleEntity();
 
@@ -138,7 +137,7 @@ public class AuthenServiceImpl implements AuthService {
 
             role.setId(3);
             newUser.setRole(role);
-            
+
             userRepo.save(newUser);
 
             kafkaProducerService.sendRegistrationEmailEvent(request.getEmail());
@@ -147,6 +146,7 @@ public class AuthenServiceImpl implements AuthService {
             System.out.println("email da ton tai");
         }
     }
+
 
     @Override
     public void doLogout(String token) {

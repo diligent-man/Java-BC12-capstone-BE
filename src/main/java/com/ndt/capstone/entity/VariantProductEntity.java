@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.awt.*;
 
+
 @Getter
 @Setter
 @Entity(name = "variant")
@@ -28,5 +29,6 @@ public class VariantProductEntity {
     private SizeEntity idSize;
 
     private int quantity;
+
     private String images;
 }

@@ -56,7 +56,10 @@ services:
         volumes:
             - redis:/data
         healthcheck:
-            test: [ "CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD} --no-auth-warning ping | grep -q PONG || exit 1" ]
+            test: [
+                "CMD-SHELL",
+                "redis-cli -a ${REDIS_PASSWORD} --no-auth-warning ping | grep -q PONG || exit 1"
+            ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -87,7 +90,10 @@ services:
         networks:
             - redis
         healthcheck:
-            test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:5540/api/health || exit 1" ]
+            test: [
+                "CMD-SHELL",
+                "wget --no-verbose --tries=1 --spider http://127.0.0.1:5540/api/health || exit 1"
+            ]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -140,16 +146,19 @@ services:
             KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"
             KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent.jar=${KAFKA_CLUSTERS_0_METRICS_PORT}:/usr/share/jmx_exporter/kafka_broker.yml
         volumes:
-            - kafka0_data:${KAFKA_LOG_DIRS}
+            - kafka0
             - ${KAFKA_JMX_EXPORTER_PATH}:/usr/share/jmx_exporter/
         networks:
-            - mysql
+            - kafka
         ports:
             - "${KAFKA0_BROKER_PORT}:9092"
             - "${KAFKA0_CONTROLLER_PORT}:9093"
             - "${KAFKA0_CLIENT_PORT}:9094"
         healthcheck:
-            test: [ "CMD-SHELL", "KAFKA_OPTS= kafka-broker-api-versions --bootstrap-server localhost:${KAFKA0_BROKER_PORT} || exit 1" ]
+            test: [
+                "CMD-SHELL",
+                "KAFKA_OPTS= kafka-broker-api-versions --bootstrap-server localhost:${KAFKA0_BROKER_PORT} || exit 1"
+            ]
             interval: 10s
             timeout: 10s
             retries: 10
@@ -186,7 +195,7 @@ services:
             KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTERS_0_NAME}
             KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: ${KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS}
         networks:
-            - mysql
+            - kafka
         depends_on:
             - kafka0
         healthcheck:
@@ -226,7 +235,7 @@ volumes:
         driver: local
         labels:
             com.ndt.capstone.description: "Redis Cache Database"
-    kafka0_data:
+    kafka0:
         driver: local
         labels:
             com.ndt.capstone.description: "Kafka Cache Database"

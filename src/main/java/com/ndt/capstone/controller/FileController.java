@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 @RestController
 @RequestMapping("/file")
 @CrossOrigin
@@ -24,11 +25,12 @@ public class FileController {
         return ResponseEntity.ok("File uploaded successfully: " + file.getOriginalFilename());
     }
 
+
     @GetMapping("/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName){
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         Resource file = fileServices.load(fileName);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+            "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
 

@@ -53,6 +53,7 @@ public class JwtService {
         }
     }
 
+
     public String genAccessToken(UserDto user) {
         try {
             return Jwts.builder()
@@ -67,6 +68,7 @@ public class JwtService {
             throw new RuntimeException("Failed to generate JWT token", e);
         }
     }
+
 
     public static String genSecretKey() {
         SecretKey key = Jwts.SIG.HS256.key().build();

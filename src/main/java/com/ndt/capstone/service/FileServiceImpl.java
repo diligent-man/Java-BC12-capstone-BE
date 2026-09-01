@@ -13,16 +13,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+
 @Service
-public class FileServiceImp implements FileService {
+public class FileServiceImpl implements FileService {
     @Value("${upload.image}")
     private String root;
+
 
     @Override
     public void save(MultipartFile file) {
         try {
-            Path rootPath = Paths.get(root); //truy đến file trong server để tải hình xuống
-            if(!Files.exists(rootPath)) {
+            Path rootPath = Paths.get(root); // truy đến file trong server để tải hình xuống
+            if (!Files.exists(rootPath)) {
                 Files.createDirectories(rootPath);
             }
 
@@ -33,12 +35,13 @@ public class FileServiceImp implements FileService {
         }
     }
 
+
     @Override
     public Resource load(String filename) {
         try {
-            Path pathFile = Paths.get(root).resolve(filename); //truy đến file trong server để đọc và tải về client, su dung browser
+            Path pathFile = Paths.get(root).resolve(filename); // truy đến file trong server để đọc và tải về client, su dung browser
             Resource resource = new UrlResource(pathFile.toUri());
-            if(resource.exists() && resource.isReadable()) {
+            if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
                 throw new FileException(FileError.FILE_NOT_FOUND);

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer> {
     // Thêm dòng này: Tìm kiếm sản phẩm theo tên (không phân biệt hoa thường) + phân trang

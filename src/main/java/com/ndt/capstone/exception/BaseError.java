@@ -9,7 +9,10 @@ import org.springframework.http.HttpStatusCode;
 
 public interface BaseError {
     HttpStatusCode getHttpStatus();
+
+
     String getMessage();
+
 
     static <T extends Enum<T> & BaseError> T getFromHttpStatus(Class<T> enumClass, HttpStatusCode code) {
         return Arrays.stream(enumClass.getEnumConstants())

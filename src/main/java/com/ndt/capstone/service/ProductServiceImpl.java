@@ -18,12 +18,12 @@ import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
+
 @Service
-public class ProductServiceImp implements ProductService {
+public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepository productRepository;
 
@@ -45,11 +45,12 @@ public class ProductServiceImp implements ProductService {
 
     private static final String PRODUCT_CACHE_KEY = "products:all";
 
+
     @Override
     @Transactional
-    //biến nguyên hàm được đặt trên thành 1 giao dịch, nếu cả hàm chạy thành công thì mới thực hiện truy vấn tới database
+    // biến nguyên hàm được đặt trên thành 1 giao dịch, nếu cả hàm chạy thành công thì mới thực hiện truy vấn tới database
     public void insertProduct(InsertProductRequest productRequester) {
-        fileServices.save(productRequester.getFile()); //lưu hình
+        fileServices.save(productRequester.getFile()); // lưu hình
 
         ProductEntity product = new ProductEntity();
         product.setName(productRequester.getName());
@@ -68,33 +69,33 @@ public class ProductServiceImp implements ProductService {
         variantProduct.setProduct(productInserted);
         variantProduct.setColor(color);
         variantProduct.setIdSize(size);
-        variantProduct.setImages(productRequester.getFile().getOriginalFilename()); //lấy tên hình để lưu vào bảng variant
+        variantProduct.setImages(productRequester.getFile().getOriginalFilename()); // lấy tên hình để lưu vào bảng variant
 
-        variantRepository.save(variantProduct); //luu bang varint, phai luu ca 2 bang cung luc
+        variantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
     }
-
 
 
     @Override // su dung paging, paging cung la 1 co che cache
-    public Page<ProductDTO> getAllProductByPage(int pageNumber, int pageSize) { //bản chất của kiểu page là list
+    public Page<ProductDTO> getAllProductByPage(int pageNumber, int pageSize) { // bản chất của kiểu page là list
         Pageable page = PageRequest.of(pageNumber, pageSize);
-        //cách 1
-        //return productRepository.findAll(page).map(ProductMapper::toProductDTO);
-        //cách 2
-        return  productRepository.findAll(page).map(product -> ProductMapper.toProductDTO(product));
+        // cách 1
+        // return productRepository.findAll(page).map(ProductMapper::toProductDTO);
+        // cách 2
+        return productRepository.findAll(page).map(product -> ProductMapper.toProductDTO(product));
     }
 
 
-    //sử dụng mem-cache
-//    @Cacheable("product") // đặt tên cho cache là product
-//    @Override
-//    public List<ProductDTO> getAllProduct() {
-//        System.out.println("Kiemtra product");
-//        return productRepository.findAll()
-//                .stream()
-//                .map(ProductMapper::toProductDTO)
-//                .toList();
-//    }
+    // sử dụng mem-cache
+    //    @Cacheable("product") // đặt tên cho cache là product
+    //    @Override
+    //    public List<ProductDTO> getAllProduct() {
+    //        System.out.println("Kiemtra product");
+    //        return productRepository.findAll()
+    //                .stream()
+    //                .map(ProductMapper::toProductDTO)
+    //                .toList();
+    //    }
+
 
     @Override
     public List<ProductDTO> getAllProduct() {
@@ -108,23 +109,24 @@ public class ProductServiceImp implements ProductService {
                 System.out.println("Load Product From Redis");
 
                 return objectMapper.readValue(
-                        cache,
-                        new TypeReference<List<ProductDTO>>() {});
+                    cache,
+                    new TypeReference<List<ProductDTO>>() {
+                    });
             }
 
             // 2. Không có cache -> Query DB
             System.out.println("Load Product From Database");
 
             List<ProductDTO> products = productRepository.findAll()
-                    .stream()
-                    .map(ProductMapper::toProductDTO)
-                    .toList();
+                .stream()
+                .map(ProductMapper::toProductDTO)
+                .toList();
 
             // 3. Lưu cache 10 phút
             redisTemplate.opsForValue().set(
-                    PRODUCT_CACHE_KEY,
-                    objectMapper.writeValueAsString(products),
-                    Duration.ofMinutes(10));
+                PRODUCT_CACHE_KEY,
+                objectMapper.writeValueAsString(products),
+                Duration.ofMinutes(10));
 
             return products;
 
@@ -132,11 +134,13 @@ public class ProductServiceImp implements ProductService {
             throw new RuntimeException("Redis Cache Error", e);
         }
     }
+
+
     @Override
     public Page<ProductDTO> searchProductByName(String keyword, int pageNumber, int pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
         return productRepository.findByNameContainingIgnoreCase(keyword, page)
-                .map(product -> ProductMapper.toProductDTO(product));
+            .map(product -> ProductMapper.toProductDTO(product));
     }
 
 }

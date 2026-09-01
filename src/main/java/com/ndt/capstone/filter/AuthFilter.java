@@ -40,7 +40,9 @@ import com.ndt.capstone.service.JwtService;
 @RequiredArgsConstructor
 public class AuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+
     private final LoginAttemptService loginAttemptService;
+
 
     @Override
     protected void doFilterInternal(
@@ -71,7 +73,7 @@ public class AuthFilter extends OncePerRequestFilter {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(
-                        "{\"code\":\"401\",\"status\":\"Session invalid, please login again\"}"
+                    "{\"code\":\"401\",\"status\":\"Session invalid, please login again\"}"
                 );
                 return; // KHÔNG cho đi tiếp
             }

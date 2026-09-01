@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class LoginAttemptService {
@@ -16,17 +17,19 @@ public class LoginAttemptService {
     private final RedisTemplate<String, String> redisTemplate;
 
     // tao ra các key cần thiết
-    //luu số lần sai liên tiếp
+    // luu số lần sai liên tiếp
     private static final String FAIL_COUNT_PREFIX = "login:fail_count:";
 
-    //luu trạng thái khoa:  temp hay pernament
+    // luu trạng thái khoa:  temp hay pernament
     private static final String LOCKED_PREFIX = "login:locked:";
-    //luu trang thai Khóa: đã từng bị khóa tạm không ?
+
+    // luu trang thai Khóa: đã từng bị khóa tạm không ?
     private static final String WAS_LOCKED_PREFIX = "login:was_locked:";
-    //luu token cua phien hoat động: để xét đk chỉ cho đúng 1 trình duyệt active tại 1 thời điểm
+
+    // luu token cua phien hoat động: để xét đk chỉ cho đúng 1 trình duyệt active tại 1 thời điểm
     private static final String SESSION_PREFIX = "login:session:";
 
-    //các hằng số thời gian của key
+    // các hằng số thời gian của key
     private static final int MAX_ATTEMPTS = 3;
 
     private static final long LOCK_DURATION_MINUTES = 15;
@@ -35,6 +38,7 @@ public class LoginAttemptService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     // ============================================================
     // METHOD 1: getLockType
@@ -52,7 +56,7 @@ public class LoginAttemptService {
     // Ghi nhận 1 lần đăng nhập sai, tự động khoá nếu đạt ngưỡng
     // Return: số lần thử CÒN LẠI (2, 1, hoặc 0)
     // ============================================================
-    public int recordFailedAttempt(String email) { //hàm này chỉ được kích hoạt khi user nhập sai mật khẩu
+    public int recordFailedAttempt(String email) { // hàm này chỉ được kích hoạt khi user nhập sai mật khẩu
         String failKey = FAIL_COUNT_PREFIX + email;
         String lockedKey = LOCKED_PREFIX + email;
         String wasLockedKey = WAS_LOCKED_PREFIX + email;
@@ -65,7 +69,7 @@ public class LoginAttemptService {
             redisTemplate.expire(failKey, LOCK_DURATION_MINUTES, TimeUnit.MINUTES);
         }
 
-        //Nếu đạt ngưỡng 3 lần sai, tạo ra các key khóa login tương ứng
+        // Nếu đạt ngưỡng 3 lần sai, tạo ra các key khóa login tương ứng
         if (currentAttempts != null && currentAttempts >= MAX_ATTEMPTS) {
 
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wasLockedKey))) {
@@ -79,10 +83,10 @@ public class LoginAttemptService {
             } else {
                 // CHƯA từng bị khoá → Khoá TẠM 15 phút, sau 15p này thì vẫn còn key waslocked key = true, nếu trong 15p này mà vẫn nhập sau mk thì se bị khóa vĩnh viển
                 redisTemplate.opsForValue().set(lockedKey, "TEMP",
-                        LOCK_DURATION_MINUTES, TimeUnit.MINUTES);
+                    LOCK_DURATION_MINUTES, TimeUnit.MINUTES);
                 // Đánh dấu "đã từng bị khoá" (TTL 30 phút), sau 15p nữa (vì vừa bị khóa 15p do locked key set = temp) nếu ng dùng bỏ đi đâu đó và quay lại nó được nhận lại đủ 3 lần attempt
                 redisTemplate.opsForValue().set(wasLockedKey, "true",
-                        WAS_LOCKED_DURATION_MINUTES, TimeUnit.MINUTES);
+                    WAS_LOCKED_DURATION_MINUTES, TimeUnit.MINUTES);
             }
 
             // Xoá bộ đếm (vì đã khoá rồi, không cần đếm nữa)
