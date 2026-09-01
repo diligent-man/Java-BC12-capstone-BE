@@ -1,7 +1,40 @@
 services:
+    # refer to fe source for building its docker image
+    fe:
+        image: java_bc12_capstone/fe:1.0.0
+        container_name: java_bc12_capstone_fe
+        ports:
+            - "${FE_PORT}:3979"
+        restart: on-failure
+        healthcheck:
+            test: [
+                "CMD",
+                "node",
+                "-e",
+                "require('http').get('http://127.0.0.1:3979/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
+            ]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
+        deploy:
+            mode: global
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                window: 120s
+                max_attempts: 3
+            resources:
+                limits:
+                    cpus: "4"
+                    memory: 4096M
+                reservations:
+                    cpus: "4"
+                    memory: 2048M
+
     mysql:
         image: java_bc12_capstone/mysql:1.0.0
-        container_name: java_bc12_capstone_be_mysql
+        container_name: java_bc12_capstone_mysql
         environment:
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_PORT: ${MYSQL_PORT}
@@ -38,7 +71,7 @@ services:
 
     redis:
         image: redis:8.8.1-alpine
-        container_name: java_bc12_capstone_be_redis
+        container_name: java_bc12_capstone_redis
         environment:
             REDIS_PORT: ${REDIS_PORT}
         networks:
@@ -81,7 +114,7 @@ services:
 
     redisinsight:
         image: redis/redisinsight:3.8
-        container_name: java_bc12_capstone_be_redisinsight
+        container_name: java_bc12_capstone_redisinsight
         ports:
             - "${REDIS_UI_PORT}:5540"
         restart: on-failure
@@ -118,7 +151,7 @@ services:
         # Kafka v4.3.x
         image: confluentinc/cp-kafka:8.3.1
         hostname: kafka0
-        container_name: java_bc12_capstone_be_kafka0
+        container_name: java_bc12_capstone_kafka0
         environment:
             KAFKA_KRAFT_MODE: "true"
             KAFKA_NODE_ID: 1
@@ -146,7 +179,7 @@ services:
             KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"
             KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent.jar=${KAFKA_CLUSTERS_0_METRICS_PORT}:/usr/share/jmx_exporter/kafka_broker.yml
         volumes:
-            - kafka0
+            - kafka0:${KAFKA_LOG_DIRS}
             - ${KAFKA_JMX_EXPORTER_PATH}:/usr/share/jmx_exporter/
         networks:
             - kafka
@@ -180,7 +213,7 @@ services:
 
     kafka-ui:
         image: provectuslabs/kafka-ui:v0.7.2
-        container_name: java_bc12_capstone_be_kafka_ui
+        container_name: java_bc12_capstone_kafka_ui
         ports:
             - "${KAFKA_UI_PORT}:8080"
         environment:
