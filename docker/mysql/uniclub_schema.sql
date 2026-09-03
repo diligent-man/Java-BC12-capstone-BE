@@ -7,7 +7,7 @@ USE uniclub;
 CREATE TABLE color
 (
     id   int auto_increment primary key,
-    name varchar(20)
+    name varchar(20) NOT NULL
 );
 
 
@@ -15,20 +15,20 @@ CREATE TABLE color
 CREATE TABLE size
 (
     id   int auto_increment primary key,
-    name varchar(20)
+    name varchar(20) NOT NULL
 );
 
 
 CREATE TABLE variant
 (
     sku         int auto_increment primary key,
-    id_product  int,
-    id_color    int,
-    id_size     int,
-    images      text,
-    quantity    int,
-    price       decimal,
-    create_date timestamp default now()
+    id_product  int       NOT NULL,
+    id_color    int       NOT NULL,
+    id_size     int       NOT NULL,
+    images      text      NOT NULL,
+    quantity    int       NOT NULL,
+    price       decimal(11, 2),
+    create_date timestamp NOT NULL default now()
 );
 
 
@@ -37,7 +37,7 @@ CREATE TABLE order_variant
     id_order    int,
     sku_variant int,
     quantity    int,
-    price       decimal,
+    price       decimal(11, 2),
 
     primary key (id_order, sku_variant)
 );
@@ -46,7 +46,7 @@ CREATE TABLE order_variant
 CREATE TABLE orders
 (
     id          int auto_increment primary key,
-    total       double,
+    total       decimal(11, 2),
     note        text,
     id_payment  int,
     id_user     int,
@@ -145,7 +145,7 @@ CREATE TABLE product
     name        varchar(255),
     description text,
     information text,
-    price       double,
+    price       decimal(11, 2),
     id_brand    int,
     create_date timestamp default now()
 );

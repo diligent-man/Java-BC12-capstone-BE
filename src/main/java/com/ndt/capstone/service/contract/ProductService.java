@@ -14,7 +14,7 @@ public interface ProductService {
     Page<ProductDTO> getAllProductByPage(int pageNumber, int pageSize);
 
 
-    List<ProductDTO> getAllProduct();
+    List<ProductDTO> getAll();
 
 
     Page<ProductDTO> searchProductByName(String keyword, int pageNumber, int pageSize);

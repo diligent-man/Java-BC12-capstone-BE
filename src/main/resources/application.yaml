@@ -39,7 +39,6 @@ spring:
 #                    ssl:
 #                        trust: smtp.gmail.com
 
-
 server:
     address: localhost
     port: ${APPLICATION_PORT}
@@ -49,4 +48,13 @@ jwt:
     expiration: 600000
 
 upload:
-    image: ${UPLOAD_IMAGE}
+    image: ${UPLOAD_IMAGE_PATH}
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health
+    endpoint:
+        health:
+            show-details: always
