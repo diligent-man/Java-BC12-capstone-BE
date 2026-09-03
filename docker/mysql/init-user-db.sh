@@ -1,11 +1,12 @@
 #!/bin/bash
 set -e
 
+export MYSQL_PWD="$MYSQL_ROOT_PASSWORD"
 
-mysql --user=root --password="$MYSQL_ROOT_PASSWORD" < uniclub_schema.sql
-mysql --user=root --password="$MYSQL_ROOT_PASSWORD" < uniclub_mock_data.sql
+mysql --user=root < /uniclub_schema.sql
+mysql --user=root < /uniclub_mock_data.sql
 
-mysql --user=root --password="$MYSQL_ROOT_PASSWORD" -e "
+mysql --user=root -e "
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
 
 ALTER USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';

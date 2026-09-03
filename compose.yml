@@ -234,7 +234,7 @@ services:
         healthcheck:
             test: [
                 "CMD-SHELL",
-                "wget --no-verbose --tries=1 --spider 'http://${SPRING_SECURITY_USER_NAME}:${SPRING_SECURITY_USER_PASSWORD}@localhost:8080/actuator/health' || exit 1"
+                "wget --no-verbose --tries=1 --spider 'http://${KAFKA_UI_USER}:${KAFKA_UI_PASSWORD}@localhost:8080/actuator/health' || exit 1"
             ]
             interval: 10s
             timeout: 5s
