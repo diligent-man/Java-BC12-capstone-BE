@@ -62,9 +62,11 @@ public class AuthenServiceImpl implements AuthService {
         // B1 lấy thông tin user trong DB
         Optional<UserEntity> opUser = userRepo.findByEmail(email);
         if (opUser.isEmpty()) { //*Nếu email sai
+            int remaining = loginAttemptService.recordFailedAttempt(email);
             // nếu nhập sai email nó vẫn tăng 1 lần sai, để chống việc mấy thg hacker nó xài tool dò email
-            loginAttemptService.recordFailedAttempt(email);
-            throw new AuthException(AuthError.INVALID_CREDENTIALS);
+            String msg = AuthError.INVALID_CREDENTIALS.getMessage()
+                    .replace("{remaining}", String.valueOf(remaining));
+            throw new AuthException(AuthError.INVALID_CREDENTIALS, msg);
         }
         UserEntity user = opUser.get();
         // lấy được user thì kiểm tra ngay status trong DB ( phòng trường hợp redis bị crash ất key)
@@ -90,8 +92,9 @@ public class AuthenServiceImpl implements AuthService {
             }
 
             // Chưa bị khoá → thông báo sai MK (remaining chứa số lần còn lại)
-            System.out.println("so lan con lại " + remaining);
-            throw new AuthException(AuthError.INVALID_CREDENTIALS);
+            String msg = AuthError.INVALID_CREDENTIALS.getMessage()
+                    .replace("{remaining}", String.valueOf(remaining));
+            throw new AuthException(AuthError.INVALID_CREDENTIALS, msg);
 
         }
 

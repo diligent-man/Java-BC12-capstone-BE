@@ -18,7 +18,7 @@ public enum AuthError implements BaseError {
     FAIL(HttpStatus.OK, "Authentication failed"),
 
     // Login security errors
-    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password, you have {remaining} attempt left "),
     ACCOUNT_TEMP_LOCKED(HttpStatus.FORBIDDEN, "Account temporarily locked for 15 minutes"),
     ACCOUNT_PERMANENTLY_LOCKED(HttpStatus.FORBIDDEN, "Account permanently locked, contact admin"),
     ACCOUNT_ACTIVE_SESSION(HttpStatus.FORBIDDEN, "Account is being used on another browser, please logout first"),

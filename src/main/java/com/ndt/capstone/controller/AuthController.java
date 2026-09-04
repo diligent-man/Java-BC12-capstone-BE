@@ -26,7 +26,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(
-        LoginRequest request
+            @RequestBody LoginRequest request
     ) {
         String accessToken = authenService.doLogin(request);
 

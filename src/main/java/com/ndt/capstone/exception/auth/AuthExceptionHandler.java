@@ -22,7 +22,12 @@ public class AuthExceptionHandler implements BaseExceptionHandler {
             AuthException.class
     })
     public ResponseEntity<ApiErrorResponse> handleAuthException(AuthException ex) {
-        return buildApiErrorResponse(ex.getError());
+        return ResponseEntity
+                .status(ex.getError().getHttpStatus())
+                .body(new ApiErrorResponse(
+                        String.valueOf(ex.getError().getHttpStatus().value()),
+                        ex.getCustomMessage() //ex.getCustomMessage() → lấy đúng chuỗi đã được .replace()
+                ));
     }
 
     @ExceptionHandler({

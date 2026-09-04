@@ -39,10 +39,10 @@ spring:
 #                    ssl:
 #                        trust: smtp.gmail.com
 
-
 server:
     address: localhost
     port: ${APPLICATION_PORT}
+
 
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
