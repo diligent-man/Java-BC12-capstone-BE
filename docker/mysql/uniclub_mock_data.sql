@@ -24,8 +24,8 @@ VALUES
 INSERT INTO
     brand(name)
 VALUES
-    ('Nike'),
     ('Adidas'),
+    ('Nike'),
     ('Gucci')
 ;
 
@@ -135,7 +135,7 @@ Product code: KE2927',
      1),
 
 
-    ('Nike Sportswear',
+    ('nike sportswear',
      'Nothing hits like a classic tee. This one is relaxed through the body for easy layering. Lightweight cotton feels soft and comfortable for everyday wear.',
      'Ribbed collar
 100% cotton
@@ -146,7 +146,7 @@ Style: IH1141-063',
      44.99,
      2),
 
-    ('Nike Dri-FIT',
+    ('nike dri-fit',
      'The Nike Dri-FIT Shorts are made to keep you moving during high-intensity training. Woven fabric stretches with every move, while vents at the hems are ideal for deep bends like lunges and squats. This product is made with 100% recycled polyester fibers.',
      'Standard fit for a relaxed, easy feel
 9" inseam
@@ -249,6 +249,24 @@ Details: 88% Wool, 12% Polyester',
      39.99,
      3),
 
+    ('cotton viscose jacket with python effect',
+     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and richer tones, as jackets evolve into modern sets with a sleek edge. Crafted from washed cotton polyester viscose, this slim-fit jacket features a distinctive python effect.',
+     'Black washed cotton polyester viscose with python effect
+Interlocking G embroidery
+Stand collar
+Long sleeves
+Zip closure
+Slim fit
+Total length: 21.8"; Shoulder: 16.7"; Chest: 37.4"; Sleeves length: 26.3"; based on a size 44 IT
+Made in Italy
+We recommend selecting at least one size up.
+Fabric: 53% Cotton, 26% Viscose, 21% Polyester
+Pocket lining: 65% Polyester, 35% Cotton
+Embroidery: 100% Polyester
+Non textile decoration: 100% Polyamide',
+     54.99,
+     3),
+
     ('grainy laminated bull leather jacket',
      'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and rich hues, along with subtle House codes. On this jacket, a tonal trim inspired by the Web offers an understated expression of the signature motif. Crafted from grainy bull leather, it is complete with Gucci embroidery, padded details, embossed details, and leather patches.',
      '
@@ -272,24 +290,6 @@ Lining: 100% Polyester
 Lining: 100% Viscose
 Embroidery: 100% Polyester',
      99.99,
-     3),
-
-    ('cotton viscose jacket with python effect',
-     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and richer tones, as jackets evolve into modern sets with a sleek edge. Crafted from washed cotton polyester viscose, this slim-fit jacket features a distinctive python effect.',
-     'Black washed cotton polyester viscose with python effect
-Interlocking G embroidery
-Stand collar
-Long sleeves
-Zip closure
-Slim fit
-Total length: 21.8"; Shoulder: 16.7"; Chest: 37.4"; Sleeves length: 26.3"; based on a size 44 IT
-Made in Italy
-We recommend selecting at least one size up.
-Fabric: 53% Cotton, 26% Viscose, 21% Polyester
-Pocket lining: 65% Polyester, 35% Cotton
-Embroidery: 100% Polyester
-Non textile decoration: 100% Polyamide',
-     54.99,
      3)
 ;
 
@@ -299,7 +299,7 @@ Non textile decoration: 100% Polyamide',
 INSERT INTO
     variant (id_product, id_color, id_size, images, quantity, price)
 VALUES
-    (1, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
+    (1, 1, 1, null, RAND(10), null),
     (1, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
     (1, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
     (1, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 45.99),

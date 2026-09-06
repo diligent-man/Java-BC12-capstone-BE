@@ -18,26 +18,24 @@ spring:
         restart:
             enabled: true
     data:
+        web:
+            pageable:
+                default-page-size: 20
+                max-page-size: 100
+                one-indexed-parameters: true   # page starts at 1 instead of 0
         redis:
             host: ${REDIS_HOST}
             port: ${REDIS_PORT}
             password: ${REDIS_PASSWORD}
             timeout: 5000ms
 
-#    mail:
-#        host: smtp.gmail.com
-#        port: 587
-#        username: ${HOST_EMAIL}    # Thay bằng email của bạn
-#        password: ${HOST_APPLICATION_PASSWORD}    # Thay bằng App Password ở bước 2 (viết liền không khoảng trắng)
-#        properties:
-#            mail:
-#                smtp:
-#                    auth: true
-#                    starttls:
-#                        enable: true
-#                        required: true
-#                    ssl:
-#                        trust: smtp.gmail.com
+#    cache:
+#        type:
+#            redis:
+#                time-to-live: 100000        # ms — entries auto-expire after 10 min
+#                cache-null-values: false
+#                key-prefix: "products::"
+#                use-key-prefix: true
 
 server:
     address: localhost
@@ -49,6 +47,13 @@ jwt:
 
 upload:
     image: ${UPLOAD_IMAGE_PATH}
+    default-image: default_cloth.jpg
+
+cache:
+    product:
+        prefix: product
+        all:
+            cache-duration: 600000
 
 management:
     endpoints:

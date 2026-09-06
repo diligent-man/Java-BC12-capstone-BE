@@ -5,9 +5,10 @@ import java.util.Optional;
 
 import com.ndt.capstone.dto.UserDto;
 import com.ndt.capstone.entity.RoleEntity;
-import com.ndt.capstone.enums.exception.AuthError;
+import com.ndt.capstone.enums.exception.AuthErrMsg;
 import com.ndt.capstone.exception.auth.AuthException;
 import com.ndt.capstone.payload.request.auth.SignupRequest;
+import com.ndt.capstone.service.contract.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -52,10 +53,10 @@ public class AuthenServiceImpl implements AuthService {
         // đầu tiên lấy locktype rồi kiểm tra xem email này có đang bị khóa hay không
         String lockType = loginAttemptService.getLockType(email); // Lụm ra locktype
         if ("PERMANENT".equals(lockType)) {
-            throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
+            throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
         }
         if ("TEMP".equals(lockType)) {
-            throw new AuthException(AuthError.ACCOUNT_TEMP_LOCKED);
+            throw new AuthException(AuthErrMsg.ACCOUNT_TEMP_LOCKED);
         }
 
         // Nếu không bị dính khóa, tiếp tục luồng đăng nhập
@@ -64,12 +65,12 @@ public class AuthenServiceImpl implements AuthService {
         if (opUser.isEmpty()) { //*Nếu email sai
             // nếu nhập sai email nó vẫn tăng 1 lần sai, để chống việc mấy thg hacker nó xài tool dò email
             loginAttemptService.recordFailedAttempt(email);
-            throw new AuthException(AuthError.INVALID_CREDENTIALS);
+            throw new AuthException(AuthErrMsg.INVALID_CREDENTIALS);
         }
         UserEntity user = opUser.get();
         // lấy được user thì kiểm tra ngay status trong DB ( phòng trường hợp redis bị crash ất key)
         if ("PERMANENTLY_LOCKED".equals(user.getStatus())) {
-            throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
+            throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
         }
 
 
@@ -82,16 +83,16 @@ public class AuthenServiceImpl implements AuthService {
             // vì khi hàm recordFailedAttempt được kích hoạt, nếu thỏa >3 nhập sai, nó sẽ tạo ra các key để block log
             String newLockType = loginAttemptService.getLockType(email); // lấy key để kiểm tra
             if ("PERMANENT".equals(newLockType)) {
-                throw new AuthException(AuthError.ACCOUNT_PERMANENTLY_LOCKED);
+                throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
             }
 
             if ("TEMP".equals(newLockType)) {
-                throw new AuthException(AuthError.ACCOUNT_TEMP_LOCKED);
+                throw new AuthException(AuthErrMsg.ACCOUNT_TEMP_LOCKED);
             }
 
             // Chưa bị khoá → thông báo sai MK (remaining chứa số lần còn lại)
             System.out.println("so lan con lại " + remaining);
-            throw new AuthException(AuthError.INVALID_CREDENTIALS);
+            throw new AuthException(AuthErrMsg.INVALID_CREDENTIALS);
 
         }
 
@@ -100,7 +101,7 @@ public class AuthenServiceImpl implements AuthService {
 
         if (existingSession != null) {
             // Đã có session đang active ở trình duyệt khác → CHẶN
-            throw new AuthException(AuthError.ACCOUNT_ACTIVE_SESSION);
+            throw new AuthException(AuthErrMsg.ACCOUNT_ACTIVE_SESSION);
         }
 
         // ========== BƯỚC 5: Đăng nhập thành công ==========

@@ -1,14 +1,16 @@
 package com.ndt.capstone.exception.user;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.ndt.capstone.exception.BaseException;
+import com.ndt.capstone.enums.exception.UserErrMsg;
 
 
-import com.ndt.capstone.enums.exception.UserError;
+public class UserException extends BaseException {
+    public UserException(UserErrMsg errorMsg) {
+        super(errorMsg, null);
+    }
 
 
-@Getter
-@RequiredArgsConstructor
-public class UserException extends RuntimeException {
-    private final UserError error;
+    public UserException(UserErrMsg errorMsg, String overrideMsg) {
+        super(errorMsg, overrideMsg);
+    }
 }

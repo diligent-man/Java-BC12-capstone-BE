@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 
-import com.ndt.capstone.service.AuthService;
-import com.ndt.capstone.enums.exception.AuthError;
+import com.ndt.capstone.service.contract.AuthService;
+import com.ndt.capstone.enums.exception.AuthErrMsg;
 import com.ndt.capstone.payload.response.ApiResponse;
 import com.ndt.capstone.payload.request.auth.LoginRequest;
 import com.ndt.capstone.payload.response.auth.AuthResponse;
@@ -35,8 +35,8 @@ public class AuthController {
             .build();
 
         ApiResponse response = ApiResponse.builder()
-            .code(AuthError.SUCCESS.getHttpStatus().toString())
-            .status(AuthError.SUCCESS.toString())
+            .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
+            .message(AuthErrMsg.SUCCESS.toString())
             .data(authResponse)
             .build();
         return ResponseEntity.ok(response);
@@ -51,8 +51,8 @@ public class AuthController {
         authenService.doLogout(token);
 
         ApiResponse response = ApiResponse.builder()
-                .code(AuthError.SUCCESS.getHttpStatus().toString())
-                .status(AuthError.SUCCESS.toString())
+                .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
+                .message(AuthErrMsg.SUCCESS.toString())
                 .data("Đăng xuất thành công")
                 .build();
         return ResponseEntity.ok(response);

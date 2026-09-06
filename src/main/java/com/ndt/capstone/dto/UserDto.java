@@ -7,7 +7,7 @@ import com.ndt.capstone.entity.UserEntity;
 
 @Data
 public class UserDto {
-    private Integer id;
+    private Long id;
 
     private String email;
 

@@ -274,9 +274,9 @@ volumes:
             com.ndt.capstone.description: "Kafka Cache Database"
 
 networks:
-  mysql:
-    driver: bridge
-  kafka:
-    driver: bridge
-  redis:
-    driver: bridge
+    mysql:
+        driver: bridge
+    kafka:
+        driver: bridge
+    redis:
+        driver: bridge

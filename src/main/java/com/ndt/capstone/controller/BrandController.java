@@ -1,34 +1,24 @@
 package com.ndt.capstone.controller;
 
-import lombok.RequiredArgsConstructor;
-
-
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.data.web.PageableDefault;
-
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Pageable;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-
-import com.ndt.capstone.utils.PageableUtils;
-
-import com.ndt.capstone.payload.response.PageResponse;
-import com.ndt.capstone.payload.response.ApiResponse;
-
 import com.ndt.capstone.payload.request.GetProductRequest;
 import com.ndt.capstone.payload.request.InsertProductRequest;
-
+import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.response.PageResponse;
 import com.ndt.capstone.service.contract.ProductService;
+import com.ndt.capstone.utils.PageableUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/brand")
 @RequiredArgsConstructor
-public class ProductController {
+public class BrandController {
     private final ProductService productService;
 
 

@@ -1,13 +1,17 @@
 package com.ndt.capstone.exception.file;
 
 
-import com.ndt.capstone.enums.exception.FileError;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.ndt.capstone.exception.BaseException;
+import com.ndt.capstone.enums.exception.FileErrMsg;
 
-@Getter
-@RequiredArgsConstructor
-public class FileException extends RuntimeException {
-    private final FileError error;
+
+public final class FileException extends BaseException {
+    public FileException(FileErrMsg errorMsg) {
+        super(errorMsg, null);
+    }
+
+
+    public FileException(FileErrMsg errorMsg, String overrideMsg) {
+        super(errorMsg, overrideMsg);
+    }
 }

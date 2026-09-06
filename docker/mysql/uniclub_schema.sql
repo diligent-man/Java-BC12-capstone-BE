@@ -21,11 +21,11 @@ CREATE TABLE size
 
 CREATE TABLE variant
 (
-    sku         int auto_increment primary key,
-    id_product  int       NOT NULL,
+    sku         bigint auto_increment primary key,
+    id_product  bigint    NOT NULL,
     id_color    int       NOT NULL,
     id_size     int       NOT NULL,
-    images      text      NOT NULL,
+    images      text,
     quantity    int       NOT NULL,
     price       decimal(11, 2),
     create_date timestamp NOT NULL default now()
@@ -35,7 +35,7 @@ CREATE TABLE variant
 CREATE TABLE order_variant
 (
     id_order    int,
-    sku_variant int,
+    sku_variant bigint,
     quantity    int,
     price       decimal(11, 2),
 
@@ -49,14 +49,14 @@ CREATE TABLE orders
     total       decimal(11, 2),
     note        text,
     id_payment  int,
-    id_user     int,
+    id_user     bigint,
     create_date timestamp default now()
 );
 
 
 CREATE TABLE billing_details
 (
-    id           int auto_increment primary key,
+    id           bigint auto_increment primary key,
     first_name   varchar(50),
     last_name    varchar(50),
     company_name varchar(50),
@@ -81,8 +81,8 @@ CREATE TABLE payment_method
 
 CREATE TABLE wishlist
 (
-    id_product int,
-    id_user    int,
+    id_product bigint,
+    id_user    bigint,
 
     primary key (id_product, id_user)
 );
@@ -90,7 +90,7 @@ CREATE TABLE wishlist
 
 CREATE TABLE user
 (
-    id        int auto_increment,
+    id        bigint auto_increment,
     email     varchar(50),
     password  varchar(255),
     full_name varchar(255),
@@ -110,9 +110,9 @@ CREATE TABLE role
 
 CREATE TABLE review
 (
-    id          int auto_increment primary key,
-    id_product  int,
-    id_user     int,
+    id          bigint auto_increment primary key,
+    id_product  bigint,
+    id_user     bigint,
     star        int,
     content     text,
     create_date timestamp default now(),
@@ -122,8 +122,8 @@ CREATE TABLE review
 
 CREATE TABLE comment
 (
-    id          int auto_increment primary key,
-    id_user     int,
+    id          bigint auto_increment primary key,
+    id_user     bigint,
     id_post     int,
     id_reply    int,
     content     text,
@@ -141,12 +141,12 @@ CREATE TABLE post
 
 CREATE TABLE product
 (
-    id          int auto_increment primary key,
-    name        varchar(255),
+    id          bigint auto_increment primary key,
+    name        varchar(255) NOT NULL ,
     description text,
     information text,
-    price       decimal(11, 2),
-    id_brand    int,
+    price       decimal(11, 2) NOT NULL ,
+    id_brand    int NOT NULL ,
     create_date timestamp default now()
 );
 
@@ -175,7 +175,7 @@ CREATE TABLE category
 CREATE TABLE product_brand
 (
     id_brand   int,
-    id_product int,
+    id_product bigint,
 
     primary key (id_brand, id_product)
 );
@@ -184,7 +184,7 @@ CREATE TABLE product_brand
 CREATE TABLE product_tag
 (
     id_tag     int,
-    id_product int,
+    id_product bigint,
 
     primary key (id_tag, id_product)
 );
@@ -193,7 +193,7 @@ CREATE TABLE product_tag
 CREATE TABLE product_category
 (
     id_category int,
-    id_product  int,
+    id_product  bigint,
 
     primary key (id_category, id_product)
 );

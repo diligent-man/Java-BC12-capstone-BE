@@ -1,19 +1,16 @@
 package com.ndt.capstone.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.math.BigDecimal;
 
 
-@Setter
-@Getter
-public class ProductDTO {
-    private int id;
+import lombok.Data;
 
+
+@Data
+public class ProductDTO {
     private String name;
 
     private BigDecimal price;
 
-    private String[] image;
+    private String image;
 }

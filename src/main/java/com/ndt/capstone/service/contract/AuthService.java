@@ -1,4 +1,4 @@
-package com.ndt.capstone.service;
+package com.ndt.capstone.service.contract;
 
 import com.ndt.capstone.payload.request.auth.LoginRequest;
 import com.ndt.capstone.payload.request.auth.SignupRequest;

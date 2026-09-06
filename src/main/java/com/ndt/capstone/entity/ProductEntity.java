@@ -1,41 +1,51 @@
 package com.ndt.capstone.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+
+
+import jakarta.persistence.*;
+
+
+import lombok.*;
 
 
 @Setter
 @Getter
+@ToString
+@NoArgsConstructor
 @Entity(name = "product")
 public class ProductEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String name;
 
+    @ToString.Exclude
+    @Column(columnDefinition = "TEXT")
     private String description;
 
+    @ToString.Exclude
+    @Column(columnDefinition = "TEXT")
     private String information;
 
+    @Column(precision = 11, scale = 2)
     private BigDecimal price;
 
     @ManyToOne
     @JoinColumn(name = "id_brand")
     private BrandEntity brand;
 
+
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
-    // khi đi làm ngta thường map ngược lại ( không map ngược lại vẫn được nhma đa phần sẽ phải map ngược lại)
-    @OneToMany(mappedBy = "product")
-    // ở đấy map ngược lại bảng variant để khi insert ở bản product nó sẽ tự động truy vấn đến variant và thêm vào bảng variant
-    private List<VariantProductEntity> variantProducts;
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "product")
+    private Set<VariantEntity> variants;
 }

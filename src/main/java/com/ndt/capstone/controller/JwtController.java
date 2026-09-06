@@ -1,7 +1,7 @@
 package com.ndt.capstone.controller;
 
 import com.ndt.capstone.dto.UserDto;
-import com.ndt.capstone.enums.exception.JwtError;
+import com.ndt.capstone.enums.exception.JwtErrMsg;
 import com.ndt.capstone.payload.request.jwt.GenTokenRequest;
 import com.ndt.capstone.payload.response.ApiResponse;
 import com.ndt.capstone.payload.response.jwt.GenKeyResponse;
@@ -32,8 +32,8 @@ public class JwtController {
         GenKeyResponse genKeyResponse = GenKeyResponse.builder().secreteKey(JwtService.genSecretKey()).build();
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code(String.valueOf(JwtError.KEY_CREATION_SUCCESS.getHttpStatus().value()))
-                .status(JwtError.KEY_CREATION_SUCCESS.getMessage())
+                .code(String.valueOf(JwtErrMsg.KEY_CREATION_SUCCESS.getHttpStatus().value()))
+                .message(JwtErrMsg.KEY_CREATION_SUCCESS.getErrorMsg())
                 .data(genKeyResponse)
                 .build()
         );
@@ -50,8 +50,8 @@ public class JwtController {
 
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code(String.valueOf(JwtError.TOKEN_CREATION_SUCCESS.getHttpStatus().value()))
-                .status(JwtError.TOKEN_CREATION_SUCCESS.getMessage())
+                .code(String.valueOf(JwtErrMsg.TOKEN_CREATION_SUCCESS.getHttpStatus().value()))
+                .message(JwtErrMsg.TOKEN_CREATION_SUCCESS.getErrorMsg())
                 .data(genTokenResponse)
                 .build()
         );

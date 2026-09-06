@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
-import com.ndt.capstone.enums.exception.AuthError;
+import com.ndt.capstone.exception.BaseException;
+import com.ndt.capstone.enums.exception.AuthErrMsg;
 import com.ndt.capstone.exception.BaseExceptionHandler;
-import com.ndt.capstone.payload.response.ApiErrorResponse;
+import com.ndt.capstone.payload.response.exception.ApiErrorResponse;
 
 
 @RestControllerAdvice
 public class AuthExceptionHandler implements BaseExceptionHandler {
-
-    // THÊM METHOD NÀY: Bắt AuthException từ doLogin()
     @ExceptionHandler({
-            AuthException.class
+        AuthException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleAuthException(AuthException ex) {
-        return buildApiErrorResponse(ex.getError());
+    public ResponseEntity<ApiErrorResponse> handleAuthException(BaseException ex) {
+        return buildResponse(ex.getErrorMsg(), ex.getOverrideMsg());
     }
+
 
     @ExceptionHandler({
         ExpiredJwtException.class,
@@ -31,7 +31,6 @@ public class AuthExceptionHandler implements BaseExceptionHandler {
         IllegalArgumentException.class,
     })
     public ResponseEntity<ApiErrorResponse> handleJwtException() {
-
-        return buildApiErrorResponse(AuthError.FAIL);
+        return buildResponse(AuthErrMsg.FAIL);
     }
 }

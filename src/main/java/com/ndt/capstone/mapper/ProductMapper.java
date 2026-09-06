@@ -1,23 +1,55 @@
 package com.ndt.capstone.mapper;
 
+import java.util.*;
+
+
 import com.ndt.capstone.dto.ProductDTO;
 import com.ndt.capstone.entity.ProductEntity;
+import com.ndt.capstone.entity.VariantEntity;
 
 
 public class ProductMapper {
-    public static ProductDTO toProductDTO(ProductEntity product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(product.getId());
-        productDTO.setName(product.getName());
-        productDTO.setPrice(product.getPrice());
-        if (!product.getVariantProducts().isEmpty()) {
-            productDTO.setImage(
-                product.getVariantProducts().stream()
+    private ProductMapper() {
+    }
+
+
+    public static ProductDTO toDTO(ProductEntity obj, String defaultImage) {
+        if (obj == null)
+            return null;
+
+        ProductDTO dto = new ProductDTO();
+
+        dto.setName(obj.getName());
+        dto.setPrice(obj.getPrice());
+
+        Set<VariantEntity> variants = obj.getVariants();
+
+        // always retrieve the first variant of specific product
+        if (!variants.isEmpty()) {
+            dto.setImage(
+                variants
+                    .parallelStream()
+                    .min(Comparator.comparingLong(VariantEntity::getSku))
+                    .stream()
                     .findFirst()
-                    .map(item -> item.getImages() != null ? item.getImages().split(",") : new String[]{"default.png"})
-                    .orElse(new String[]{"default.png"})
+                    .map(
+                        variant -> {
+                            String images = variant.getImages();
+
+                            if (images == null || images.isBlank())
+                                return defaultImage;
+
+                            return Arrays
+                                .stream(images.split(", "))
+                                .sorted()
+                                .toList()
+                                .stream()
+                                .findFirst()
+                                .orElse(defaultImage);
+                        }
+                    ).orElse(defaultImage)
             );
         }
-        return productDTO;
+        return dto;
     }
 }

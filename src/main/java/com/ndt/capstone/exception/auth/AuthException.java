@@ -1,13 +1,16 @@
 package com.ndt.capstone.exception.auth;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import com.ndt.capstone.enums.exception.AuthError;
+import com.ndt.capstone.exception.BaseException;
+import com.ndt.capstone.enums.exception.AuthErrMsg;
 
 
-@Getter
-@RequiredArgsConstructor
-public class AuthException extends RuntimeException {
-    private final AuthError error;
+public final class AuthException extends BaseException {
+    public AuthException(AuthErrMsg errorMsg) {
+        super(errorMsg, null);
+    }
+
+
+    public AuthException(AuthErrMsg errorMsg, String overrideMsg) {
+        super(errorMsg, overrideMsg);
+    }
 }

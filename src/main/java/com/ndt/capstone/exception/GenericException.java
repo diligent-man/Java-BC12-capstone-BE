@@ -1,14 +1,15 @@
 package com.ndt.capstone.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.ndt.capstone.enums.exception.GenericErrMsg;
 
 
-import com.ndt.capstone.enums.exception.GenericError;
+public final class GenericException extends BaseException {
+    public GenericException(GenericErrMsg errorMsg) {
+        super(errorMsg, null);
+    }
 
 
-@Getter
-@RequiredArgsConstructor
-public final class GenericException extends RuntimeException {
-    private final GenericError genericError;
+    public GenericException(GenericErrMsg errorMsg, String overrideMsg) {
+        super(errorMsg, overrideMsg);
+    }
 }

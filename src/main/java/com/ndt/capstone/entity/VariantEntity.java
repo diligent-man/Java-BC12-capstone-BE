@@ -1,19 +1,37 @@
 package com.ndt.capstone.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import java.awt.*;
+
+import jakarta.persistence.*;
+
+
+import lombok.*;
 
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
 @Entity(name = "variant")
-public class VariantProductEntity {
+public class VariantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int sku;
+    private Long sku;
+
+    // stored as comma-separated or JSON string
+    @Column(columnDefinition = "TEXT")
+    private String images;
+
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(nullable = false, precision = 11, scale = 2)
+    private BigDecimal price;
+
+    @Column(nullable = false, insertable = false, updatable = false)
+    private LocalDateTime createDate;
 
     @ManyToOne
     @JoinColumn(name = "id_product")
@@ -21,14 +39,10 @@ public class VariantProductEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_color")
-    private ColorEntity Color;
+    private ColorEntity color;
 
 
     @ManyToOne
     @JoinColumn(name = "id_size")
     private SizeEntity idSize;
-
-    private int quantity;
-
-    private String images;
 }

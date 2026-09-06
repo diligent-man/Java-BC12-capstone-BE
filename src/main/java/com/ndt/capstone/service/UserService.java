@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 
 import com.ndt.capstone.dto.UserDto;
-import com.ndt.capstone.enums.exception.UserError;
+import com.ndt.capstone.enums.exception.UserErrMsg;
 import com.ndt.capstone.repository.UserRepository;
 import com.ndt.capstone.exception.user.UserException;
 
@@ -22,7 +22,7 @@ public class UserService {
     public UserDto getUserByEmail(String email) {
         return UserDto.fromEntity(userRepository
             .findByEmail(email)
-            .orElseThrow(() -> new UserException(UserError.NOT_FOUND))
+            .orElseThrow(() -> new UserException(UserErrMsg.NOT_FOUND))
         );
     }
 }

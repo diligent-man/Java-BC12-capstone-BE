@@ -13,7 +13,7 @@ import lombok.*;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String email;
 
@@ -26,6 +26,4 @@ public class UserEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private RoleEntity role;
-
-
 }
