@@ -15,7 +15,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @Entity(name = "variant")
-public class VariantEntity {
+public class ProductVariantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sku;

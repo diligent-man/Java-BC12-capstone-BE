@@ -1,7 +1,6 @@
 package com.ndt.capstone.entity;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,5 +46,5 @@ public class ProductEntity {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "product")
-    private Set<VariantEntity> variants;
+    private Set<ProductVariantEntity> variants;
 }

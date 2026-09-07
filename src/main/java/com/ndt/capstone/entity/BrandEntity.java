@@ -17,5 +17,6 @@ public class BrandEntity {
     private Integer id;
 
     @ToString.Exclude
+    @Column(unique = true, nullable = false,  length = 50)
     private String name;
 }

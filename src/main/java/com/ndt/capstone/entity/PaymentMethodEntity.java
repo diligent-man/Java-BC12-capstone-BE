@@ -2,20 +2,22 @@ package com.ndt.capstone.entity;
 
 import jakarta.persistence.*;
 
-
 import lombok.*;
 
 
-@Setter
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
-@Entity(name = "size")
-public class SizeEntity {
+@Entity(name = "payment_method")
+public class PaymentMethodEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false,  unique = true, length = 20)
+    @Column(unique = true, nullable = false, length = 50)
     private String name;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 }
