@@ -39,6 +39,7 @@ public class SecurityConfig {
                     authorizer.requestMatchers("/api/jwt/*").permitAll();
                     authorizer.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
                     authorizer.requestMatchers(HttpMethod.GET, "/product/**").permitAll();
+                    authorizer.requestMatchers(HttpMethod.GET, "/brand/**").permitAll();
                     authorizer.requestMatchers("/file/**").permitAll(); // Cho phép truy cập các API liên quan đến file
                     authorizer.requestMatchers("/error").permitAll(); // Cho phép Spring Boot hiển thị đúng mã lỗi thực sự (VD: 400, 500) thay vì bị chặn thành 403
                     authorizer.requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN");

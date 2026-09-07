@@ -55,6 +55,11 @@ cache:
         all:
             cache-duration: 600000
 
+    brand:
+        prefix: brand
+        all:
+            cache-duration: 600000
+
 management:
     endpoints:
         web:

@@ -1,36 +1,36 @@
 services:
     # refer to fe source for building its docker image
-    fe:
-        image: java_bc12_capstone/fe:1.0.0
-        container_name: java_bc12_capstone_fe
-        ports:
-            - "${FE_PORT}:3979"
-        restart: on-failure
-        healthcheck:
-            test: [
-                "CMD",
-                "node",
-                "-e",
-                "require('http').get('http://127.0.0.1:3979/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
-            ]
-            interval: 30s
-            timeout: 5s
-            retries: 3
-            start_period: 10s
-        deploy:
-            mode: global
-            restart_policy:
-                condition: on-failure
-                delay: 5s
-                window: 120s
-                max_attempts: 3
-            resources:
-                limits:
-                    cpus: "4"
-                    memory: 4096M
-                reservations:
-                    cpus: "4"
-                    memory: 2048M
+#    fe:
+#        image: java_bc12_capstone/fe:1.0.0
+#        container_name: java_bc12_capstone_fe
+#        ports:
+#            - "${FE_PORT}:3979"
+#        restart: on-failure
+#        healthcheck:
+#            test: [
+#                "CMD",
+#                "node",
+#                "-e",
+#                "require('http').get('http://127.0.0.1:3979/', r => process.exit(r.statusCode < 400 ? 0 : 1)).on('error', () => process.exit(1))"
+#            ]
+#            interval: 30s
+#            timeout: 5s
+#            retries: 3
+#            start_period: 10s
+#        deploy:
+#            mode: global
+#            restart_policy:
+#                condition: on-failure
+#                delay: 5s
+#                window: 120s
+#                max_attempts: 3
+#            resources:
+#                limits:
+#                    cpus: "4"
+#                    memory: 4096M
+#                reservations:
+#                    cpus: "4"
+#                    memory: 2048M
 
     mysql:
         image: java_bc12_capstone/mysql:1.0.0

@@ -5,7 +5,7 @@ import java.util.*;
 
 import com.ndt.capstone.dto.ProductDTO;
 import com.ndt.capstone.entity.ProductEntity;
-import com.ndt.capstone.entity.VariantEntity;
+import com.ndt.capstone.entity.ProductVariantEntity;
 
 
 public class ProductMapper {
@@ -22,14 +22,14 @@ public class ProductMapper {
         dto.setName(obj.getName());
         dto.setPrice(obj.getPrice());
 
-        Set<VariantEntity> variants = obj.getVariants();
+        Set<ProductVariantEntity> variants = obj.getVariants();
 
         // always retrieve the first variant of specific product
         if (!variants.isEmpty()) {
             dto.setImage(
                 variants
                     .parallelStream()
-                    .min(Comparator.comparingLong(VariantEntity::getSku))
+                    .min(Comparator.comparingLong(ProductVariantEntity::getSku))
                     .stream()
                     .findFirst()
                     .map(

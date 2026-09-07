@@ -7,15 +7,18 @@ USE uniclub;
 CREATE TABLE color
 (
     id   int auto_increment primary key,
-    name varchar(20) NOT NULL
-);
+    name varchar(20) NOT NULL,
 
+    CONSTRAINT UQ_color_name UNIQUE (name)
+);
 
 
 CREATE TABLE size
 (
     id   int auto_increment primary key,
-    name varchar(20) NOT NULL
+    name varchar(20) NOT NULL,
+
+    CONSTRAINT UQ_size_name UNIQUE (name)
 );
 
 
@@ -34,7 +37,7 @@ CREATE TABLE variant
 
 CREATE TABLE order_variant
 (
-    id_order    int,
+    id_order    bigint,
     sku_variant bigint,
     quantity    int,
     price       decimal(11, 2),
@@ -45,11 +48,11 @@ CREATE TABLE order_variant
 
 CREATE TABLE orders
 (
-    id          int auto_increment primary key,
-    total       decimal(11, 2),
+    id          bigint auto_increment primary key,
+    total       decimal(11, 2) not null,
     note        text,
-    id_payment  int,
-    id_user     bigint,
+    id_payment  int            not null,
+    id_user     bigint         not null,
     create_date timestamp default now()
 );
 
@@ -57,25 +60,30 @@ CREATE TABLE orders
 CREATE TABLE billing_details
 (
     id           bigint auto_increment primary key,
-    first_name   varchar(50),
-    last_name    varchar(50),
-    company_name varchar(50),
-    id_country   int,
-    address      varchar(255),
-    town         varchar(50),
-    state        varchar(50),
-    zip_code     varchar(50),
-    phone        varchar(12),
-    email        varchar(255),
-    create_date  timestamp default now()
+    first_name   varchar(50)  not null,
+    last_name    varchar(50)  not null,
+    company_name varchar(50)  not null,
+    id_country   int          not null,
+    id_order     bigint       not null,
+    address      varchar(255) not null,
+    town         varchar(50)  not null,
+    state        varchar(50)  not null,
+    zip_code     varchar(50)  not null,
+    phone        varchar(12)  not null,
+    email        varchar(255) not null,
+    create_date  timestamp default now(),
+
+    CONSTRAINT billing_details_id_order UNIQUE (id_order)
 );
 
 
 CREATE TABLE payment_method
 (
     id          int auto_increment primary key,
-    name        varchar(50),
-    description text
+    name        varchar(50) not null,
+    description text,
+
+    CONSTRAINT UQ_payment_method_name UNIQUE (name)
 );
 
 
@@ -90,21 +98,23 @@ CREATE TABLE wishlist
 
 CREATE TABLE user
 (
-    id        bigint auto_increment,
-    email     varchar(50),
-    password  varchar(255),
-    full_name varchar(255),
-    role_id   int,
-    status    varchar(20) default 'ACTIVE',
+    id        bigint auto_increment primary key,
+    email     varchar(50)  not null,
+    password  varchar(255) not null,
+    full_name varchar(255) not null,
+    role_id   int          not null,
+    status    varchar(20)  not null default 'ACTIVE',
 
-    primary key (id)
+    CONSTRAINT UQ_user_email UNIQUE (email)
 );
 
 
 CREATE TABLE role
 (
     id   int auto_increment primary key,
-    name varchar(100)
+    name varchar(100) not null,
+
+    CONSTRAINT UQ_role_name UNIQUE (name)
 );
 
 
@@ -142,11 +152,11 @@ CREATE TABLE post
 CREATE TABLE product
 (
     id          bigint auto_increment primary key,
-    name        varchar(255) NOT NULL ,
+    name        varchar(255)   NOT NULL,
     description text,
     information text,
-    price       decimal(11, 2) NOT NULL ,
-    id_brand    int NOT NULL ,
+    price       decimal(11, 2) NOT NULL,
+    id_brand    int            NOT NULL,
     create_date timestamp default now()
 );
 
@@ -154,30 +164,27 @@ CREATE TABLE product
 CREATE TABLE brand
 (
     id   int auto_increment primary key,
-    name varchar(50)
+    name varchar(50) not null,
+
+    CONSTRAINT UQ_brand_name UNIQUE (name)
 );
 
 
 CREATE TABLE tag
 (
     id   int auto_increment primary key,
-    name varchar(50)
+    name varchar(50) not null,
+
+    CONSTRAINT UQ_tag_name UNIQUE (name)
 );
 
 
 CREATE TABLE category
 (
     id   int auto_increment primary key,
-    name varchar(50)
-);
+    name varchar(50) not null,
 
-
-CREATE TABLE product_brand
-(
-    id_brand   int,
-    id_product bigint,
-
-    primary key (id_brand, id_product)
+    CONSTRAINT UQ_category_name UNIQUE (name)
 );
 
 
@@ -208,11 +215,16 @@ CREATE TABLE post_category
 );
 
 
-CREATE TABLE country
+CREATE TABLE IF NOT EXISTS country
 (
-    id   int auto_increment primary key,
-    name varchar(255)
-);
+    id         int(11)     NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    iso        char(2)     NOT NULL,
+    name       varchar(80) NOT NULL,
+    nice_name  varchar(80) NOT NULL,
+    iso3       char(3)     DEFAULT NULL,
+    num_code   smallint(6) DEFAULT NULL,
+    phone_code int(5)      NOT NULL
+) DEFAULT CHARSET = utf8mb4;
 
 
 ALTER TABLE variant ADD CONSTRAINT FK_id_product_variant FOREIGN KEY (id_product) REFERENCES product (id);
@@ -229,6 +241,7 @@ ALTER TABLE orders ADD CONSTRAINT FK_id_user_order FOREIGN KEY (id_user) REFEREN
 
 
 ALTER TABLE billing_details ADD CONSTRAINT FK_id_country_billing_details FOREIGN KEY (id_country) REFERENCES country (id);
+ALTER TABLE billing_details ADD CONSTRAINT FK_id_orders_billing_details FOREIGN KEY (id_order) REFERENCES orders (id);
 
 
 ALTER TABLE wishlist ADD CONSTRAINT FK_id_product_wishlist FOREIGN KEY (id_product) REFERENCES product (id);
@@ -257,10 +270,6 @@ ALTER TABLE product_category ADD CONSTRAINT FK_id_category_product_category FORE
 
 ALTER TABLE product_tag ADD CONSTRAINT FK_id_product_product_tag FOREIGN KEY (id_product) REFERENCES product (id);
 ALTER TABLE product_tag ADD CONSTRAINT FK_id_category_product_tag FOREIGN KEY (id_tag) REFERENCES tag (id);
-
-
-ALTER TABLE product_brand ADD CONSTRAINT FK_id_product_product_brand FOREIGN KEY (id_product) REFERENCES product (id);
-ALTER TABLE product_brand ADD CONSTRAINT FK_id_brand_product_brand FOREIGN KEY (id_brand) REFERENCES brand (id);
 
 
 ALTER TABLE user ADD CONSTRAINT FK_role_id_user_role FOREIGN KEY (role_id) REFERENCES role (id);

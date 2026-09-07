@@ -151,7 +151,7 @@ public class ProductServiceImpl implements ProductService {
         ColorEntity color = entityManager.getReference(ColorEntity.class, productRequester.getIdColor());
         SizeEntity size = entityManager.getReference(SizeEntity.class, productRequester.getIdSize());
 
-        VariantEntity variantProduct = new VariantEntity();
+        ProductVariantEntity variantProduct = new ProductVariantEntity();
         variantProduct.setProduct(productInserted);
         variantProduct.setColor(color);
         variantProduct.setIdSize(size);
