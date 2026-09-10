@@ -27,7 +27,7 @@ public class ProductVariantEntity {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false, precision = 11, scale = 2)
+    @Column(precision = 11, scale = 2)
     private BigDecimal price;
 
     @Column(nullable = false, insertable = false, updatable = false)

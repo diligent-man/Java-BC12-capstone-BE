@@ -9,7 +9,7 @@ public final class PageableUtils {
     }
 
 
-    public static Pageable withDefaultSort(Pageable pageable, Sort defaultSort) {
+    public static Pageable withDefaultSort(Sort defaultSort, Pageable pageable) {
         return pageable.getSort().isUnsorted()
             ? PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), defaultSort)
             : pageable;

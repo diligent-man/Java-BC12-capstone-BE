@@ -1,4 +1,4 @@
-package com.ndt.capstone.payload.request;
+package com.ndt.capstone.payload.request.product;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,8 @@
 package com.ndt.capstone.entity;
 
+import java.util.Set;
+
+
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -15,7 +18,10 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ToString.Exclude
     @Column(unique = true, nullable = false, length = 50)
     private String name;
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private Set<ProductCategoryEntity> productCategories;
 }

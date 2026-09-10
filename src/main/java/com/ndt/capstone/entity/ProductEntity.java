@@ -47,4 +47,14 @@ public class ProductEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "product")
     private Set<ProductVariantEntity> variants;
+
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private Set<ProductCategoryEntity> productCategories;
+
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private Set<ProductTagEntity> productTags;
 }

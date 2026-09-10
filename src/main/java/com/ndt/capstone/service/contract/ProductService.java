@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 
 import com.ndt.capstone.dto.ProductDTO;
-import com.ndt.capstone.payload.request.InsertProductRequest;
+import com.ndt.capstone.payload.request.product.*;
 
 
 public interface ProductService {
@@ -18,9 +18,8 @@ public interface ProductService {
     Page<ProductDTO> getPagedProducts(Pageable pageable);
 
 
-    Page<ProductDTO> searchProductByName(String keyword, int pageNumber, int pageSize);
+    Page<ProductDTO> filterProduct(ProductFilterRequest request, Pageable pageable);
 
 
     void insertProduct(InsertProductRequest productRequester);
-
 }

@@ -1,8 +1,5 @@
 package com.ndt.capstone.mapper;
 
-import java.util.*;
-
-
 import com.ndt.capstone.dto.BrandDTO;
 import com.ndt.capstone.entity.BrandEntity;
 

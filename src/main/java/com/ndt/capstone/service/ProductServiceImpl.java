@@ -6,30 +6,36 @@ import java.time.Duration;
 
 import jakarta.persistence.*;
 
-
 import jakarta.transaction.Transactional;
+
+
 import org.springframework.data.domain.*;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 
-import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 
 import com.ndt.capstone.entity.*;
 
 import com.ndt.capstone.dto.ProductDTO;
+import com.ndt.capstone.spec.ProductSpec;
 import com.ndt.capstone.mapper.ProductMapper;
-import com.ndt.capstone.payload.request.InsertProductRequest;
+
 
 import com.ndt.capstone.repository.ProductRepository;
 import com.ndt.capstone.repository.VariantRepository;
 
 import com.ndt.capstone.service.contract.FileService;
 import com.ndt.capstone.service.contract.ProductService;
+
+import com.ndt.capstone.payload.request.product.ProductFilterRequest;
+import com.ndt.capstone.payload.request.product.InsertProductRequest;
 
 
 @Service
@@ -116,6 +122,7 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+
     @Override
     public Page<ProductDTO> getPagedProducts(Pageable pageable) {
         return productRepository
@@ -125,10 +132,17 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public Page<ProductDTO> searchProductByName(String keyword, int pageNumber, int pageSize) {
-        Pageable page = PageRequest.of(pageNumber, pageSize);
-        return productRepository.findByNameContainingIgnoreCase(keyword, page)
-            .map(product -> ProductMapper.toDTO(product, defaultImage));
+    public Page<ProductDTO> filterProduct(ProductFilterRequest req, Pageable pageable) {
+        Specification<ProductEntity> spec = ProductSpec.build(
+            req.getName(),
+            req.getCategories(),
+            req.getTags(),
+            req.getBrands(),
+            req.getPriceRanges()
+        );
+        return productRepository
+            .findAll(spec, pageable)
+            .map(ele -> ProductMapper.toDTO(ele, defaultImage));
     }
 
 
@@ -159,5 +173,4 @@ public class ProductServiceImpl implements ProductService {
 
         variantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
     }
-
 }

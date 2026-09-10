@@ -1,11 +1,11 @@
 package com.ndt.capstone.service;
 
-import java.util.List;
 import java.time.Duration;
+import java.util.List;
 
 
-import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 
 import org.springframework.stereotype.Service;
@@ -13,17 +13,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 
-import com.ndt.capstone.dto.BrandDTO;
-import com.ndt.capstone.mapper.BrandMapper;
-import com.ndt.capstone.repository.BrandRepository;
-import com.ndt.capstone.service.contract.BrandService;
+import com.ndt.capstone.dto.TagDTO;
+import com.ndt.capstone.mapper.TagMapper;
+import com.ndt.capstone.repository.TagRepository;
+import com.ndt.capstone.service.contract.TagService;
 
 
 @Service
-public class BrandServiceImpl implements BrandService {
-    private final String brandAllCacheKey;
+public class TagServiceImpl implements TagService {
+    private final String tagAllCacheKey;
 
-    private final BrandRepository brandRepository;
+    private final TagRepository tagRepository;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -32,28 +32,28 @@ public class BrandServiceImpl implements BrandService {
     private final Integer cacheDuration;
 
 
-    public BrandServiceImpl(
-        BrandRepository brandRepository,
+    public TagServiceImpl(
+        TagRepository tagRepository,
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
-        @Value(value = "${cache.brand.prefix:brand}") String brandPrefixCacheKey,
-        @Value(value = "${cache.brand.all.cache-duration:60000}") Integer cacheDuration
+        @Value(value = "${cache.tag.prefix:tag}") String tagPrefixCacheKey,
+        @Value(value = "${cache.tag.all.cache-duration:60000}") Integer cacheDuration
     ) {
-        this.brandRepository = brandRepository;
+        this.tagRepository = tagRepository;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.cacheDuration = cacheDuration;
 
         // post-setup
-        this.brandAllCacheKey = brandPrefixCacheKey + ":all";
+        this.tagAllCacheKey = tagPrefixCacheKey + ":all";
     }
 
 
     @Override
-    public List<BrandDTO> getAll() {
+    public List<TagDTO> getAll() {
         try {
             // Read cache
-            String cache = redisTemplate.opsForValue().get(brandAllCacheKey);
+            String cache = redisTemplate.opsForValue().get(tagAllCacheKey);
 
             if (cache != null && !cache.isBlank()) {
                 return objectMapper.readValue(
@@ -64,21 +64,21 @@ public class BrandServiceImpl implements BrandService {
             }
 
             // No cache -> Read db
-            List<BrandDTO> brands = brandRepository
+            List<TagDTO> tags = tagRepository
                 .findAll()
                 .stream()
-                .map(BrandMapper::toDTO)
+                .map(TagMapper::toDTO)
                 .toList();
 
 
             // Caching
             redisTemplate.opsForValue().set(
-                brandAllCacheKey,
-                objectMapper.writeValueAsString(brands),
+                tagAllCacheKey,
+                objectMapper.writeValueAsString(tags),
                 Duration.ofMillis(cacheDuration)
             );
 
-            return brands;
+            return tags;
         } catch (Exception e) {
             throw new RuntimeException("Redis Cache Error", e);
         }
