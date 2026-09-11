@@ -54,16 +54,21 @@ public class JwtService {
     }
 
 
+    // Hàm 1 tham số: dùng mặc định accessExpiration từ application.yaml
     public String genAccessToken(UserDto user) {
+        return genAccessToken(user, accessExpiration);
+    }
+
+    public String genAccessToken(UserDto user, long expirationMs) {
         try {
             return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("role", user.getRoleName())
-                .claim("email", user.getEmail())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessExpiration))
-                .signWith(getSigningKey())
-                .compact();
+                    .subject(user.getId().toString())
+                    .claim("role", user.getRoleName())
+                    .claim("email", user.getEmail())
+                    .issuedAt(new Date())
+                    .expiration(new Date(System.currentTimeMillis() + expirationMs)) // Dùng đúng expirationMs
+                    .signWith(getSigningKey())
+                    .compact();
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate JWT token", e);
         }
