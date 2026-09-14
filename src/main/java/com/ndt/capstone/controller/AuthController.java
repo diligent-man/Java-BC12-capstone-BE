@@ -1,8 +1,6 @@
 package com.ndt.capstone.controller;
 
 import jakarta.validation.Valid;
-
-
 import lombok.RequiredArgsConstructor;
 
 
@@ -68,5 +66,16 @@ public class AuthController {
     public ResponseEntity<String> signUp(@RequestBody SignupRequest signupRequest) {
         authenService.doSignUp(signupRequest);
         return ResponseEntity.ok("Đăng ký thành công, vui lòng kiểm tra mail");
+    }
+
+
+    @GetMapping("/check-session")
+    public ResponseEntity<ApiResponse> checkSession() {
+        // Nếu request lọt qua được AuthFilter → session Redis còn sống → trả 200
+        ApiResponse response = ApiResponse.builder()
+            .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
+            .message("Phiên đăng nhập hợp lệ")
+            .build();
+        return ResponseEntity.ok(response);
     }
 }

@@ -57,36 +57,33 @@ public class AuthFilter extends OncePerRequestFilter {
             return;
         }
 
+
         String token = authHeader.substring(7);
-
-        if (jwtService.isTokenValid(token)) {
-            Claims claims = jwtService.extractClaims(token);
-
-            String email = claims.get("email", String.class);
-
-            // ===== KIỂM TRA SINGLE SESSION =====
-            String activeToken = loginAttemptService.getActiveSession(email);
-
-            if (activeToken == null || !token.equals(activeToken)) {
-                // Session không tồn tại hoặc token không khớp → phiên không hợp lệ
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(
-                    "{\"code\":\"401\",\"status\":\"Session invalid, please login again\"}"
-                );
-                return; // KHÔNG cho đi tiếp
-            }
-            // ===== KẾT THÚC KIỂM TRA =====
-
-            Integer userId = Integer.parseInt(claims.getSubject());
-            String role = claims.get("role", String.class);
-
-            List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+// 1. Kiểm tra JWT hợp lệ và còn hạn không
+        if (!jwtService.isTokenValid(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"code\":\"401\",\"status\":\"Phiên đăng nhập đã kết thúc, vui lòng đăng nhập lại\"}");
+            return;
         }
-
+// 2. JWT hợp lệ -> Kiểm tra session trong Redis
+        Claims claims = jwtService.extractClaims(token);
+        String email = claims.get("email", String.class);
+        String activeToken = loginAttemptService.getActiveSession(email);
+        if (activeToken == null || !token.equals(activeToken)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"code\":\"401\",\"status\":\"Phiên đăng nhập đã kết thúc, vui lòng đăng nhập lại\"}");
+            return;
+        }
+// 3. Hợp lệ cả 2 -> Cấp quyền đi tiếp
+        Integer userId = Integer.parseInt(claims.getSubject());
+        String role = claims.get("role", String.class);
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
     }
 }

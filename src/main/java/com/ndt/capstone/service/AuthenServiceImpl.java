@@ -108,12 +108,14 @@ public class AuthenServiceImpl implements AuthService {
         // Reset bộ đếm sai
         loginAttemptService.resetFailedAttempts(email);
 
-        // Tạo JWT token
-        String accessToken = jwtService.genAccessToken(UserDto.fromEntity(user));
-
-        // Lưu session vào Redis (TTL = thời gian sống JWT)
-        loginAttemptService.saveSession(email, accessToken, jwtExpiration);
-
+        // 1. Xác định thời gian: có Remember Me thì 1 ngày (24h), không thì 15 phút
+        long expirationMs = request.isRememberMe()
+                ? (24L * 60 * 60 * 1000)   // 1 ngày
+                : (15L * 60 * 1000);       // 15 phút
+        // 2. Tạo JWT Token với thời gian expirationMs này
+        String accessToken = jwtService.genAccessToken(UserDto.fromEntity(user), expirationMs);
+        // 3. Tận dụng đúng METHOD 4 của LoginAttemptService truyền expirationMs vào Redis:
+        loginAttemptService.saveSession(email, accessToken, expirationMs);
         return accessToken;
     }
 
