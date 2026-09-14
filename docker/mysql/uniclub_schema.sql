@@ -8,6 +8,7 @@ CREATE TABLE color
 (
     id   int auto_increment primary key,
     name varchar(20) NOT NULL,
+    hexcode char(7) NOT NULL,
 
     CONSTRAINT UQ_color_name UNIQUE (name)
 );

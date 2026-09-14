@@ -68,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
         EntityManager entityManager,
-        @Value(value = "${upload.default-image:default_cloth.jpg}") String defaultImage,
+        @Value(value = "${file.upload.image.default-image-name:default_cloth.jpg}") String defaultImage,
         @Value(value = "${cache.product.prefix:product}") String productPrefixCacheKey,
         @Value(value = "${cache.product.all.cache-duration:60000}") Integer cacheDuration
     ) {

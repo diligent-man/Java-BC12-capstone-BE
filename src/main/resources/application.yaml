@@ -54,9 +54,13 @@ jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
     expiration: 600000
 
-upload:
-    image: ${UPLOAD_IMAGE_PATH}
-    default-image: default_cloth.jpg
+file:
+    root: ${DATA_ROOT}
+
+    upload:
+        image:
+            path: ${UPLOAD_IMAGE_PATH}
+            default-image-name: ${DEFAULT_VARIANT_IMAGE_NAME}
 
 cache:
     product:

@@ -55,7 +55,6 @@ public class ProductController {
         Pageable pageable
     ) {
         pageable = withDefaultSort(defaultProductSort, pageable);
-
         return ResponseEntity.ok(
             ApiResponse.builder()
                 .data(PageResponse.from(productService.getPagedProducts(pageable)))

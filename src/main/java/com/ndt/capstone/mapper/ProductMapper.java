@@ -1,6 +1,7 @@
 package com.ndt.capstone.mapper;
 
 import java.util.*;
+import java.nio.file.Paths;
 
 
 import com.ndt.capstone.dto.ProductDTO;
@@ -28,7 +29,7 @@ public class ProductMapper {
         if (!variants.isEmpty()) {
             dto.setImage(
                 variants
-                    .parallelStream()
+                    .stream()
                     .min(Comparator.comparingLong(ProductVariantEntity::getSku))
                     .stream()
                     .findFirst()
@@ -36,8 +37,9 @@ public class ProductMapper {
                         variant -> {
                             String images = variant.getImages();
 
-                            if (images == null || images.isBlank())
+                            if (images == null || images.isBlank()) {
                                 return defaultImage;
+                            }
 
                             return Arrays
                                 .stream(images.split(", "))
@@ -45,11 +47,21 @@ public class ProductMapper {
                                 .toList()
                                 .stream()
                                 .findFirst()
-                                .orElse(defaultImage);
+                                .map(image -> buildVariantImagePath(
+                                        variant.getProduct().getBrand().getName(),
+                                        variant.getProduct().getName().replace(" ", "_"),
+                                        image
+                                    )
+                                ).orElse(defaultImage);
                         }
                     ).orElse(defaultImage)
             );
         }
         return dto;
+    }
+
+
+    private static String buildVariantImagePath(String brand, String productName, String image) {
+        return Paths.get(brand, productName, image).toString();
     }
 }

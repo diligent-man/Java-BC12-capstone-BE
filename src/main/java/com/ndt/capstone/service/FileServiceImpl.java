@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 
+import jakarta.annotation.PostConstruct;
+
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -28,11 +31,12 @@ import com.ndt.capstone.enums.exception.GenericErrMsg;
 
 @Service
 public class FileServiceImpl implements FileService {
-    @Value("${upload.image:./uploads}")
-    private final Path root = Paths.get("uploads");
+    @Value("${file.root:./data/}")
+    private final Path root = Paths.get("data");
 
 
     @Override
+    @PostConstruct
     public void init() {
         try {
             Files.createDirectories(root);
@@ -43,11 +47,13 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public void save(MultipartFile file) {
+    public void save(MultipartFile file, String relativePath) {
+        Path dst = Paths.get(relativePath, Objects.requireNonNull(file.getOriginalFilename()));
+
         try {
             Files.copy(
                 file.getInputStream(),
-                root.resolve(Objects.requireNonNull(file.getOriginalFilename())),
+                root.resolve(dst),
                 StandardCopyOption.REPLACE_EXISTING
             );
         } catch (FileAlreadyExistsException e) {
@@ -62,9 +68,10 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public Resource load(String filename) {
+    public Resource load(String filename, String... relativePaths) {
         try {
-            Path file = root.resolve(filename);
+            Path dst = Paths.get(root.toString(), relativePaths);
+            Path file = dst.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {

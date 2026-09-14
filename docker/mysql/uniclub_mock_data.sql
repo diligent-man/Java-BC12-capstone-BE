@@ -6,9 +6,9 @@ USE uniclub;
 INSERT INTO
     brand(name)
 VALUES
-    ('Adidas'),
-    ('Nike'),
-    ('Gucci')
+    ('adidas'),
+    ('nike'),
+    ('gucci')
 ;
 
 
@@ -35,13 +35,21 @@ VALUES
 
 
 INSERT INTO
-    color(name)
+    color(name, hexcode)
 VALUES
-    ('black'),
-    ('white'),
-    ('blue'),
-    ('red'),
-    ('grey')
+#     adidas
+('black', '#000000'),
+('alumina', '#E4E1DD'),
+('night indigo', '#1B1F3B'),
+('medium grey heather', '#A9A9A9'),
+('chalky brown', '#8B7355'),
+('collegiate green', '#00563F'),
+('warm sandstone', '#D7BAA1'),
+#     nike
+('canary', '#FFFF66'),
+('old royal', '#1F3160'),
+('dark grey heather', '#696969'),
+('sail', '#F1EDE4')
 ;
 
 
@@ -60,13 +68,14 @@ VALUES
 INSERT INTO
     product(name, description, information, price, id_brand)
 VALUES
-    ('firebird loose monogram track pants',
-     'The Firebird Loose Monogram Track Pants are a nod to adidas’ iconic heritage, blending classic design with modern flair. Crafted from jacquard fabric, these track pants offer a relaxed fit that offers comfort and style for your everyday lifestyle.
+# adidas products
+('firebird loose monogram track pants',
+ 'The Firebird Loose Monogram Track Pants are a nod to adidas’ iconic heritage, blending classic design with modern flair. Crafted from jacquard fabric, these track pants offer a relaxed fit that offers comfort and style for your everyday lifestyle.
 
 With a focus on versatility, these track pants feature a loose silhouette that pairs effortlessly with your favourite tops. The drawcord closure allows for a personalised fit, making them a smart choice for any occasion.
 
 adidas Originals brings you a piece that not only celebrates the past but also embraces the future of fashion. Elevate your wardrobe with this piece and experience the blend of tradition and innovation.',
-     'Loose fit
+ 'Loose fit
 Elastic waistband with drawcord
 Main Material: 100% Polyester(100% Recycled)
 Jacquard
@@ -75,27 +84,27 @@ adidas branding elements
 All-over print
 Colour: Black
 Product code: KC9159',
-     39.99,
-     1),
+ 84.76,
+ 1),
 
-    ('adilenium season 5 denim jeans',
-     'Crafted for those who are looking for casual comfort with a touch of rebellion, the Adilenium Season 5 Denim Jeans embody the spirit of adidas Originals. They’re a great choice for urban trendsetters.
+('adilenium season 5 denim jeans',
+ 'Crafted for those who are looking for casual comfort with a touch of rebellion, the Adilenium Season 5 Denim Jeans embody the spirit of adidas Originals. They’re a great choice for urban trendsetters.
 
 They offer a loose fit that speaks to both style and ease. The woven construction provides durability, making these jeans your go-to apparel for everyday wear. Featuring a classic zip closure, the jeans combine functionality with a timeless aesthetic.
 
 Pair these denim jeans with your favourite adidas apparel, and transform your wardrobe with the bold and authentic flair that adidas delivers.',
-     'Loose fit
+ 'Loose fit
 Zip
 Main Material: 100% Cotton / Pockets: 100% Cotton
 Denim
 Colour: Chalky Brown
 Product code: KX4821',
-     59.99,
-     1),
+ 111.72,
+ 1),
 
-    ('originals twistknit pleated pants',
-     'Climb the leaderboard with distraction-free performance and comfort in these adidas golf pants. Stretchy TWISTKNIT fabric offers full mobility to bend, twist and crouch without restriction. Pleats add traditional course style.',
-     'Regular fit
+('originals twistknit pleated pants',
+ 'Climb the leaderboard with distraction-free performance and comfort in these adidas golf pants. Stretchy TWISTKNIT fabric offers full mobility to bend, twist and crouch without restriction. Pleats add traditional course style.',
+ 'Regular fit
 Belt loops
 100% polyester (80% recycled)
 Front and back pockets
@@ -103,14 +112,14 @@ Coin pocket
 Pleated
 Colour: Night Indigo
 Product code: JF5014',
-     89.99,
-     1),
+ 107.87,
+ 1),
 
-    ('essential 3-stripes french terry pants',
-     'Whether you''re lounging at home or heading out, these adidas pants have you covered. The soft French terry build keeps you comfortable, and the 3-Stripes down the sides add a sporty finish. With a modern, tapered fit, these pants are an everyday essential.
+('essential 3-stripes french terry pants',
+ 'Whether you''re lounging at home or heading out, these adidas pants have you covered. The soft French terry build keeps you comfortable, and the 3-Stripes down the sides add a sporty finish. With a modern, tapered fit, these pants are an everyday essential.
 
 By choosing recycled, we are able to reuse materials that have already been created, which helps to reduce waste. Renewable materials choices will help us to remove our reliance on finite resources. Our products made with a blend of recycled and renewable materials feature at least 70% total of these materials.',
-     'Regular fit
+ 'Regular fit
 Drawstring closure
 Body: 55% Cotton / 36% Polyester(100% Recycled) / 9% Viscose
 Ribbed cuffs
@@ -118,16 +127,16 @@ Tapered legs
 Contains a minimum of 70% recycled and renewable content
 Colour: Warm Sandstone / Black
 Product code: JX0724',
-     89.50,
-     1),
+ 46.23,
+ 1),
 
-    ('adicolor classics 3-stripes cargo pants',
-     'The Adicolor Classics 3-Stripes Cargo Pants are your go-to for everyday casual wear. With a nod to the adidas Originals heritage, they blend iconic style with modern comfort.
+('adicolor classics 3-stripes cargo pants',
+ 'The Adicolor Classics 3-Stripes Cargo Pants are your go-to for everyday casual wear. With a nod to the adidas Originals heritage, they blend iconic style with modern comfort.
 
 Crafted from durable ripstop fabric, these trousers are built to last. The loose fit and mid-rise waist create a relaxed feel, while cargo pockets provide ample storage for your essentials. An embroidered trefoil on the left leg and signature 3-Stripes complete the look with a touch of adidas flair.
 
 Whether you''re heading out and about or just lounging around, these trousers give you the versatility and style you need. Embrace the rebellious optimism of adidas and make them a staple in your wardrobe.',
-     'oose fit
+ 'oose fit
 Drawstring
 Main Material: 100% Polyamide(100% Recycled)
 Ripstop fabric
@@ -135,66 +144,67 @@ Cargo pockets
 Iconic branding
 Colour: Black
 Product code: KE2927',
-     149.00,
-     1),
+ 88.61,
+ 1),
 
-
-    ('nike sportswear',
-     'Nothing hits like a classic tee. This one is relaxed through the body for easy layering. Lightweight cotton feels soft and comfortable for everyday wear.',
-     'Ribbed collar
+# nike products
+('nike sportswear',
+ 'Nothing hits like a classic tee. This one is relaxed through the body for easy layering. Lightweight cotton feels soft and comfortable for everyday wear.',
+ 'Ribbed collar
 100% cotton
 Machine wash
 Imported
 Shown: Dark Grey Heather
 Style: IH1141-063',
-     44.99,
-     2),
+ 32.00,
+ 2),
 
-    ('nike dri-fit',
-     'The Nike Dri-FIT Shorts are made to keep you moving during high-intensity training. Woven fabric stretches with every move, while vents at the hems are ideal for deep bends like lunges and squats. This product is made with 100% recycled polyester fibers.',
-     'Standard fit for a relaxed, easy feel
+('nike dri-fit',
+ 'The Nike Dri-FIT Shorts are made to keep you moving during high-intensity training. Woven fabric stretches with every move, while vents at the hems are ideal for deep bends like lunges and squats. This product is made with 100% recycled polyester fibers.',
+ 'Standard fit for a relaxed, easy feel
 9" inseam
 100% polyester
 Machine wash
 Imported
 Shown: Black/Black/White
 Style: DM6617-010',
-     65.00,
-     2),
+ 35.00,
+ 2),
 
-    ('brazil',
-     'Inspired by their home kit, this Brazil top is made with sweat-wicking technology to help keep you dry and comfortable on and off the field.',
-     '100% polyester
+('brazil',
+ 'Inspired by their home kit, this Brazil top is made with sweat-wicking technology to help keep you dry and comfortable on and off the field.',
+ '100% polyester
 Machine wash
 Imported
 Shown: Canary/Light Menta/Geode Teal
 Style: JU1492-724',
-     49.99,
-     2),
+ 65.00,
+ 2),
 
-    ('jordan',
-     'Lightweight mesh and our sweat-wicking technology help you stay fresh all day long. And that signature diamond taping? It''s the cherry on top.',
-     'Body: 100% Polyester; Lining: 100% Polyester
+('jordan',
+ 'Lightweight mesh and our sweat-wicking technology help you stay fresh all day long. And that signature diamond taping? It''s the cherry on top.',
+ 'Body: 100% Polyester; Lining: 100% Polyester
 Machine wash
 Imported
 Shown: Old Royal/Yellow Pulse
 Style: IF3912-417',
-     129.99,
-     2),
+ 49.99,
+ 2),
 
-    ('usmnt',
-     'Show love for your squad in this relaxed USMNT tee.',
-     '100% cotton
+('usmnt',
+ 'Show love for your squad in this relaxed USMNT tee.',
+ '100% cotton
 Machine wash
 Imported
 Shown: Sail
 Style: IQ2280-133',
-     34.99,
-     2),
+ 42.00,
+ 2),
 
-    ('leather biker jacket with web detail',
-     'This style is part of the Gucci Primavera collection. Biker inspirations are reinterpreted with leather Web detail along the sleeves on this regular-fit jacket. Crafted from treated calf leather with subtly worn-out effect, the style features intentional creases for a lived-in appearance. Special finishings and a softened grain complete the distinctive design.',
-     'Black treated calf leather with worn-out effect
+#  gucci
+('leather biker jacket with web detail',
+ 'This style is part of the Gucci Primavera collection. Biker inspirations are reinterpreted with leather Web detail along the sleeves on this regular-fit jacket. Crafted from treated calf leather with subtly worn-out effect, the style features intentional creases for a lived-in appearance. Special finishings and a softened grain complete the distinctive design.',
+ 'Black treated calf leather with worn-out effect
 Stretch side inserts
 Green and red Web leather detail at the sleeves
 Tonal lining
@@ -211,12 +221,12 @@ Lining: 75% Acetate, 25% Cotton
 Lining: 78% Polyamide, 18% Viscose, 4% Elastane
 Lining: 100% Silk
 Pocket lining: 100% Cotton',
-     199.99,
-     3),
+ 8900,
+ 3),
 
-    ('lightweight nylon padded jacket',
-     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New offerings in nylon are grounded in practicality, defined by sartorial construction and richer tones. Crafted from lightweight compact nylon, this jacket reveals an internal Web detail.',
-     'Black lightweight compact nylon
+('lightweight nylon padded jacket',
+ 'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New offerings in nylon are grounded in practicality, defined by sartorial construction and richer tones. Crafted from lightweight compact nylon, this jacket reveals an internal Web detail.',
+ 'Black lightweight compact nylon
 Lined and padded
 Stand collar
 Two side pockets
@@ -233,12 +243,12 @@ Parts in knitted fabric: 95% Polyester, 5% Elastane
 Lining: 100% Cupro
 Pocket lining: 100% Cotton
 Filling: 100% Polyester',
-     79.99,
-     3),
+ 2850,
+ 3),
 
-    ('coated cotton twill denim pants with web',
-     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New denim offerings are defined by sartorial construction and richer tones, as denim pants evolve into modern sets with a sleek edge. Crafted from coated stretch cotton twill denim, this style is designed with a loose fit, enhanced by Web inserts along the sides.',
-     'Black coated stretch cotton twill denim
+('coated cotton twill denim pants with web',
+ 'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New denim offerings are defined by sartorial construction and richer tones, as denim pants evolve into modern sets with a sleek edge. Crafted from coated stretch cotton twill denim, this style is designed with a loose fit, enhanced by Web inserts along the sides.',
+ 'Black coated stretch cotton twill denim
 Side Web insert
 Belt loops
 ''Gucci Made in Italy'' leather label
@@ -250,12 +260,12 @@ Made in Italy
 Label: Calfskin
 Fabric: 94% Cotton, 6% Elastane
 Details: 88% Wool, 12% Polyester',
-     39.99,
-     3),
+ 1600,
+ 3),
 
-    ('cotton viscose jacket with python effect',
-     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and richer tones, as jackets evolve into modern sets with a sleek edge. Crafted from washed cotton polyester viscose, this slim-fit jacket features a distinctive python effect.',
-     'Black washed cotton polyester viscose with python effect
+('cotton viscose jacket with python effect',
+ 'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and richer tones, as jackets evolve into modern sets with a sleek edge. Crafted from washed cotton polyester viscose, this slim-fit jacket features a distinctive python effect.',
+ 'Black washed cotton polyester viscose with python effect
 Interlocking G embroidery
 Stand collar
 Long sleeves
@@ -268,12 +278,12 @@ Fabric: 53% Cotton, 26% Viscose, 21% Polyester
 Pocket lining: 65% Polyester, 35% Cotton
 Embroidery: 100% Polyester
 Non textile decoration: 100% Polyamide',
-     54.99,
-     3),
+ 2600,
+ 3),
 
-    ('grainy laminated bull leather jacket',
-     'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and rich hues, along with subtle House codes. On this jacket, a tonal trim inspired by the Web offers an understated expression of the signature motif. Crafted from grainy bull leather, it is complete with Gucci embroidery, padded details, embossed details, and leather patches.',
-     '
+('grainy laminated bull leather jacket',
+ 'Gucci Primavera establishes a new vocabulary of silhouettes, textures, and materials, merging innovation with a grounded vision. New leather offerings are defined by sartorial construction and rich hues, along with subtle House codes. On this jacket, a tonal trim inspired by the Web offers an understated expression of the signature motif. Crafted from grainy bull leather, it is complete with Gucci embroidery, padded details, embossed details, and leather patches.',
+ '
 Black soft, grainy laminated bull leather
 Gucci embroidery
 Embossed ''Primavera'' detail
@@ -293,8 +303,8 @@ Genuine leather: Cow leather
 Lining: 100% Polyester
 Lining: 100% Viscose
 Embroidery: 100% Polyester',
-     99.99,
-     3)
+ 9900,
+ 3)
 ;
 
 
@@ -343,118 +353,75 @@ VALUES
 ;
 
 
-
-# TODO: fix data correctedness later
-# 'item1.jpg, item4.jpg'
 INSERT INTO
     variant (id_product, id_color, id_size, images, quantity, price)
 VALUES
-    (1, 1, 1, null, RAND(10), null),
-    (1, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (1, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (1, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 45.99),
-    (1, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 45.99),
-    (1, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 45.99),
+    (1, 1, 1, 'firebird_loose_monogram_track_pants_black_1.jpg, firebird_loose_monogram_track_pants_black_2.jpg, firebird_loose_monogram_track_pants_black_3.jpg, firebird_loose_monogram_track_pants_black_4.jpg, firebird_loose_monogram_track_pants_black_5.jpg, firebird_loose_monogram_track_pants_black_6.jpg', RAND(10), 84.76),
+    (1, 1, 2, 'firebird_loose_monogram_track_pants_black_1.jpg, firebird_loose_monogram_track_pants_black_2.jpg, firebird_loose_monogram_track_pants_black_3.jpg, firebird_loose_monogram_track_pants_black_4.jpg, firebird_loose_monogram_track_pants_black_5.jpg, firebird_loose_monogram_track_pants_black_6.jpg', RAND(10), 84.76),
+    (1, 1, 3, 'firebird_loose_monogram_track_pants_black_1.jpg, firebird_loose_monogram_track_pants_black_2.jpg, firebird_loose_monogram_track_pants_black_3.jpg, firebird_loose_monogram_track_pants_black_4.jpg, firebird_loose_monogram_track_pants_black_5.jpg, firebird_loose_monogram_track_pants_black_6.jpg', RAND(10), 84.76),
+    (1, 6, 1, 'firebird_loose_monogram_track_pants_collegiate_green_1.jpg, firebird_loose_monogram_track_pants_collegiate_green_2.jpg, firebird_loose_monogram_track_pants_collegiate_green_3.jpg, firebird_loose_monogram_track_pants_collegiate_green_4.jpg, firebird_loose_monogram_track_pants_collegiate_green_5.jpg, fireb84.76oose_monogram_track_pants_collegiate_green_6.jpg', RAND(10), 84.76),
+    (1, 6, 2, 'firebird_loose_monogram_track_pants_collegiate_green_1.jpg, firebird_loose_monogram_track_pants_collegiate_green_2.jpg, firebird_loose_monogram_track_pants_collegiate_green_3.jpg, firebird_loose_monogram_track_pants_collegiate_green_4.jpg, firebird_loose_monogram_track_pants_collegiate_green_5.jpg, fireb84.76oose_monogram_track_pants_collegiate_green_6.jpg', RAND(10), 84.76),
+    (1, 6, 3, 'firebird_loose_monogram_track_pants_collegiate_green_1.jpg, firebird_loose_monogram_track_pants_collegiate_green_2.jpg, firebird_loose_monogram_track_pants_collegiate_green_3.jpg, firebird_loose_monogram_track_pants_collegiate_green_4.jpg, firebird_loose_monogram_track_pants_collegiate_green_5.jpg, firebird_loose_monogram_track_pants_collegiate_green_6.jpg', RAND(10), 84.76),
 
-    (2, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (2, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (2, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (2, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 69.99),
-    (2, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 69.99),
-    (2, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 69.99),
+    (2, 5, 1, 'adilenium_season_5_denim_jeans_chalky_brown_1.jpg, adilenium_season_5_denim_jeans_chalky_brown_2.jpg, adilenium_season_5_denim_jeans_chalky_brown_3.jpg, adilenium_season_5_denim_jeans_chalky_brown_4.jpg, adilenium_season_5_denim_jeans_chalky_brown_5.jpg, adilenium_season_5_denim_jeans_chalky_brown_6.jpg', RAND(10), 111.72),
+    (2, 5, 2, 'adilenium_season_5_denim_jeans_chalky_brown_1.jpg, adilenium_season_5_denim_jeans_chalky_brown_2.jpg, adilenium_season_5_denim_jeans_chalky_brown_3.jpg, adilenium_season_5_denim_jeans_chalky_brown_4.jpg, adilenium_season_5_denim_jeans_chalky_brown_5.jpg, adilenium_season_5_denim_jeans_chalky_brown_6.jpg', RAND(10), 111.72),
+    (2, 5, 3, 'adilenium_season_5_denim_jeans_chalky_brown_1.jpg, adilenium_season_5_denim_jeans_chalky_brown_2.jpg, adilenium_season_5_denim_jeans_chalky_brown_3.jpg, adilenium_season_5_denim_jeans_chalky_brown_4.jpg, adilenium_season_5_denim_jeans_chalky_brown_5.jpg, adilenium_season_5_denim_jeans_chalky_brown_6.jpg', RAND(10), 111.72),
 
-    (3, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (3, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (3, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (3, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 99.99),
-    (3, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 99.99),
-    (3, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 99.99),
+    (3, 3, 1, 'originals_twistknit_pleated_pants_night_indigo_1.jpg, originals_twistknit_pleated_pants_night_indigo_2.jpg, originals_twistknit_pleated_pants_night_indigo_3.jpg, originals_twistknit_pleated_pants_night_indigo_4.jpg, originals_twistknit_pleated_pants_night_indigo_5.jpg, originals_twistknit_pleated_pants_night_indigo_6.jpg, originals_twistknit_pleated_pants_night_indigo_7.jpg, originals_twistknit_pleated_pants_night_indigo_8.jpg, originals_twistknit_pleated_pants_night_indigo_9.jpg', RAND(10), 107.87),
+    (3, 3, 2, 'originals_twistknit_pleated_pants_night_indigo_1.jpg, originals_twistknit_pleated_pants_night_indigo_2.jpg, originals_twistknit_pleated_pants_night_indigo_3.jpg, originals_twistknit_pleated_pants_night_indigo_4.jpg, originals_twistknit_pleated_pants_night_indigo_5.jpg, originals_twistknit_pleated_pants_night_indigo_6.jpg, originals_twistknit_pleated_pants_night_indigo_7.jpg, originals_twistknit_pleated_pants_night_indigo_8.jpg, originals_twistknit_pleated_pants_night_indigo_9.jpg', RAND(10), 107.87),
+    (3, 3, 3, 'originals_twistknit_pleated_pants_night_indigo_1.jpg, originals_twistknit_pleated_pants_night_indigo_2.jpg, originals_twistknit_pleated_pants_night_indigo_3.jpg, originals_twistknit_pleated_pants_night_indigo_4.jpg, originals_twistknit_pleated_pants_night_indigo_5.jpg, originals_twistknit_pleated_pants_night_indigo_6.jpg, originals_twistknit_pleated_pants_night_indigo_7.jpg, originals_twistknit_pleated_pants_night_indigo_8.jpg, originals_twistknit_pleated_pants_night_indigo_9.jpg', RAND(10), 107.87),
 
-    (4, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (4, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (4, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (4, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 70.5),
-    (4, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 70.5),
-    (4, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 70.5),
+    (4, 7, 1, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 46.23),
+    (4, 7, 2, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 446.23),
+    (4, 7, 3, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 446.23),
+    (4, 4, 1, 'essential_3-stripes_french_terry_pants_medium_grey_heather_1.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_2.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_3.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_4.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_5.jpg, essential_3-stripes_french_terry_pants_medium_gr46.23eather_6.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_7.jpg', RAND(10), 46.23),
+    (4, 4, 2, 'essential_3-stripes_french_terry_pants_medium_grey_heather_1.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_2.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_3.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_4.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_5.jpg, essential_3-stripes_french_terry_pants_medium_gr46.23eather_6.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_7.jpg', RAND(10), 46.23),
+    (4, 4, 3, 'essential_3-stripes_french_terry_pants_medium_grey_heather_1.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_2.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_3.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_4.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_5.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_6.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_7.jpg', RAND(10), 46.23),
 
-    (5, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (5, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (5, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (5, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 130),
-    (5, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 130),
-    (5, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 130),
+    (5, 1, 1, 'adicolor_classics_3-stripes_cargo_pants_black_1.jpg, adicolor_classics_3-stripes_cargo_pants_black_2.jpg, adicolor_classics_3-stripes_cargo_pants_black_3.jpg, adicolor_classics_3-stripes_cargo_pants_black_4.jpg, adicolor_classics_3-stripes_cargo_pants_black_5.jpg, adicolor_classics_3-stripes_cargo_pants_black_6.jpg', RAND(10), 88.61),
+    (5, 1, 2, 'adicolor_classics_3-stripes_cargo_pants_black_1.jpg, adicolor_classics_3-stripes_cargo_pants_black_2.jpg, adicolor_classics_3-stripes_cargo_pants_black_3.jpg, adicolor_classics_3-stripes_cargo_pants_black_4.jpg, adicolor_classics_3-stripes_cargo_pants_black_5.jpg, adicolor_classics_3-stripes_cargo_pants_black_6.jpg', RAND(10), 88.61),
+    (5, 1, 3, 'adicolor_classics_3-stripes_cargo_pants_black_1.jpg, adicolor_classics_3-stripes_cargo_pants_black_2.jpg, adicolor_classics_3-stripes_cargo_pants_black_3.jpg, adicolor_classics_3-stripes_cargo_pants_black_4.jpg, adicolor_classics_3-stripes_cargo_pants_black_5.jpg, adicolor_classics_3-stripes_cargo_pants_black_6.jpg', RAND(10), 88.61),
 
-    (6, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (6, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (6, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (6, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 54.99),
-    (6, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 54.99),
-    (6, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 54.99),
+    (6, 10, 1, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND(10), 32.00),
+    (6, 10, 2, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND(10), 32.00),
+    (6, 10, 3, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND(10), 32.00),
 
-    (7, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (7, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (7, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (7, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 75),
-    (7, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 75),
-    (7, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 75),
+    (7, 1, 1, 'nike_dri-fit_black_1.jpg, nike_dri-fit_black_2.jpg, nike_dri-fit_black_3.jpg, nike_dri-fit_black_4.jpg, nike_dri-fit_black_5.jpg, nike_dri-fit_black_6.jpg, nike_dri-fit_black_7.jpg', RAND(10), 35.00),
+    (7, 1, 2, 'nike_dri-fit_black_1.jpg, nike_dri-fit_black_2.jpg, nike_dri-fit_black_3.jpg, nike_dri-fit_black_4.jpg, nike_dri-fit_black_5.jpg, nike_dri-fit_black_6.jpg, nike_dri-fit_black_7.jpg', RAND(10), 35.00),
+    (7, 1, 3, 'nike_dri-fit_black_1.jpg, nike_dri-fit_black_2.jpg, nike_dri-fit_black_3.jpg, nike_dri-fit_black_4.jpg, nike_dri-fit_black_5.jpg, nike_dri-fit_black_6.jpg, nike_dri-fit_black_7.jpg', RAND(10), 35.00),
 
-    (8, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (8, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (8, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (8, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 39.99),
-    (8, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 39.99),
-    (8, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 39.99),
+    (8, 8, 1, 'brazil_canary_1.jpg, brazil_canary_2.jpg, brazil_canary_3.jpg, brazil_canary_4.jpg, brazil_canary_5.jpg', RAND(10), 65.00),
+    (8, 8, 2, 'brazil_canary_1.jpg, brazil_canary_2.jpg, brazil_canary_3.jpg, brazil_canary_4.jpg, brazil_canary_5.jpg', RAND(10), 65.00),
+    (8, 8, 3, 'brazil_canary_1.jpg, brazil_canary_2.jpg, brazil_canary_3.jpg, brazil_canary_4.jpg, brazil_canary_5.jpg', RAND(10), 65.00),
 
-    (9, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (9, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (9, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (9, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 119.50),
-    (9, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 119.50),
-    (9, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 119.50),
+    (9, 9, 1, 'jordan_old_royal_1.jpg, jordan_old_royal_2.jpg, jordan_old_royal_3.jpg, jordan_old_royal_4.jpg, jordan_old_royal_5.jpg, jordan_old_royal_6.jpg, jordan_old_royal_7.jpg, jordan_old_royal_8.jpg', RAND(10), 49.99),
+    (9, 9, 2, 'jordan_old_royal_1.jpg, jordan_old_royal_2.jpg, jordan_old_royal_3.jpg, jordan_old_royal_4.jpg, jordan_old_royal_5.jpg, jordan_old_royal_6.jpg, jordan_old_royal_7.jpg, jordan_old_royal_8.jpg', RAND(10), 49.99),
+    (9, 9, 3, 'jordan_old_royal_1.jpg, jordan_old_royal_2.jpg, jordan_old_royal_3.jpg, jordan_old_royal_4.jpg, jordan_old_royal_5.jpg, jordan_old_royal_6.jpg, jordan_old_royal_7.jpg, jordan_old_royal_8.jpg', RAND(10), 49.99),
 
-    (10, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (10, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (10, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (10, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 24.99),
-    (10, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 24.99),
-    (10, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 24.99),
+    (10, 11, 1, 'usmnt_sail_1.jpg, usmnt_sail_2.jpg, usmnt_sail_3.jpg, usmnt_sail_4.jpg, usmnt_sail_5.jpg', RAND(10), 42.00),
+    (10, 11, 2, 'usmnt_sail_1.jpg, usmnt_sail_2.jpg, usmnt_sail_3.jpg, usmnt_sail_4.jpg, usmnt_sail_5.jpg', RAND(10), 42.00),
+    (10, 11, 3, 'usmnt_sail_1.jpg, usmnt_sail_2.jpg, usmnt_sail_3.jpg, usmnt_sail_4.jpg, usmnt_sail_5.jpg', RAND(10), 42.00),
 
-    (11, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (11, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (11, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (11, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 189.19),
-    (11, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 189.19),
-    (11, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 189.19),
+    (11, 1, 1, 'leather_biker_jacket_with_web_detail_black_1.jpg, leather_biker_jacket_with_web_detail_black_2.jpg, leather_biker_jacket_with_web_detail_black_3.jpg, leather_biker_jacket_with_web_detail_black_4.jpg, leather_biker_jacket_with_web_detail_black_5.jpg, leather_biker_jacket_with_web_detail_black_6.jpg', RAND(10), 8900),
+    (11, 1, 2, 'leather_biker_jacket_with_web_detail_black_1.jpg, leather_biker_jacket_with_web_detail_black_2.jpg, leather_biker_jacket_with_web_detail_black_3.jpg, leather_biker_jacket_with_web_detail_black_4.jpg, leather_biker_jacket_with_web_detail_black_5.jpg, leather_biker_jacket_with_web_detail_black_6.jpg', RAND(10), 8900),
+    (11, 1, 3, 'leather_biker_jacket_with_web_detail_black_1.jpg, leather_biker_jacket_with_web_detail_black_2.jpg, leather_biker_jacket_with_web_detail_black_3.jpg, leather_biker_jacket_with_web_detail_black_4.jpg, leather_biker_jacket_with_web_detail_black_5.jpg, leather_biker_jacket_with_web_detail_black_6.jpg', RAND(10), 8900),
 
-    (12, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (12, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (12, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (12, 2, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (12, 2, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (12, 2, 3, 'item1.jpg, item4.jpg', RAND(10), null),
+    (12, 1, 1, 'lightweight_nylon_padded_jacket_black_1.jpg, lightweight_nylon_padded_jacket_black_2.jpg, lightweight_nylon_padded_jacket_black_3.jpg, lightweight_nylon_padded_jacket_black_4.jpg, lightweight_nylon_padded_jacket_black_5.jpg, lightweight_nylon_padded_jacket_black_6.jpg', RAND(10), 2850),
+    (12, 1, 2, 'lightweight_nylon_padded_jacket_black_1.jpg, lightweight_nylon_padded_jacket_black_2.jpg, lightweight_nylon_padded_jacket_black_3.jpg, lightweight_nylon_padded_jacket_black_4.jpg, lightweight_nylon_padded_jacket_black_5.jpg, lightweight_nylon_padded_jacket_black_6.jpg', RAND(10), 2850),
+    (12, 1, 3, 'lightweight_nylon_padded_jacket_black_1.jpg, lightweight_nylon_padded_jacket_black_2.jpg, lightweight_nylon_padded_jacket_black_3.jpg, lightweight_nylon_padded_jacket_black_4.jpg, lightweight_nylon_padded_jacket_black_5.jpg, lightweight_nylon_padded_jacket_black_6.jpg', RAND(10), 2850),
 
-    (13, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (13, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (13, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (13, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 30.99),
-    (13, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 30.99),
-    (13, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 30.99),
+    (13, 1, 1, 'coated_cotton_twill_denim_pants_with_web_black_1.jpg, coated_cotton_twill_denim_pants_with_web_black_2.jpg, coated_cotton_twill_denim_pants_with_web_black_3.jpg, coated_cotton_twill_denim_pants_with_web_black_4.jpg, coated_cotton_twill_denim_pants_with_web_black_5.jpg, coated_cotton_twill_denim_pants_with_web_black_6.jpg', RAND(10), 1600),
+    (13, 1, 2, 'coated_cotton_twill_denim_pants_with_web_black_1.jpg, coated_cotton_twill_denim_pants_with_web_black_2.jpg, coated_cotton_twill_denim_pants_with_web_black_3.jpg, coated_cotton_twill_denim_pants_with_web_black_4.jpg, coated_cotton_twill_denim_pants_with_web_black_5.jpg, coated_cotton_twill_denim_pants_with_web_black_6.jpg', RAND(10), 1600),
+    (13, 1, 3, 'coated_cotton_twill_denim_pants_with_web_black_1.jpg, coated_cotton_twill_denim_pants_with_web_black_2.jpg, coated_cotton_twill_denim_pants_with_web_black_3.jpg, coated_cotton_twill_denim_pants_with_web_black_4.jpg, coated_cotton_twill_denim_pants_with_web_black_5.jpg, coated_cotton_twill_denim_pants_with_web_black_6.jpg', RAND(10), 1600),
 
-    (14, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (14, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (14, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (14, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 99.59),
-    (14, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 99.59),
-    (14, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 99.59),
+    (14, 1, 1, 'cotton_viscose_jacket_with_python_effect_black_1.jpg, cotton_viscose_jacket_with_python_effect_black_2.jpg, cotton_viscose_jacket_with_python_effect_black_3.jpg, cotton_viscose_jacket_with_python_effect_black_4.jpg, cotton_viscose_jacket_with_python_effect_black_5.jpg, cotton_viscose_jacket_with_python_effect_black_6.jpg, cotton_viscose_jacket_with_python_effect_black_7.jpg', RAND(10), 2600),
+    (14, 1, 2, 'cotton_viscose_jacket_with_python_effect_black_1.jpg, cotton_viscose_jacket_with_python_effect_black_2.jpg, cotton_viscose_jacket_with_python_effect_black_3.jpg, cotton_viscose_jacket_with_python_effect_black_4.jpg, cotton_viscose_jacket_with_python_effect_black_5.jpg, cotton_viscose_jacket_with_python_effect_black_6.jpg, cotton_viscose_jacket_with_python_effect_black_7.jpg', RAND(10), 2600),
+    (14, 1, 3, 'cotton_viscose_jacket_with_python_effect_black_1.jpg, cotton_viscose_jacket_with_python_effect_black_2.jpg, cotton_viscose_jacket_with_python_effect_black_3.jpg, cotton_viscose_jacket_with_python_effect_black_4.jpg, cotton_viscose_jacket_with_python_effect_black_5.jpg, cotton_viscose_jacket_with_python_effect_black_6.jpg, cotton_viscose_jacket_with_python_effect_black_7.jpg', RAND(10), 2600),
 
-    (15, 1, 1, 'item1.jpg, item4.jpg', RAND(10), null),
-    (15, 1, 2, 'item1.jpg, item4.jpg', RAND(10), null),
-    (15, 1, 3, 'item1.jpg, item4.jpg', RAND(10), null),
-    (15, 2, 1, 'item1.jpg, item4.jpg', RAND(10), 44.99),
-    (15, 2, 2, 'item1.jpg, item4.jpg', RAND(10), 44.99),
-    (15, 2, 3, 'item1.jpg, item4.jpg', RAND(10), 44.99)
+    (15, 1, 1, 'grainy_laminated_bull_leather_jacket_black_1.jpg, grainy_laminated_bull_leather_jacket_black_2.jpg, grainy_laminated_bull_leather_jacket_black_3.jpg, grainy_laminated_bull_leather_jacket_black_4.jpg, grainy_laminated_bull_leather_jacket_black_5.jpg, grainy_laminated_bull_leather_jacket_black_6.jpg', RAND(10), 9900),
+    (15, 1, 2, 'grainy_laminated_bull_leather_jacket_black_1.jpg, grainy_laminated_bull_leather_jacket_black_2.jpg, grainy_laminated_bull_leather_jacket_black_3.jpg, grainy_laminated_bull_leather_jacket_black_4.jpg, grainy_laminated_bull_leather_jacket_black_5.jpg, grainy_laminated_bull_leather_jacket_black_6.jpg', RAND(10), 9900),
+    (15, 1, 3, 'grainy_laminated_bull_leather_jacket_black_1.jpg, grainy_laminated_bull_leather_jacket_black_2.jpg, grainy_laminated_bull_leather_jacket_black_3.jpg, grainy_laminated_bull_leather_jacket_black_4.jpg, grainy_laminated_bull_leather_jacket_black_5.jpg, grainy_laminated_bull_leather_jacket_black_6.jpg', RAND(10), 9900)
 ;
-
 
 #######################################          User/ Role          ###################################################
 INSERT INTO
@@ -470,9 +437,9 @@ VALUES
 INSERT INTO
     user(email, password, full_name, role_id)
 VALUES
-    ('nv1@gmail.com', '$2a$12$uK5K0iIRxTls1hxzSI3vMOnFTSX0q1QGZ3Qwe6lF7mZOPbe3RARre', 'Nguyen Van Mot', 1),
-    ('nv2@gmail.com', '$2a$12$bh0p.LMf1PWLNGF1RMtG1O1dmxHzROL0OOZss9W4qp6bwZfC0blIq', 'Nguyen Van Hai', 2),
-    ('nv3@gmail.com', '$2a$12$GaxiM43VkAG60uOfcOI0kuXbcqYF2aJ0e/HocPOl5tSRQTPH.HMKm', 'Nguyen Van Ba', 3)
+    ('nv1@gmail.com', '$2a$12$q1raFk154n4csK8gQVKrlOzMt4NlhDH/IhnsHa6SH712a9XiDO2cG', 'Nguyen Van Mot', 1),
+    ('nv2@gmail.com', '$2a$12$BNOSE.ROeQKbmJdqcipKbeFFlJXpmm2r3u5fQ1v/laipPBey6ZzZ6', 'Nguyen Van Hai', 2),
+    ('nv3@gmail.com', '$2a$12$8uxStLystNrFGo0L/fpIyOe.NpDW0g9pN6PG/piPbeMqI9fzKJaTC', 'Nguyen Van Ba', 3)
 ;
 
 
