@@ -16,6 +16,7 @@ public class ProductDetailMapper {
     public static ProductDetailDTO toDTO(ProductVariantRow row, List<ProductVariantDetailDTO> variants) {
         return ProductDetailDTO.builder()
             .name(row.getName())
+            .brand(row.getBrand())
             .price(row.getBasePrice())
             .information(row.getInformation())
             .description(row.getDescription())

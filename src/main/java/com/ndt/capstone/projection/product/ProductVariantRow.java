@@ -8,7 +8,7 @@ public interface ProductVariantRow {
     String getDescription();
     String getInformation();
     BigDecimal getBasePrice();
-    String getBrandName();
+    String getBrand();
     Long getSku();
     Integer getQuantity();
     BigDecimal getVariantPrice();

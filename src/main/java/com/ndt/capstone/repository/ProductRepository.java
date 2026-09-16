@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
     @Query("""
         SELECT
             p.name AS name, p.description AS description, p.information AS information, p.price AS basePrice,
-            b.name AS brandName,
+            b.name AS brand,
             category.name AS categoryName,
             t.name AS tagName,
             v.sku AS sku, v.quantity AS quantity, v.price AS variantPrice, v.images AS images,

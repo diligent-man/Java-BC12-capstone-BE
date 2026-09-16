@@ -40,7 +40,7 @@ public class ProductVariantDetailMapper {
 
                 Set<String> images = first.getImages() != null ?
                     Arrays.stream(first.getImages().split(imageSeparator))
-                        .map(image -> buildVariantImagePath(first.getBrandName(), first.getName(), image))
+                        .map(image -> buildVariantImagePath(first.getBrand(), first.getName(), image))
                         .collect(Collectors.toSet()) :
                     Set.of(defaultImage);
 

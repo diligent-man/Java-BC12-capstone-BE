@@ -16,6 +16,7 @@ public class ProductDetailDTO {
     private String name;
     // private Double rating;
     private BigDecimal price;
+    private String brand;
     private String information;
     private String description;
     private List<ProductVariantDetailDTO> variants;
