@@ -44,5 +44,5 @@ public class ProductVariantEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_size")
-    private SizeEntity idSize;
+    private SizeEntity size;
 }

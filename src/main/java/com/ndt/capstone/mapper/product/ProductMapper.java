@@ -1,10 +1,10 @@
-package com.ndt.capstone.mapper;
+package com.ndt.capstone.mapper.product;
 
 import java.util.*;
 import java.nio.file.Paths;
 
 
-import com.ndt.capstone.dto.ProductDTO;
+import com.ndt.capstone.dto.product.ProductDTO;
 import com.ndt.capstone.entity.ProductEntity;
 import com.ndt.capstone.entity.ProductVariantEntity;
 
@@ -49,7 +49,7 @@ public class ProductMapper {
                                 .findFirst()
                                 .map(image -> buildVariantImagePath(
                                         variant.getProduct().getBrand().getName(),
-                                        variant.getProduct().getName().replace(" ", "_"),
+                                        variant.getProduct().getName(),
                                         image
                                     )
                                 ).orElse(defaultImage);
@@ -62,6 +62,7 @@ public class ProductMapper {
 
 
     private static String buildVariantImagePath(String brand, String productName, String image) {
+        productName = productName.replace(" ", "_");
         return Paths.get(brand, productName, image).toString();
     }
 }

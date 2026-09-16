@@ -78,6 +78,18 @@ public class ProductController {
     }
 
 
+    @GetMapping("/{name}")
+    public ResponseEntity<ApiResponse> getProductDetail(
+        @PathVariable String name
+    ) {
+        return ResponseEntity.ok(
+            ApiResponse
+                .builder()
+                .data(productService.getProductDetail(name))
+                .build()
+        );
+    }
+
     // @PostMapping("/insert")
     // public ResponseEntity<?> insertProduct(InsertProductRequest request) {
     //     productService.insertProduct(request);

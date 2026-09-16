@@ -1,9 +1,8 @@
-package com.ndt.capstone.exception.file;
+package com.ndt.capstone.exception.product;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 import com.ndt.capstone.exception.BaseException;
 import com.ndt.capstone.exception.BaseExceptionHandler;
@@ -11,11 +10,11 @@ import com.ndt.capstone.payload.response.exception.ApiErrorResponse;
 
 
 @RestControllerAdvice
-public class FileExceptionHandler implements BaseExceptionHandler {
+public class ProductExceptionHandler implements BaseExceptionHandler {
     @ExceptionHandler({
-        FileException.class
+        ProductException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleFileException(BaseException ex) {
+    public ResponseEntity<ApiErrorResponse> handleProductException(BaseException ex) {
         return buildResponse(ex.getErrorMsg(), ex.getOverrideMsg());
     }
 }

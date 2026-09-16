@@ -68,13 +68,11 @@ public class AuthenServiceImpl implements AuthService {
             throw new AuthException(AuthErrMsg.INVALID_CREDENTIALS);
         }
         UserEntity user = opUser.get();
-        // lấy được user thì kiểm tra ngay status trong DB ( phòng trường hợp redis bị crash ất key)
+
         if ("PERMANENTLY_LOCKED".equals(user.getStatus())) {
             throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
         }
 
-
-        //*Nếu mk sai
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             // kích hoạt hàm recordFailedAttempt để tăng lên 1 lần sai
             int remaining = loginAttemptService.recordFailedAttempt(email);
@@ -109,9 +107,9 @@ public class AuthenServiceImpl implements AuthService {
         loginAttemptService.resetFailedAttempts(email);
 
         // 1. Xác định thời gian: có Remember Me thì 1 ngày (24h), không thì 15 phút
-        long expirationMs = request.isRememberMe()
-                ? (24L * 60 * 60 * 1000)   // 1 ngày
-                : (15L * 60 * 1000);       // 15 phút
+        long expirationMs = request.getRememberMe()
+            ? (24L * 60 * 60 * 1000)   // 1 ngày
+            : (15L * 60 * 1000);       // 15 phút
         // 2. Tạo JWT Token với thời gian expirationMs này
         String accessToken = jwtService.genAccessToken(UserDto.fromEntity(user), expirationMs);
         // 3. Tận dụng đúng METHOD 4 của LoginAttemptService truyền expirationMs vào Redis:

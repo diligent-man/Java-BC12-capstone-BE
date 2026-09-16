@@ -1,9 +1,11 @@
 package com.ndt.capstone.service;
 
-import java.util.List;
+import java.util.*;
 import java.time.Duration;
+import java.util.stream.Collectors;
 
 
+import com.ndt.capstone.mapper.product.*;
 import jakarta.persistence.*;
 
 import jakarta.transaction.Transactional;
@@ -23,10 +25,11 @@ import tools.jackson.core.type.TypeReference;
 
 import com.ndt.capstone.entity.*;
 
-import com.ndt.capstone.dto.ProductDTO;
+import com.ndt.capstone.dto.product.ProductDTO;
 import com.ndt.capstone.spec.ProductSpec;
-import com.ndt.capstone.mapper.ProductMapper;
 
+
+import com.ndt.capstone.enums.exception.ProductErrMsg;
 
 import com.ndt.capstone.repository.ProductRepository;
 import com.ndt.capstone.repository.VariantRepository;
@@ -34,15 +37,18 @@ import com.ndt.capstone.repository.VariantRepository;
 import com.ndt.capstone.service.contract.FileService;
 import com.ndt.capstone.service.contract.ProductService;
 
+import com.ndt.capstone.exception.product.ProductException;
+import com.ndt.capstone.projection.product.ProductVariantRow;
+
 import com.ndt.capstone.payload.request.product.ProductFilterRequest;
 import com.ndt.capstone.payload.request.product.InsertProductRequest;
+
+import com.ndt.capstone.dto.product.ProductDetailDTO;
+import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
-    private final String productAllCacheKey;
-
     private final ProductRepository productRepository;
 
     private final VariantRepository variantRepository;
@@ -54,6 +60,12 @@ public class ProductServiceImpl implements ProductService {
     private final ObjectMapper objectMapper;
 
     private final String defaultImage;
+
+    private final String imageSeparator;
+
+    private final String productAllCacheKey;
+
+    private final String productDetailCacheKey;
 
     private final Integer cacheDuration;
 
@@ -69,6 +81,7 @@ public class ProductServiceImpl implements ProductService {
         ObjectMapper objectMapper,
         EntityManager entityManager,
         @Value(value = "${file.upload.image.default-image-name:default_cloth.jpg}") String defaultImage,
+        @Value(value = "${file.upload.image.default-image-separator:, }") String imageSeparator,
         @Value(value = "${cache.product.prefix:product}") String productPrefixCacheKey,
         @Value(value = "${cache.product.all.cache-duration:60000}") Integer cacheDuration
     ) {
@@ -80,10 +93,12 @@ public class ProductServiceImpl implements ProductService {
         this.entityManager = entityManager;
 
         this.defaultImage = defaultImage;
+        this.imageSeparator = imageSeparator;
         this.cacheDuration = cacheDuration;
 
         // post-setup
         this.productAllCacheKey = productPrefixCacheKey + ":all";
+        this.productDetailCacheKey = productPrefixCacheKey + ":detail";
     }
 
 
@@ -122,6 +137,43 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public ProductDetailDTO getProductDetail(String name) {
+        try {
+            String cacheKey = String.format("%s:%s", productDetailCacheKey, name);
+
+            String cache = redisTemplate.opsForValue().get(cacheKey);
+            if (cache != null && !cache.isBlank()) {
+                return objectMapper.readValue(
+                    cache,
+                    new TypeReference<>() {
+                    }
+                );
+            }
+
+            // No cache -> Read db
+            List<ProductVariantRow> rows = productRepository.findProductDetailByName(name);
+            if (rows.isEmpty()) {
+                throw new ProductException(ProductErrMsg.NOT_FOUND, String.format("Product (%s) not found: ", name));
+            }
+
+            List<ProductVariantDetailDTO> variants = ProductVariantDetailMapper.toDTO(rows, defaultImage, imageSeparator);
+            ProductDetailDTO productDetail = ProductDetailMapper.toDTO(rows.getFirst(), variants);
+
+            // Caching
+            redisTemplate
+                .opsForValue()
+                .set(
+                    cacheKey,
+                    objectMapper.writeValueAsString(productDetail),
+                    Duration.ofMillis(cacheDuration)
+                );
+            return productDetail;
+        } catch (Exception e) {
+            throw new RuntimeException("Redis Cache Error", e);
+        }
+    }
+
 
     @Override
     public Page<ProductDTO> getPagedProducts(Pageable pageable) {
@@ -149,27 +201,27 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     // biến nguyên hàm được đặt trên thành 1 giao dịch, nếu cả hàm chạy thành công thì mới thực hiện truy vấn tới database
-    public void insertProduct(InsertProductRequest productRequester) {
-        fileService.save(productRequester.getFile()); // lưu hình
+    public void insertProduct(InsertProductRequest productRequest) {
+        fileService.save(productRequest.getFile()); // lưu hình
 
         ProductEntity product = new ProductEntity();
-        product.setName(productRequester.getName());
-        product.setDescription(productRequester.getDescription());
-        product.setPrice(productRequester.getPrice());
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
 
-        BrandEntity brand = entityManager.getReference(BrandEntity.class, productRequester.getIdBrand());
+        BrandEntity brand = entityManager.getReference(BrandEntity.class, productRequest.getIdBrand());
         product.setBrand(brand);
         ProductEntity productInserted = productRepository.save(product); // luu bang product
         // jpa mặc định sẽ trả ra dòng dữ liệu vừa insert để có thể tiếp tục lấy id product để truy vấn vào bảng variant, nếu làm chay phải lấy truy vấn lấy id max
 
-        ColorEntity color = entityManager.getReference(ColorEntity.class, productRequester.getIdColor());
-        SizeEntity size = entityManager.getReference(SizeEntity.class, productRequester.getIdSize());
+        ColorEntity color = entityManager.getReference(ColorEntity.class, productRequest.getIdColor());
+        SizeEntity size = entityManager.getReference(SizeEntity.class, productRequest.getIdSize());
 
         ProductVariantEntity variantProduct = new ProductVariantEntity();
         variantProduct.setProduct(productInserted);
         variantProduct.setColor(color);
-        variantProduct.setIdSize(size);
-        variantProduct.setImages(productRequester.getFile().getOriginalFilename()); // lấy tên hình để lưu vào bảng variant
+        variantProduct.setSize(size);
+        variantProduct.setImages(productRequest.getFile().getOriginalFilename()); // lấy tên hình để lưu vào bảng variant
 
         variantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
     }

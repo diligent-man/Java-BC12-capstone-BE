@@ -1,4 +1,4 @@
-package com.ndt.capstone.dto;
+package com.ndt.capstone.dto.product;
 
 import java.math.BigDecimal;
 

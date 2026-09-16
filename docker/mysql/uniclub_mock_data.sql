@@ -307,7 +307,6 @@ Embroidery: 100% Polyester',
  3)
 ;
 
-
 INSERT INTO
     product_category(id_category, id_product)
 VALUES
@@ -352,7 +351,6 @@ VALUES
     (1, 15)
 ;
 
-
 INSERT INTO
     variant (id_product, id_color, id_size, images, quantity, price)
 VALUES
@@ -371,7 +369,7 @@ VALUES
     (3, 3, 2, 'originals_twistknit_pleated_pants_night_indigo_1.jpg, originals_twistknit_pleated_pants_night_indigo_2.jpg, originals_twistknit_pleated_pants_night_indigo_3.jpg, originals_twistknit_pleated_pants_night_indigo_4.jpg, originals_twistknit_pleated_pants_night_indigo_5.jpg, originals_twistknit_pleated_pants_night_indigo_6.jpg, originals_twistknit_pleated_pants_night_indigo_7.jpg, originals_twistknit_pleated_pants_night_indigo_8.jpg, originals_twistknit_pleated_pants_night_indigo_9.jpg', RAND(10), 107.87),
     (3, 3, 3, 'originals_twistknit_pleated_pants_night_indigo_1.jpg, originals_twistknit_pleated_pants_night_indigo_2.jpg, originals_twistknit_pleated_pants_night_indigo_3.jpg, originals_twistknit_pleated_pants_night_indigo_4.jpg, originals_twistknit_pleated_pants_night_indigo_5.jpg, originals_twistknit_pleated_pants_night_indigo_6.jpg, originals_twistknit_pleated_pants_night_indigo_7.jpg, originals_twistknit_pleated_pants_night_indigo_8.jpg, originals_twistknit_pleated_pants_night_indigo_9.jpg', RAND(10), 107.87),
 
-    (4, 7, 1, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 46.23),
+    (4, 7, 1, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 446.23),
     (4, 7, 2, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 446.23),
     (4, 7, 3, 'essential_3-stripes_french_terry_pants_warm_sandstone_1.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_2.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_3.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_4.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_5.jpg, essential_3-stripes_french_terry_pants_warm_sandstone_6.jpg', RAND(10), 446.23),
     (4, 4, 1, 'essential_3-stripes_french_terry_pants_medium_grey_heather_1.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_2.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_3.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_4.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_5.jpg, essential_3-stripes_french_terry_pants_medium_gr46.23eather_6.jpg, essential_3-stripes_french_terry_pants_medium_grey_heather_7.jpg', RAND(10), 46.23),

@@ -60,7 +60,7 @@ file:
     upload:
         image:
             path: ${UPLOAD_IMAGE_PATH}
-            default-image-name: ${DEFAULT_VARIANT_IMAGE_NAME}
+            default-image-name  : ${DEFAULT_VARIANT_IMAGE_NAME}
 
 cache:
     product:
