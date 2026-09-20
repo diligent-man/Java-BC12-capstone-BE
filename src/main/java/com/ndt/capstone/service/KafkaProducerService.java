@@ -16,5 +16,10 @@ public class KafkaProducerService {
         kafkaTemplate.send(topicName, email); // gui message bao gom topic va noi dung len broker
         System.out.println("Producer da gui message yeu cau gui mail cho " + email + "vao kafka");
     }
+    
+    public void send(String topic, String payload) {
+        kafkaTemplate.send(topic, payload);
+        System.out.println("[Outbox] Đã gửi message lên topic: " + topic);
+    }
 
 }

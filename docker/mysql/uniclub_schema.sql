@@ -1,6 +1,5 @@
 DROP DATABASE IF EXISTS uniclub;
 CREATE DATABASE uniclub;
-
 USE uniclub;
 
 
@@ -227,6 +226,17 @@ CREATE TABLE IF NOT EXISTS country
     phone_code int(5)      NOT NULL
 ) DEFAULT CHARSET = utf8mb4;
 
+CREATE TABLE outbox_event(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    aggregate_id BIGINT       NOT NULL, # ID đơn hàng liên quan (orderId)
+    event_type   VARCHAR(100) NOT NULL, #Tên sự kiện
+    topic        VARCHAR(200) NOT NULL, #Tên Kafka topic
+    payload      TEXT         NOT NULL, #Nội dung JSON đầy đủ (tên KH, sản phẩm, tổng tiền...)
+    status       VARCHAR(20)  NOT NULL DEFAULT 'PENDING', #trạng thái pending / published
+    retry_count  INT          NOT NULL DEFAULT 0,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    published_at DATETIME     NULL
+);
 
 ALTER TABLE variant ADD CONSTRAINT FK_id_product_variant FOREIGN KEY (id_product) REFERENCES product (id);
 ALTER TABLE variant ADD CONSTRAINT FK_id_color_variant FOREIGN KEY (id_color) REFERENCES color (id);
