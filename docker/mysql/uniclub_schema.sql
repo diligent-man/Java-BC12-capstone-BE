@@ -106,7 +106,8 @@ CREATE TABLE user
     role_id   int          not null,
     status    varchar(20)  not null default 'ACTIVE',
 
-    CONSTRAINT UQ_user_email UNIQUE (email)
+    CONSTRAINT UQ_user_email UNIQUE (email),
+    CONSTRAINT CK_user_status CHECK ( status IN ('ACTIVE', 'INACTIVE', 'LOCKED'))
 );
 
 

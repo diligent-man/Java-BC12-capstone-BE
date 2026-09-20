@@ -1,6 +1,6 @@
 package com.ndt.capstone.config;
 
-import com.ndt.capstone.filter.AuthFilter;
+import java.util.List;
 
 
 import org.springframework.http.HttpMethod;
@@ -8,21 +8,24 @@ import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+
+import com.ndt.capstone.filter.AuthFilter;
+import com.ndt.capstone.enums.account.Role;
 
 
 @Configuration
@@ -47,7 +50,7 @@ public class SecurityConfig {
                     authorizer.requestMatchers("/file/**").permitAll();
                     authorizer.requestMatchers("/error").permitAll(); // Cho phép Spring Boot hiển thị đúng mã lỗi thực sự (VD: 400, 500) thay vì bị chặn thành 403
 
-                    authorizer.requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ROLE_ADMIN");
+                    authorizer.requestMatchers("/api/admin/**").hasAuthority(Role.ROLE_ADMIN.name());
 
                     // tất cả các request còn lại đều phải chứng thực
                     authorizer.anyRequest().authenticated();

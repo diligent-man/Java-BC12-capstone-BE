@@ -1,20 +1,25 @@
 package com.ndt.capstone.payload.request.auth;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
 
 
-@Getter
-@Setter
+import lombok.*;
+
+
+@Data
 public class SignupRequest {
-
-    @NotNull
+    @Email
+    @NotBlank
+    @Size(min = 1, max = 50)
     private String email;
 
-    @NotNull
+    @NotBlank
     private String password;
 
-    @NotNull
+
+    @NotBlank
     private String fullName;
+
+    @NotNull
+    private Integer roleId;
 }

@@ -2,31 +2,46 @@ package com.ndt.capstone.controller;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
-import com.ndt.capstone.service.LoginAttemptService;
+
+import org.springframework.http.ResponseEntity;
+
+
 import com.ndt.capstone.payload.response.ApiResponse;
-import com.ndt.capstone.enums.exception.AuthErrMsg;
+import com.ndt.capstone.service.contract.AccountService;
 
 
-@CrossOrigin
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
+    private final AccountService accountService;
 
-    private final LoginAttemptService loginAttemptService;
 
-    @PostMapping("/unlock/{email}")
-    public ResponseEntity<ApiResponse> unlockAccount(@PathVariable String email) {
-        loginAttemptService.unlockAccount(email);
+    @PostMapping("/account/lock/{id}")
+    public ResponseEntity<ApiResponse> lock(
+        @PathVariable Long id
+    ) {
+        accountService.lockAccount(id);
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message("Lock account successfully")
+                .build()
+        );
+    }
 
-        ApiResponse response = ApiResponse.builder()
-                .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
-                .message(AuthErrMsg.SUCCESS.toString())
-                .data("Mở khoá tài khoản " + email + " thành công")
-                .build();
-        return ResponseEntity.ok(response);
+
+    @PostMapping("/account/unlock/{id}")
+    public ResponseEntity<ApiResponse> unlockAccount(
+        @PathVariable Long id
+    ) {
+        accountService.unlockAccount(id);
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message("Unlock account successfully")
+                .build()
+        );
     }
 }

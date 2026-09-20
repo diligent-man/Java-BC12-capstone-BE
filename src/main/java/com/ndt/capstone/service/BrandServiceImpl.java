@@ -36,7 +36,7 @@ public class BrandServiceImpl implements BrandService {
         BrandRepository brandRepository,
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
-        @Value(value = "${cache.brand.prefix:brand}") String brandPrefixCacheKey,
+        @Value(value = "${cache.brand.prefix:brand}") String cacheKeyPrefix,
         @Value(value = "${cache.brand.all.cache-duration:60000}") Integer cacheDuration
     ) {
         this.brandRepository = brandRepository;
@@ -45,7 +45,7 @@ public class BrandServiceImpl implements BrandService {
         this.cacheDuration = cacheDuration;
 
         // post-setup
-        this.brandAllCacheKey = brandPrefixCacheKey + ":all";
+        this.brandAllCacheKey = cacheKeyPrefix + ":all";
     }
 
 

@@ -14,12 +14,16 @@ import com.ndt.capstone.exception.ErrorMsg;
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 public enum AuthErrMsg implements ErrorMsg {
-    SUCCESS(HttpStatus.OK, "Authentication successful"),
-    FAIL(HttpStatus.OK, "Authentication failed"),
+    SIGNIN_SUCCESS(HttpStatus.OK, "Signed in successfully"),
+    SIGNIN_FAIL(HttpStatus.OK, "Signed in failed"),
+
+    SIGNOUT_SUCCESS(HttpStatus.OK, "Signed out successfully"),
+
+    SIGNUP_SUCCESS(HttpStatus.OK, "Signed up successfully. Please, check your mail box."),
 
     // Login security errors
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
-    ACCOUNT_TEMP_LOCKED(HttpStatus.FORBIDDEN, "Account temporarily locked for 15 minutes"),
+    ACCOUNT_TEMP_LOCKED(HttpStatus.FORBIDDEN, "Account temporarily locked, retry after"),
     ACCOUNT_PERMANENTLY_LOCKED(HttpStatus.FORBIDDEN, "Account permanently locked, contact admin"),
     ACCOUNT_ACTIVE_SESSION(HttpStatus.FORBIDDEN, "Account is being used on another browser, please logout first"),
     SESSION_INVALID(HttpStatus.UNAUTHORIZED, "Session invalid, please login again"),

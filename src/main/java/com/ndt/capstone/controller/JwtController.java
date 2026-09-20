@@ -1,12 +1,5 @@
 package com.ndt.capstone.controller;
 
-import com.ndt.capstone.dto.UserDto;
-import com.ndt.capstone.enums.exception.JwtErrMsg;
-import com.ndt.capstone.payload.request.jwt.GenTokenRequest;
-import com.ndt.capstone.payload.response.ApiResponse;
-import com.ndt.capstone.payload.response.jwt.GenKeyResponse;
-import com.ndt.capstone.payload.response.jwt.GenTokenResponse;
-import com.ndt.capstone.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 
@@ -15,7 +8,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 
-import com.ndt.capstone.service.JwtService;
+import com.ndt.capstone.dto.UserDto;
+import com.ndt.capstone.enums.exception.JwtErrMsg;
+
+import com.ndt.capstone.payload.request.jwt.GenTokenRequest;
+
+import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.response.jwt.GenKeyResponse;
+import com.ndt.capstone.payload.response.jwt.GenTokenResponse;
+
+import com.ndt.capstone.service.UserService;
+import com.ndt.capstone.service.contract.JwtService;
 
 
 @RestController

@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
         EntityManager entityManager,
         @Value(value = "${file.upload.image.default-image-name:default_cloth.jpg}") String defaultImage,
         @Value(value = "${file.upload.image.default-image-separator:, }") String imageSeparator,
-        @Value(value = "${cache.product.prefix:product}") String productPrefixCacheKey,
+        @Value(value = "${cache.product.prefix:product}") String cacheKeyPrefix,
         @Value(value = "${cache.product.all.cache-duration:60000}") Integer cacheDuration
     ) {
         this.productRepository = productRepository;
@@ -97,8 +97,8 @@ public class ProductServiceImpl implements ProductService {
         this.cacheDuration = cacheDuration;
 
         // post-setup
-        this.productAllCacheKey = productPrefixCacheKey + ":all";
-        this.productDetailCacheKey = productPrefixCacheKey + ":detail";
+        this.productAllCacheKey = cacheKeyPrefix + ":all";
+        this.productDetailCacheKey = cacheKeyPrefix + ":detail:";
     }
 
 
@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDetailDTO getProductDetail(String name) {
         try {
-            String cacheKey = String.format("%s:%s", productDetailCacheKey, name);
+            String cacheKey = productDetailCacheKey + name;
 
             String cache = redisTemplate.opsForValue().get(cacheKey);
             if (cache != null && !cache.isBlank()) {

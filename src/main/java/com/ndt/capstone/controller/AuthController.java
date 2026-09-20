@@ -1,6 +1,8 @@
 package com.ndt.capstone.controller;
 
 import jakarta.validation.Valid;
+
+
 import lombok.RequiredArgsConstructor;
 
 
@@ -26,56 +28,54 @@ public class AuthController {
     private final AuthService authenService;
 
 
-    @PostMapping("/login")
+    @PostMapping("/signin")
     public ResponseEntity<ApiResponse> login(
         @Valid @RequestBody LoginRequest request
     ) {
-        String accessToken = authenService.doLogin(request);
-
-        AuthResponse authResponse = AuthResponse.builder()
-            .accessToken(accessToken)
-            .build();
-
-        ApiResponse response = ApiResponse.builder()
-            .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
-            .message(AuthErrMsg.SUCCESS.toString())
-            .data(authResponse)
-            .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message(AuthErrMsg.SIGNIN_SUCCESS.getErrorMsg())
+                .data(AuthResponse.builder().token(authenService.doSignIn(request)).build())
+                .build()
+        );
     }
 
 
-    @PostMapping("/logout")
+    @PostMapping("/signout")
     public ResponseEntity<ApiResponse> logout(
         @RequestHeader("Authorization") String authHeader
     ) {
-        // Cắt bỏ "Bearer " (7 ký tự đầu)
         String token = authHeader.substring(7);
-        authenService.doLogout(token);
+        authenService.doSignOut(token);
 
-        ApiResponse response = ApiResponse.builder()
-            .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
-            .message(AuthErrMsg.SUCCESS.toString())
-            .data("Đăng xuất thành công")
-            .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message(AuthErrMsg.SIGNOUT_SUCCESS.getErrorMsg())
+                .build()
+        );
     }
 
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse> signUp(
+        @Valid @RequestBody SignupRequest signupRequest
+    ) {
         authenService.doSignUp(signupRequest);
-        return ResponseEntity.ok("Đăng ký thành công, vui lòng kiểm tra mail");
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message(AuthErrMsg.SIGNUP_SUCCESS.getErrorMsg())
+                .build()
+        );
     }
 
 
     @GetMapping("/check-session")
     public ResponseEntity<ApiResponse> checkSession() {
         // Nếu request lọt qua được AuthFilter → session Redis còn sống → trả 200
-        ApiResponse response = ApiResponse.builder()
-            .code(AuthErrMsg.SUCCESS.getHttpStatus().toString())
-            .message("Phiên đăng nhập hợp lệ")
-            .build();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+            ApiResponse.builder()
+                .message(AuthErrMsg.SIGNIN_SUCCESS.getErrorMsg())
+                .build()
+        );
     }
 }

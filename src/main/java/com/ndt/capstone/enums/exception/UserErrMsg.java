@@ -15,6 +15,8 @@ import com.ndt.capstone.exception.ErrorMsg;
 @ToString(onlyExplicitlyIncluded = true)
 public enum UserErrMsg implements ErrorMsg {
     NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
+
+    EXISTED(HttpStatus.CONFLICT, "User already exists"),
     ;
 
     private final HttpStatusCode httpStatus;

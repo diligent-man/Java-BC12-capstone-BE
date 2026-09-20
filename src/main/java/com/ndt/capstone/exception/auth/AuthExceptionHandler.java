@@ -31,6 +31,6 @@ public class AuthExceptionHandler implements BaseExceptionHandler {
         IllegalArgumentException.class,
     })
     public ResponseEntity<ApiErrorResponse> handleJwtException() {
-        return buildResponse(AuthErrMsg.FAIL);
+        return buildResponse(AuthErrMsg.SIGNIN_FAIL);
     }
 }

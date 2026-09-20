@@ -1,163 +1,130 @@
 package com.ndt.capstone.service;
 
-import java.util.Optional;
+import java.util.Objects;
+
+import jakarta.transaction.Transactional;
+
+
+import io.jsonwebtoken.Claims;
+
+
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 import com.ndt.capstone.dto.UserDto;
-import com.ndt.capstone.entity.RoleEntity;
-import com.ndt.capstone.enums.exception.AuthErrMsg;
-import com.ndt.capstone.exception.auth.AuthException;
-import com.ndt.capstone.payload.request.auth.SignupRequest;
-import com.ndt.capstone.service.contract.AuthService;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import io.jsonwebtoken.Claims;
-import com.ndt.capstone.entity.UserEntity;
 import com.ndt.capstone.repository.UserRepository;
+import com.ndt.capstone.exception.auth.AuthException;
+import com.ndt.capstone.service.contract.AuthService;
+
+
+import com.ndt.capstone.mapper.UserMapper;
+import com.ndt.capstone.entity.UserEntity;
+import com.ndt.capstone.dto.auth.LoginAttemptDTO;
+import com.ndt.capstone.exception.user.UserException;
+
+import com.ndt.capstone.enums.exception.UserErrMsg;
+import com.ndt.capstone.enums.exception.AuthErrMsg;
+import com.ndt.capstone.enums.account.AccountStatus;
+
 import com.ndt.capstone.payload.request.auth.LoginRequest;
+import com.ndt.capstone.payload.request.auth.SignupRequest;
 
 
 @Service
-@RequiredArgsConstructor
 public class AuthenServiceImpl implements AuthService {
+    private final UserRepository userRepo;
 
-    @Autowired
-    private UserRepository userRepo;
+    private final JwtServiceImpl jwtService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final KafkaProducerService kafkaProducerService;
 
-    @Autowired
-    private JwtService jwtService;
+    private final LoginAttemptServiceImpl loginAttemptService;
 
-    @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private LoginAttemptService loginAttemptService;
+    private final long rememberMeExpiration;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+
+    public AuthenServiceImpl(
+        UserRepository userRepo,
+        JwtServiceImpl jwtService,
+        KafkaProducerService kafkaProducerService,
+        LoginAttemptServiceImpl loginAttemptService,
+        PasswordEncoder passwordEncoder,
+        @Value("${auth.remember-me-expiration:86400000}") long rememberMeExpiration
+    ) {
+        this.userRepo = userRepo;
+        this.jwtService = jwtService;
+        this.kafkaProducerService = kafkaProducerService;
+        this.loginAttemptService = loginAttemptService;
+        this.passwordEncoder = passwordEncoder;
+        this.rememberMeExpiration = rememberMeExpiration;
+    }
 
 
     @Override
-    public String doLogin(LoginRequest request) {
-        String email = request.getEmail();
+    public String doSignIn(LoginRequest req) {
+        String email = req.getEmail();
 
-        // đầu tiên lấy locktype rồi kiểm tra xem email này có đang bị khóa hay không
-        String lockType = loginAttemptService.getLockType(email); // Lụm ra locktype
-        if ("PERMANENT".equals(lockType)) {
-            throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
-        }
-        if ("TEMP".equals(lockType)) {
-            throw new AuthException(AuthErrMsg.ACCOUNT_TEMP_LOCKED);
-        }
+        // email check
+        loginAttemptService.checkLock(email);
+        UserEntity user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new UserException(UserErrMsg.NOT_FOUND));
 
-        // Nếu không bị dính khóa, tiếp tục luồng đăng nhập
-        // B1 lấy thông tin user trong DB
-        Optional<UserEntity> opUser = userRepo.findByEmail(email);
-        if (opUser.isEmpty()) { //*Nếu email sai
-            // nếu nhập sai email nó vẫn tăng 1 lần sai, để chống việc mấy thg hacker nó xài tool dò email
-            loginAttemptService.recordFailedAttempt(email);
-            throw new AuthException(AuthErrMsg.INVALID_CREDENTIALS);
-        }
-        UserEntity user = opUser.get();
-
-        if ("PERMANENTLY_LOCKED".equals(user.getStatus())) {
+        // user account status check
+        if (AccountStatus.LOCKED.name().equals(user.getStatus())) {
             throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            // kích hoạt hàm recordFailedAttempt để tăng lên 1 lần sai
-            int remaining = loginAttemptService.recordFailedAttempt(email);
+        // password check
+        if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+            LoginAttemptDTO loginAttemptDTO = loginAttemptService.recordFailedAttempt(email);
 
-            // Sau khi tăng lên thì kiểm tra lại xem có bị khoá chưa,
-            // vì khi hàm recordFailedAttempt được kích hoạt, nếu thỏa >3 nhập sai, nó sẽ tạo ra các key để block log
-            String newLockType = loginAttemptService.getLockType(email); // lấy key để kiểm tra
-            if ("PERMANENT".equals(newLockType)) {
-                throw new AuthException(AuthErrMsg.ACCOUNT_PERMANENTLY_LOCKED);
+            if (Boolean.TRUE.equals(loginAttemptDTO.getLocked())) {
+                user.setStatus(AccountStatus.LOCKED.name());
+                userRepo.save(user);
             }
 
-            if ("TEMP".equals(newLockType)) {
-                throw new AuthException(AuthErrMsg.ACCOUNT_TEMP_LOCKED);
-            }
-
-            // Chưa bị khoá → thông báo sai MK (remaining chứa số lần còn lại)
-            System.out.println("so lan con lại " + remaining);
-            throw new AuthException(AuthErrMsg.INVALID_CREDENTIALS);
-
+            loginAttemptService.checkLock(email);
+            throw new AuthException(
+                AuthErrMsg.INVALID_CREDENTIALS,
+                String.format("%s (remaining attempt: %d)", AuthErrMsg.INVALID_CREDENTIALS.getErrorMsg(), loginAttemptDTO.getRemainingAttempts())
+            );
         }
 
-        //*Nếu MK đúng -> kiểm tra single session để xem có trình duyệt nào khác đang xài không
-        String existingSession = loginAttemptService.getActiveSession(email);
 
-        if (existingSession != null) {
-            // Đã có session đang active ở trình duyệt khác → CHẶN
+        // single session check
+        if (Objects.nonNull(loginAttemptService.getActiveSession(email)))
             throw new AuthException(AuthErrMsg.ACCOUNT_ACTIVE_SESSION);
-        }
 
-        // ========== BƯỚC 5: Đăng nhập thành công ==========
-        // Reset bộ đếm sai
         loginAttemptService.resetFailedAttempts(email);
 
-        // 1. Xác định thời gian: có Remember Me thì 1 ngày (24h), không thì 15 phút
-        long expirationMs = request.getRememberMe()
-            ? (24L * 60 * 60 * 1000)   // 1 ngày
-            : (15L * 60 * 1000);       // 15 phút
-        // 2. Tạo JWT Token với thời gian expirationMs này
-        String accessToken = jwtService.genAccessToken(UserDto.fromEntity(user), expirationMs);
-        // 3. Tận dụng đúng METHOD 4 của LoginAttemptService truyền expirationMs vào Redis:
-        loginAttemptService.saveSession(email, accessToken, expirationMs);
-        return accessToken;
-    }
-
-
-    @Transactional
-    @Override
-    public void doSignUp(SignupRequest request) {
-        Optional<UserEntity> opUser = userRepo.findByEmail(request.getEmail());
-        if (opUser.isEmpty()) { // neu kiemtra khong thay user
-            UserEntity newUser = new UserEntity();
-            RoleEntity role = new RoleEntity();
-
-
-            String encodedPassword = passwordEncoder.encode(request.getPassword());
-            newUser.setEmail(request.getEmail());
-
-            newUser.setPassword(encodedPassword);
-
-            newUser.setFullName(request.getFullName());
-
-            newUser.setStatus("ACTIVE");
-
-            role.setId(3);
-            newUser.setRole(role);
-
-            userRepo.save(newUser);
-
-            kafkaProducerService.sendRegistrationEmailEvent(request.getEmail());
-
-        } else {
-            System.out.println("email da ton tai");
-        }
+        long expiration = req.isRememberMe() ? rememberMeExpiration : jwtService.getExpiration();
+        String token = jwtService.genAccessToken(UserDto.fromEntity(user), expiration);
+        loginAttemptService.saveSession(email, token, expiration);
+        return token;
     }
 
 
     @Override
-    public void doLogout(String token) {
-        // Parse JWT lấy email
+    public void doSignOut(String token) {
         Claims claims = jwtService.extractClaims(token);
         String email = claims.get("email", String.class);
-
-        // Xoá session trong Redis
         loginAttemptService.removeSession(email);
     }
 
 
+
+    @Override
+    @Transactional
+    public void doSignUp(SignupRequest req) {
+        if (userRepo.existsByEmail(req.getEmail()))
+            throw new UserException(UserErrMsg.EXISTED);
+
+        userRepo.save(UserMapper.toEntity(req, passwordEncoder));
+        kafkaProducerService.sendRegistrationEmailEvent(req.getEmail());
+    }
 }

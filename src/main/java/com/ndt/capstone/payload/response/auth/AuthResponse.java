@@ -7,5 +7,5 @@ import lombok.Builder;
 @Data
 @Builder
 public class AuthResponse {
-    private final String accessToken;
+    private final String token;
 }

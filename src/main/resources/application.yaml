@@ -52,7 +52,12 @@ server:
 
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
-    expiration: 600000
+    expiration: 900000 # 15 mins
+
+auth:
+    max-attempt: 3
+    lock-duration: 900000
+    remember-me-expiration: 86400000  # 1 day
 
 file:
     root: ${DATA_ROOT}
@@ -60,18 +65,21 @@ file:
     upload:
         image:
             path: ${UPLOAD_IMAGE_PATH}
-            default-image-name  : ${DEFAULT_VARIANT_IMAGE_NAME}
+            default-image-name: ${DEFAULT_VARIANT_IMAGE_NAME}
 
 cache:
     product:
         prefix: product
         all:
-            cache-duration: 600000
+            cache-duration: 900000
 
     brand:
         prefix: brand
         all:
-            cache-duration: 600000
+            cache-duration: 900000
+
+    account:
+        prefix: account
 
 management:
     endpoints:
