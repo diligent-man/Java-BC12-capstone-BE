@@ -22,8 +22,9 @@ public class OutboxEventEntity {
     private String topic;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String payload;
-    @Column(nullable = false, length = 20)
-    private String status;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_status", nullable = false)
+    private PaymentStatusEntity status;
     @Column(nullable = false)
     private int retryCount = 0;
     @Column(nullable = false)

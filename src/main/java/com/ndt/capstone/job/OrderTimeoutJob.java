@@ -1,7 +1,9 @@
 package com.ndt.capstone.job;
 
 import com.ndt.capstone.entity.OrderEntity;
+import com.ndt.capstone.entity.PaymentStatusEntity;
 import com.ndt.capstone.repository.OrderRepository;
+import com.ndt.capstone.repository.PaymentStatusRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,6 +20,7 @@ import java.util.List;
 public class OrderTimeoutJob {
 
     private final OrderRepository orderRepository;
+    private final PaymentStatusRepository paymentStatusRepository;
 
     // fixedDelay = 15000: Cứ 15 giây bác bảo vệ lại đi tuần tra 1 lần
     @Scheduled(fixedDelay = 15000)
@@ -28,7 +31,9 @@ public class OrderTimeoutJob {
         // 2. Nếu có thì mới hủy
         if (!expiredOrders.isEmpty()) {
             for (OrderEntity order : expiredOrders) {
-                order.setNote("CANCELLED_PAYMENT");
+                PaymentStatusEntity canceledStatus = paymentStatusRepository.findById(4)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+                order.setStatus(canceledStatus);
                 orderRepository.save(order);
                 log.info("Đơn hàng #{} đã quá 1 phút chưa chuyển tiền -> Tự động chuyển sang CANCELLED_PAYMENT", order.getId());
             }

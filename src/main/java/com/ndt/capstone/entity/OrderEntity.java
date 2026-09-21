@@ -26,6 +26,10 @@ public class OrderEntity {
     private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_status", nullable = false)
+    private PaymentStatusEntity status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_payment")
     private PaymentMethodEntity payment;
 

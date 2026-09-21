@@ -1,7 +1,9 @@
 package com.ndt.capstone.job;
 
 import com.ndt.capstone.entity.OutboxEventEntity;
+import com.ndt.capstone.entity.PaymentStatusEntity;
 import com.ndt.capstone.repository.OutboxEventRepository;
+import com.ndt.capstone.repository.PaymentStatusRepository;
 import com.ndt.capstone.service.KafkaProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ public class OutboxPublisherJob {
 
     private final OutboxEventRepository outboxEventRepository;
     private final KafkaProducerService kafkaProducerService;
+    private final PaymentStatusRepository paymentStatusRepository;
 
     // Cứ 15 giây "bác đưa thư" lại kiểm tra hòm thư outbox 1 lần
     @Scheduled(fixedDelay = 15000)
@@ -25,7 +28,7 @@ public class OutboxPublisherJob {
 
         // 1. Lấy tối đa 50 event CHƯA GỬI, sắp xếp cũ nhất trước
         List<OutboxEventEntity> pendingEvents =
-                outboxEventRepository.findTop50ByStatusOrderByCreatedAtAsc("PENDING");
+                outboxEventRepository.findTop50ByStatus_IdOrderByCreatedAtAsc(1);
 
         // 2. Nếu không có event nào thì bỏ qua, không log gì cả
         if (pendingEvents.isEmpty()) {
@@ -42,7 +45,9 @@ public class OutboxPublisherJob {
                 kafkaProducerService.send(event.getTopic(), event.getPayload());
 
                 // 3b. Gửi thành công → Đánh dấu PUBLISHED + ghi thời điểm gửi
-                event.setStatus("PUBLISHED");
+                PaymentStatusEntity publishedStatus = paymentStatusRepository.findById(3)
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+                event.setStatus(publishedStatus);
                 event.setPublishedAt(LocalDateTime.now());
                 outboxEventRepository.save(event);
 

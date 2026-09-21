@@ -32,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentMethodRepository paymentMethodRepository; // Kiểm tra phương thức thanh toán hợp lệ
     private final CountryRepository countryRepository;           // Kiểm tra Quốc gia có hợp lệ không
     private final VariantRepository variantRepository; // Kiểm tra Sản phẩm trong giỏ có thật không
-
+    private final PaymentStatusRepository paymentStatusRepository;
     private final OutboxEventRepository outboxEventRepository;
     private final OrderPaymentPayloadMapper orderPaymentPayloadMapper;
 
@@ -56,12 +56,16 @@ public class OrderServiceImpl implements OrderService {
 
         CountryEntity country = countryRepository.findById(request.getBilling().getCountryId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy quốc gia!"));
+        PaymentStatusEntity pendingStatus = paymentStatusRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+
 
         OrderEntity order = new OrderEntity();
         order.setUser(user);
         order.setPayment(paymentMethod);
         order.setTotal(request.getTotalAmount());
-        order.setNote("PENDING_PAYMENT"); // Đánh dấu đơn đang chờ chuyển khoản
+        order.setNote(request.getNote());
+        order.setStatus(pendingStatus); // Đánh dấu đơn đang chờ chuyển khoản
         order.setCreateDate(new java.sql.Timestamp(System.currentTimeMillis()));
         OrderEntity savedOrder = orderRepository.save(order); //
 
@@ -129,11 +133,13 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng #" + orderId));
 
-        if (!"PENDING_PAYMENT".equals(order.getNote())) {
+        if (order.getStatus() == null || order.getStatus().getId() != 1) {
+            // id=1 là PENDING
             throw new RuntimeException("Đơn hàng không ở trạng thái chờ thanh toán!");
         }
-
-        order.setNote("PAID");
+        PaymentStatusEntity paidStatus = paymentStatusRepository.findById(2)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+        order.setStatus(paidStatus); // id=2 là PAID
         orderRepository.save(order);
 
         // Phần 2: Lấy data
@@ -144,6 +150,9 @@ public class OrderServiceImpl implements OrderService {
 
         // Phần 3: Gọi mapper để build payload → Service không cần biết chi tiết JSON
         String payload = orderPaymentPayloadMapper.buildPayload(order, billing, orderItems);
+        // Phần 4: set trạng thái outboxevent là Pending
+        PaymentStatusEntity outboxPendingStatus = paymentStatusRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
 
         // Phần 4: Insert outbox
         OutboxEventEntity event = OutboxEventEntity.builder()
@@ -151,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
                 .eventType("ORDER_PAYMENT_SUCCESS")
                 .topic("order.payment")
                 .payload(payload)
-                .status("PENDING")
+                .status(outboxPendingStatus)
                 .createdAt(LocalDateTime.now())
                 .retryCount(0)
                 .build();

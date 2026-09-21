@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
-    @Query(value = "SELECT * FROM orders WHERE note = 'PENDING_PAYMENT' AND TIMESTAMPDIFF(SECOND, create_date, NOW()) >= 120", nativeQuery = true)
+    @Query(value = "SELECT * FROM orders WHERE id_status =1 AND TIMESTAMPDIFF(SECOND, create_date, NOW()) >= 120", nativeQuery = true)
     List<OrderEntity> findExpiredOrders();
 }
