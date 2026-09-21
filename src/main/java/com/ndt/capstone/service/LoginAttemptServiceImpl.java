@@ -18,7 +18,6 @@ import com.ndt.capstone.enums.account.AccountLock;
 import com.ndt.capstone.enums.exception.AuthErrMsg;
 
 import com.ndt.capstone.utils.AccountCacheKeys;
-import com.ndt.capstone.dto.auth.LoginAttemptDTO;
 import com.ndt.capstone.exception.auth.AuthException;
 import com.ndt.capstone.service.contract.LoginAttemptService;
 
@@ -76,13 +75,12 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
      * Trigger when user enter incorrect login credential
      * @return num of remaining login attempts see {@code maxAttempts} field
      */
-    public LoginAttemptDTO recordFailedAttempt(String email) {
+    public long recordFailedAttempt(String email) {
         String failKey = accountCacheKeys.getFailCountKey() + email;
         String lockedKey = accountCacheKeys.getLockStatusKey() + email;
         String wasLockedKey = accountCacheKeys.getWasLockedKey() + email;
 
         long currentAttempts = redisTemplate.opsForValue().increment(failKey);
-
         if (currentAttempts >= maxAttempts) {
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wasLockedKey))) {
                 redisTemplate.opsForValue().set(lockedKey, AccountLock.PERMANENT.name());
@@ -99,17 +97,16 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
                 });
             }
         }
-
-        return LoginAttemptDTO
-            .builder()
-            .remainingAttempts(maxAttempts - currentAttempts)
-            .locked(Boolean.valueOf(Objects.requireNonNullElse(redisTemplate.opsForValue().get(wasLockedKey), "false")))
-            .build();
+        // always add 1 for last time
+        return maxAttempts - currentAttempts + 1;
     }
 
 
     public void resetFailedAttempts(String email) {
-        redisTemplate.delete(accountCacheKeys.getFailCountKey() + email);
+        redisTemplate.delete(List.of(
+            accountCacheKeys.getFailCountKey() + email,
+            accountCacheKeys.getWasLockedKey() + email
+        ));
     }
 
 

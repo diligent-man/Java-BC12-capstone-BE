@@ -21,7 +21,6 @@ import com.ndt.capstone.service.contract.AuthService;
 
 import com.ndt.capstone.mapper.UserMapper;
 import com.ndt.capstone.entity.UserEntity;
-import com.ndt.capstone.dto.auth.LoginAttemptDTO;
 import com.ndt.capstone.exception.user.UserException;
 
 import com.ndt.capstone.enums.exception.UserErrMsg;
@@ -81,9 +80,9 @@ public class AuthenServiceImpl implements AuthService {
 
         // password check
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-            LoginAttemptDTO loginAttemptDTO = loginAttemptService.recordFailedAttempt(email);
+            long remainingAttempts = loginAttemptService.recordFailedAttempt(email);
 
-            if (Boolean.TRUE.equals(loginAttemptDTO.getLocked())) {
+            if (remainingAttempts == 0) {
                 user.setStatus(AccountStatus.LOCKED.name());
                 userRepo.save(user);
             }
@@ -91,7 +90,7 @@ public class AuthenServiceImpl implements AuthService {
             loginAttemptService.checkLock(email);
             throw new AuthException(
                 AuthErrMsg.INVALID_CREDENTIALS,
-                String.format("%s (remaining attempt: %d)", AuthErrMsg.INVALID_CREDENTIALS.getErrorMsg(), loginAttemptDTO.getRemainingAttempts())
+                String.format("%s (remaining attempt: %d)", AuthErrMsg.INVALID_CREDENTIALS.getErrorMsg(), remainingAttempts)
             );
         }
 
