@@ -52,13 +52,12 @@ server:
 
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
-    expiration: 900000 # 15 mins
+#    expiration: 900000 # 15 mins
+    expiration: 86400000 # 15 mins
 
 auth:
     max-attempt: 3
-#    lock-duration: 900000
-    lock-duration: 10000
-    remember-me-expiration: 86400000  # 1 day
+    lock-duration: 900000 # 15 mins
 
 file:
     root: ${DATA_ROOT}
@@ -72,12 +71,12 @@ cache:
     product:
         prefix: product
         all:
-            cache-duration: 900000
+            cache-duration: 900000 # 15 mins
 
     brand:
         prefix: brand
         all:
-            cache-duration: 900000
+            cache-duration: 900000 # 15 mins
 
     account:
         prefix: account

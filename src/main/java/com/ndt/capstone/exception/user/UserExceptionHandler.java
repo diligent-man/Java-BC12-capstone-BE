@@ -16,6 +16,6 @@ public class UserExceptionHandler implements BaseExceptionHandler {
         UserException.class
     })
     public ResponseEntity<ApiErrorResponse> handleUserException(BaseException ex) {
-        return buildResponse(ex.getErrorMsg(), ex.getOverrideMsg());
+        return buildResponse(ex.getHttpStatusCode(), ex.getMessage());
     }
 }

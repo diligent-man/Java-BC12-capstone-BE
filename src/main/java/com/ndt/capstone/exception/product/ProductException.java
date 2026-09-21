@@ -6,7 +6,7 @@ import com.ndt.capstone.enums.exception.ProductErrMsg;
 
 public class ProductException extends BaseException {
     public ProductException(ProductErrMsg errorMsg) {
-        super(errorMsg, null);
+        super(errorMsg);
     }
 
 

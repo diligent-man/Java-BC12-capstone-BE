@@ -1,6 +1,14 @@
 package com.ndt.capstone.payload.response.exception;
 
 
-public record ApiErrorResponse(String code, String status) implements ApiErrResp {
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+
+@Getter
+@SuperBuilder
+@AllArgsConstructor
+public class ApiErrorResponse {
+    protected String code;
+    protected String message;
 }

@@ -81,7 +81,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
         String wasLockedKey = accountCacheKeys.getWasLockedKey() + email;
 
         long currentAttempts = redisTemplate.opsForValue().increment(failKey);
-        if (currentAttempts >= maxAttempts) {
+        if (currentAttempts == maxAttempts) {
             if (Boolean.TRUE.equals(redisTemplate.hasKey(wasLockedKey))) {
                 redisTemplate.opsForValue().set(lockedKey, AccountLock.PERMANENT.name());
                 redisTemplate.delete(failKey);

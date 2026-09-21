@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 @SuperBuilder
 public class ApiResponse {
     @Builder.Default
-    protected String code = String.valueOf(HttpStatus.OK);
+    protected String code = String.valueOf(HttpStatus.OK.value());
 
     @Builder.Default
     protected String message = "success";

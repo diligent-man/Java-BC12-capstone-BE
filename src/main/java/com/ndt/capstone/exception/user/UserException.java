@@ -6,7 +6,7 @@ import com.ndt.capstone.enums.exception.UserErrMsg;
 
 public class UserException extends BaseException {
     public UserException(UserErrMsg errorMsg) {
-        super(errorMsg, null);
+        super(errorMsg);
     }
 
 

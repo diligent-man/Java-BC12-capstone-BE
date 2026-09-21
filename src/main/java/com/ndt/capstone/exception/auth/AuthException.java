@@ -6,7 +6,7 @@ import com.ndt.capstone.enums.exception.AuthErrMsg;
 
 public final class AuthException extends BaseException {
     public AuthException(AuthErrMsg errorMsg) {
-        super(errorMsg, null);
+        super(errorMsg);
     }
 
 

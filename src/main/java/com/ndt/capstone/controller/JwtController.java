@@ -35,7 +35,7 @@ public class JwtController {
         GenKeyResponse genKeyResponse = GenKeyResponse.builder().secreteKey(JwtService.genSecretKey()).build();
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code(String.valueOf(JwtErrMsg.KEY_CREATION_SUCCESS.getHttpStatus().value()))
+                .code(String.valueOf(JwtErrMsg.KEY_CREATION_SUCCESS.getHttpStatusCode().value()))
                 .message(JwtErrMsg.KEY_CREATION_SUCCESS.getErrorMsg())
                 .data(genKeyResponse)
                 .build()
@@ -53,7 +53,7 @@ public class JwtController {
 
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .code(String.valueOf(JwtErrMsg.TOKEN_CREATION_SUCCESS.getHttpStatus().value()))
+                .code(String.valueOf(JwtErrMsg.TOKEN_CREATION_SUCCESS.getHttpStatusCode().value()))
                 .message(JwtErrMsg.TOKEN_CREATION_SUCCESS.getErrorMsg())
                 .data(genTokenResponse)
                 .build()

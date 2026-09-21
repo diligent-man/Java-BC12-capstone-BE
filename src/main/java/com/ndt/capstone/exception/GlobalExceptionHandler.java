@@ -23,7 +23,7 @@ public class GlobalExceptionHandler implements BaseExceptionHandler {
         GenericException.class
     })
     public ResponseEntity<ApiErrorResponse> handleGenericException(GenericException ex) {
-        return buildResponse(ex.getErrorMsg(), ex.getOverrideMsg());
+        return buildResponse(ex.getHttpStatusCode(), ex.getMessage());
     }
 
 
@@ -43,8 +43,6 @@ public class GlobalExceptionHandler implements BaseExceptionHandler {
         String message = ex.getBindingResult().getFieldErrors().stream()
             .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
             .collect(Collectors.joining("; "));
-        return ResponseEntity
-            .status(GenericErrMsg.BAD_REQUEST.getHttpStatus())
-            .body(createErrorMsgDTO(GenericErrMsg.BAD_REQUEST, message, ApiErrorResponse::new));
+        return buildResponse(GenericErrMsg.BAD_REQUEST.getHttpStatusCode(), message);
     }
 }

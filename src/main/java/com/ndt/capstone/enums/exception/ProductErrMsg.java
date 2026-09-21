@@ -17,7 +17,7 @@ public enum ProductErrMsg implements ErrorMsg {
     NOT_FOUND(HttpStatus.NOT_FOUND, "Product not found"),
     ;
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

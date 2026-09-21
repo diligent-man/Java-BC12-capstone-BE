@@ -16,9 +16,10 @@ import com.ndt.capstone.exception.ErrorMsg;
 public enum GenericErrMsg implements ErrorMsg {
     MULTIPART_ERROR(HttpStatus.OK, "Multipart error"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "Unauthorized request"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

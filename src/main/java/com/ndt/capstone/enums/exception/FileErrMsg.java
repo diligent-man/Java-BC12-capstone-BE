@@ -28,7 +28,7 @@ public enum FileErrMsg implements ErrorMsg {
     FILE_DELETED_ALL(HttpStatus.OK, "Delete files successfully."),
     ;
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

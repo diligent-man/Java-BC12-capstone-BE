@@ -7,7 +7,7 @@ import com.ndt.capstone.enums.exception.FileErrMsg;
 
 public final class FileException extends BaseException {
     public FileException(FileErrMsg errorMsg) {
-        super(errorMsg, null);
+        super(errorMsg);
     }
 
 

@@ -19,7 +19,7 @@ public enum UserErrMsg implements ErrorMsg {
     EXISTED(HttpStatus.CONFLICT, "User already exists"),
     ;
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

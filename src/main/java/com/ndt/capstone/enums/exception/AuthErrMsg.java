@@ -29,7 +29,7 @@ public enum AuthErrMsg implements ErrorMsg {
     SESSION_INVALID(HttpStatus.UNAUTHORIZED, "Session invalid, please login again"),
     ;
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

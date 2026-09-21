@@ -16,6 +16,6 @@ public class FileExceptionHandler implements BaseExceptionHandler {
         FileException.class
     })
     public ResponseEntity<ApiErrorResponse> handleFileException(BaseException ex) {
-        return buildResponse(ex.getErrorMsg(), ex.getOverrideMsg());
+        return buildResponse(ex.getHttpStatusCode(), ex.getMessage());
     }
 }

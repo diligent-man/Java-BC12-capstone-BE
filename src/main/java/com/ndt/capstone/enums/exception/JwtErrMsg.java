@@ -21,7 +21,7 @@ public enum JwtErrMsg implements ErrorMsg {
     TOKEN_CREATION_FAIL(HttpStatus.OK, "Fail to create token"),
     ;
 
-    private final HttpStatusCode httpStatus;
+    private final HttpStatusCode httpStatusCode;
 
     @ToString.Include
     private final String errorMsg;

@@ -3,6 +3,7 @@ package com.ndt.capstone.config;
 import java.util.List;
 
 
+import com.ndt.capstone.utils.security.CustomAccessDeniedHandler;
 import org.springframework.http.HttpMethod;
 
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,11 @@ import com.ndt.capstone.enums.account.Role;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain configSecurityFilterChain(HttpSecurity http, AuthFilter authenFilter) {
+    public SecurityFilterChain configSecurityFilterChain(
+        HttpSecurity http,
+        AuthFilter authenFilter,
+        CustomAccessDeniedHandler accessDeniedHandler
+        ) {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
@@ -55,6 +60,9 @@ public class SecurityConfig {
                     // tất cả các request còn lại đều phải chứng thực
                     authorizer.anyRequest().authenticated();
                 }
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .build();
     }
