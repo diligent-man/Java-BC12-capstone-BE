@@ -1,6 +1,5 @@
 DROP DATABASE IF EXISTS uniclub;
 CREATE DATABASE uniclub;
-
 USE uniclub;
 
 
@@ -52,6 +51,7 @@ CREATE TABLE orders
     id          bigint auto_increment primary key,
     total       decimal(11, 2) not null,
     note        text,
+    id_status   int            not null default 1,
     id_payment  int            not null,
     id_user     bigint         not null,
     create_date timestamp default now()
@@ -228,6 +228,26 @@ CREATE TABLE IF NOT EXISTS country
     phone_code int(5)      NOT NULL
 ) DEFAULT CHARSET = utf8mb4;
 
+CREATE TABLE outbox_event(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    aggregate_id BIGINT       NOT NULL, # ID đơn hàng liên quan (orderId)
+    event_type   VARCHAR(100) NOT NULL, #Tên sự kiện
+    topic        VARCHAR(200) NOT NULL, #Tên Kafka topic
+    payload      TEXT         NOT NULL, #Nội dung JSON đầy đủ (tên KH, sản phẩm, tổng tiền...)
+    id_status    int  NOT NULL DEFAULT 1, #trạng thái pending / published
+    retry_count  INT          NOT NULL DEFAULT 0,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    published_at DATETIME     NULL
+);
+
+
+CREATE TABLE payment_status (
+    id   INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+
+
 
 ALTER TABLE variant ADD CONSTRAINT FK_id_product_variant FOREIGN KEY (id_product) REFERENCES product (id);
 ALTER TABLE variant ADD CONSTRAINT FK_id_color_variant FOREIGN KEY (id_color) REFERENCES color (id);
@@ -275,3 +295,12 @@ ALTER TABLE product_tag ADD CONSTRAINT FK_id_category_product_tag FOREIGN KEY (i
 
 
 ALTER TABLE user ADD CONSTRAINT FK_role_id_user_role FOREIGN KEY (role_id) REFERENCES role (id);
+
+ALTER TABLE orders
+    ADD CONSTRAINT FK_orders_payment_status
+        FOREIGN KEY (id_status) REFERENCES payment_status(id);
+
+ALTER TABLE outbox_event
+    ADD CONSTRAINT FK_outbox_payment_status
+        FOREIGN KEY (id_status) REFERENCES payment_status(id);
+

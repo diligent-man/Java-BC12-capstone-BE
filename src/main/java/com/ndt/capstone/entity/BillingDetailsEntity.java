@@ -51,6 +51,6 @@ public class BillingDetailsEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(insertable = false, updatable = false)
+    @Column(name = "create_date")
     private Timestamp createDate;
 }

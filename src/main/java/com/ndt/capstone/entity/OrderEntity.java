@@ -26,6 +26,10 @@ public class OrderEntity {
     private String note;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_status", nullable = false)
+    private PaymentStatusEntity status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_payment")
     private PaymentMethodEntity payment;
 
@@ -33,6 +37,6 @@ public class OrderEntity {
     @JoinColumn(name = "id_user")
     private UserEntity user;
 
-    @Column(nullable = false, insertable = false, updatable = false)
+    @Column(name = "create_date")
     private Timestamp createDate;
 }
