@@ -1,170 +1,189 @@
 package com.ndt.capstone.service;
 
-import com.ndt.capstone.dto.checkout.CheckoutDTO;
-import com.ndt.capstone.entity.*;
-import com.ndt.capstone.mapper.OrderPaymentPayloadMapper;
-import com.ndt.capstone.payload.request.payment.BillingDetailsRequest;
-import com.ndt.capstone.payload.request.payment.CheckoutRequest;
-import com.ndt.capstone.payload.request.payment.OrderItemRequest;
-import com.ndt.capstone.repository.*;
-import com.ndt.capstone.service.contract.OrderService;
+import java.math.RoundingMode;
+import java.util.*;
+import java.math.BigDecimal;
+
+
+import com.ndt.capstone.exception.order.OrderException;
+import com.ndt.capstone.payload.request.payment.*;
 import jakarta.transaction.Transactional;
+
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+
+
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+
+import com.ndt.capstone.entity.*;
+import com.ndt.capstone.repository.*;
+import com.ndt.capstone.enums.exception.*;
+
+import com.ndt.capstone.mapper.payment.CheckoutMapper;
+import com.ndt.capstone.mapper.OrderPaymentPayloadMapper;
+
+import com.ndt.capstone.enums.payment.PaymentMethod;
+import com.ndt.capstone.enums.payment.PaymentStatus;
+
+import com.ndt.capstone.exception.user.UserException;
+import com.ndt.capstone.exception.country.CountryException;
+import com.ndt.capstone.exception.payment.PaymentException;
+import com.ndt.capstone.exception.product.ProductException;
+
+import com.ndt.capstone.payload.response.vietqr.VietQrResponse;
+
+import com.ndt.capstone.service.contract.external.VietQrService;
+import com.ndt.capstone.service.contract.external.ExchangeRateService;
+
+import com.ndt.capstone.dto.checkout.CheckoutDTO;
+import com.ndt.capstone.service.contract.OrderService;
 
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    // 1. Nhóm lưu dữ liệu (ghi vào 3 bảng DB)
-    private final OrderRepository orderRepository;               // Ghi vào bảng `orders`
-    private final OrderVariantRepository orderVariantRepository; // Ghi vào bảng `order_variant`
-    private final BillingDetailsRepository billingDetailsRepository; // Ghi vào bảng `billing_details`
+    private final BigDecimal VND_ROUNDING_UNIT = BigDecimal.valueOf(1000);
 
+    private final VietQrService vietQrService;
+
+    private final ExchangeRateService exchangeRateService;
+
+    // 1. Nhóm lưu dữ liệu (ghi vào 3 bảng DB)
+    private final OrderRepository orderRepo;
+
+    private final OrderVariantRepository orderVariantRepo;
+
+    private final BillingDetailsRepository billingDetailsRepo;
 
 
     // 2. Nhóm kiểm tra tính hợp lệ (tìm kiếm xem có tồn tại không)
-    private final UserRepository userRepository;                 // Kiểm tra User đang mua có trong DB không
-    private final PaymentMethodRepository paymentMethodRepository; // Kiểm tra phương thức thanh toán hợp lệ
-    private final CountryRepository countryRepository;           // Kiểm tra Quốc gia có hợp lệ không
-    private final VariantRepository variantRepository; // Kiểm tra Sản phẩm trong giỏ có thật không
-    private final PaymentStatusRepository paymentStatusRepository;
-    private final OutboxEventRepository outboxEventRepository;
+    private final UserRepository userRepo;
+
+    private final PaymentMethodRepository paymentMethodRepository;
+
+    private final CountryRepository countryRepository;
+
+    private final ProductVariantRepository productVariantRepo;
+
+    private final PaymentStatusRepository paymentStatusRepo;
+
+    private final OutboxEventRepository outboxEventRepo;
+
     private final OrderPaymentPayloadMapper orderPaymentPayloadMapper;
 
-    @Value("${vietqr.bank-id}")
-    private String bankId;
-
-    @Value("${vietqr.account-no}")
-    private String accountNo;
-
-    @Value("${vietqr.account-name}")
-    private String accountName;
-
 
     @Override
     @Transactional
-    public CheckoutDTO processCheckout (CheckoutRequest request, Long userId){
+    public CheckoutDTO processCheckout(CheckoutRequest req, Long userId) {
+        List<OrderItemRequest> items = mergeDuplicateItem(req.getItems());
 
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy User!"));
-        PaymentMethodEntity paymentMethod = paymentMethodRepository.findById(request.getPaymentMethodId())
-                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ!"));
+        UserEntity user = userRepo
+            .findById(userId)
+            .orElseThrow(() -> new UserException(UserErrMsg.NOT_FOUND));
 
-        CountryEntity country = countryRepository.findById(request.getBilling().getCountryId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quốc gia!"));
-        PaymentStatusEntity pendingStatus = paymentStatusRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+        PaymentMethod reqPaymentMethod = PaymentMethod.fromAlterName(req.getPaymentMethodName());
+        PaymentMethodEntity paymentMethod = paymentMethodRepository
+            .findByName(reqPaymentMethod.getName())
+            .orElseThrow(() -> new PaymentException(PaymentErrMsg.METHOD_NOT_FOUND));
 
+        // currently support bank transfer
+        if (!reqPaymentMethod.equals(PaymentMethod.BANK_TRANSFER))
+            throw new PaymentException(PaymentErrMsg.METHOD_UNSUPPORTED);
 
-        OrderEntity order = new OrderEntity();
-        order.setUser(user);
-        order.setPayment(paymentMethod);
-        order.setTotal(request.getTotalAmount());
-        order.setNote(request.getNote());
-        order.setStatus(pendingStatus); // Đánh dấu đơn đang chờ chuyển khoản
-        order.setCreateDate(new java.sql.Timestamp(System.currentTimeMillis()));
-        OrderEntity savedOrder = orderRepository.save(order); //
+        CountryEntity country = countryRepository
+            .findByIso(req.getBilling().getCountryIso())
+            .orElseThrow(() -> new CountryException(CountryErrMsg.NOT_FOUND));
 
+        PaymentStatusEntity paymentStatus = paymentStatusRepo
+            .findByName(PaymentStatus.PENDING.name())
+            .orElseThrow(() -> new PaymentException(PaymentErrMsg.STATUS_NOT_FOUND));
 
-        for (OrderItemRequest item : request.getItems()) {
-            // 1. Tìm sản phẩm trong kho theo SKU
-            ProductVariantEntity variant = variantRepository.findById(item.getSkuVariant()).orElseThrow(() -> new RuntimeException("Không tìm tấy sản phẩm trong kho"));
-            // 2. Gán vào bảng order_variant
-            OrderVariantEntity orderVariant = new OrderVariantEntity();
-            orderVariant.setOrder(savedOrder);   // Gán vào đơn hàng #101 vừa tạo ở Bước 2
-            orderVariant.setVariant(variant);    // Gán mã áo/quần
-            orderVariant.setQuantity(item.getQuantity()); // Số lượng
-            orderVariant.setPrice(item.getPrice());       // Giá mua lúc đó
-            orderVariantRepository.save(orderVariant);
+        OrderEntity savedOrder = orderRepo.save(CheckoutMapper.toOrderEntity(req, user, paymentMethod, paymentStatus));
+        for (OrderItemRequest item : items) {
+            ProductVariantEntity variant = productVariantRepo
+                .findBySku(item.getSku())
+                .orElseThrow(() -> new ProductException(ProductErrMsg.PRODUCT_VARIANT_NOT_FOUND));
+
+            if (productVariantRepo.decreaseQuantity(variant.getSku(), item.getQuantity()) == 0)
+                throw new ProductException(ProductErrMsg.OUT_OF_STOCK);
+
+            orderVariantRepo.save(CheckoutMapper.toOrderVariantEntity(savedOrder, item, variant));
         }
 
-        BillingDetailsEntity billing = new BillingDetailsEntity();
-        billing.setOrder(savedOrder); // Gán vào đơn hàng #101 vừa tạo ở Bước 2
-        billing.setFirstName(request.getBilling().getFirstName());
-        billing.setLastName(request.getBilling().getLastName());
-        billing.setCompanyName(request.getBilling().getCompanyName());
-        billing.setCountry(country);
-        billing.setAddress(request.getBilling().getAddress());
-        billing.setTown(request.getBilling().getTown());
-        billing.setState(request.getBilling().getState());
-        billing.setZipCode(request.getBilling().getZipCode());
-        billing.setPhone(request.getBilling().getPhone());
-        billing.setEmail(request.getBilling().getEmail());
-        billing.setCreateDate(new java.sql.Timestamp(System.currentTimeMillis()));
-        billingDetailsRepository.save(billing);
+        billingDetailsRepo.save(CheckoutMapper.toBillingDetailsEntity(req, savedOrder, country));
 
-        // 6. Tạo nội dung chuyển khoản và link QR
+        BigDecimal amount = req
+            .getTotalAmount()
+            .multiply(exchangeRateService.getExchangeRate("VND"))
+            .setScale(0, RoundingMode.HALF_UP)
+            .divide(VND_ROUNDING_UNIT, 0, RoundingMode.HALF_UP)
+            .multiply(VND_ROUNDING_UNIT);
+
         String transferContent = "DH" + savedOrder.getId();
-        long amountLong = savedOrder.getTotal().longValue();
-
-        // Mã hóa tên "LAM HOANG DUNG" thành "LAM%20HOANG%20DUNG" để không bị lỗi dấu cách trên URL
-        String encodedAccountName = java.net.URLEncoder.encode(accountName, java.nio.charset.StandardCharsets.UTF_8);
-
-        // Ghép link VietQR bằng các biến cấu hình từ file yaml
-        String qrUrl = String.format(
-                "https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
-                bankId,
-                accountNo,
-                amountLong,
-                transferContent,
-                encodedAccountName
-        );
-
-        // 7. Trả về DTO cho Frontend
-        CheckoutDTO response = new CheckoutDTO();
-        response.setOrderId(savedOrder.getId());
-        response.setQrUrl(qrUrl);
-        response.setAmount(savedOrder.getTotal());
-        response.setTransferContent(transferContent);
-
-        return response;
-
+        VietQrResponse vietQrResponse = vietQrService.generateQrCode(amount.toPlainString(), transferContent);
+        return CheckoutMapper.toCheckoutDTO(savedOrder.getId(), amount, vietQrResponse.getQrUrl(), transferContent);
     }
 
+
     @Override
     @Transactional
-    public void confirmPayment(Long orderId) {
+    public void confirmPayment(OrderConfirmRequest req) {
+        Long orderId = req.getOrderId();
 
-        // Phần 1: Cập nhật trạng thái
-        OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng #" + orderId));
+        // update status
+        OrderEntity order = orderRepo
+            .findById(orderId)
+            .orElseThrow(() -> new OrderException(OrderErrMsg.ORDER_NOT_FOUND, "Order not found for #" + orderId));
 
-        if (order.getStatus() == null || order.getStatus().getId() != 1) {
-            // id=1 là PENDING
-            throw new RuntimeException("Đơn hàng không ở trạng thái chờ thanh toán!");
-        }
-        PaymentStatusEntity paidStatus = paymentStatusRepository.findById(2)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
-        order.setStatus(paidStatus); // id=2 là PAID
-        orderRepository.save(order);
+        if (Objects.isNull(order.getStatus()) || !order.getStatus().getName().equals(PaymentStatus.PENDING.name()))
+            throw new OrderException(OrderErrMsg.ORDER_NOT_PENDING);
 
-        // Phần 2: Lấy data
-        BillingDetailsEntity billing = billingDetailsRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy billing của đơn #" + orderId));
+        PaymentStatusEntity paidStatus = paymentStatusRepo
+            .findByName(PaymentStatus.PAID.name())
+            .orElseThrow(() -> new PaymentException(PaymentErrMsg.STATUS_NOT_FOUND));
 
-        List<OrderVariantEntity> orderItems = orderVariantRepository.findByOrder_Id(orderId);
+        order.setStatus(paidStatus);
+        orderRepo.save(order);
 
-        // Phần 3: Gọi mapper để build payload → Service không cần biết chi tiết JSON
-        String payload = orderPaymentPayloadMapper.buildPayload(order, billing, orderItems);
-        // Phần 4: set trạng thái outboxevent là Pending
-        PaymentStatusEntity outboxPendingStatus = paymentStatusRepository.findById(1)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+        // retrieve billing data
+        BillingDetailsEntity billing = billingDetailsRepo
+            .findByOrderId(orderId)
+            .orElseThrow(() -> new OrderException(OrderErrMsg.ORDER_NOT_FOUND));
 
-        // Phần 4: Insert outbox
+        List<OrderVariantEntity> orders = orderVariantRepo.findByOrder_Id(orderId);
+
+        // Gọi mapper để build payload → Service không cần biết chi tiết JSON
+        String payload = orderPaymentPayloadMapper.buildPayload(order, billing, orders);
+
+        // set trạng thái outboxevent là Pending
+        PaymentStatusEntity outboxPendingStatus = paymentStatusRepo
+            .findByName(PaymentStatus.PENDING.name())
+            .orElseThrow(() -> new PaymentException(PaymentErrMsg.STATUS_NOT_FOUND));
+
+        // Insert outbox
         OutboxEventEntity event = OutboxEventEntity.builder()
-                .aggregateId(order.getId())
-                .eventType("ORDER_PAYMENT_SUCCESS")
-                .topic("order.payment")
-                .payload(payload)
-                .status(outboxPendingStatus)
-                .createdAt(LocalDateTime.now())
-                .retryCount(0)
-                .build();
+            .aggregateId(order.getId())
+            .eventType("ORDER_PAYMENT_SUCCESS")
+            .topic("order.payment")
+            .payload(payload)
+            .status(outboxPendingStatus)
+            .retryCount(0)
+            .build();
 
-        outboxEventRepository.save(event);
+        outboxEventRepo.save(event);
+    }
+
+
+    private List<OrderItemRequest> mergeDuplicateItem(List<OrderItemRequest> items) {
+        Map<Long, OrderItemRequest> mergedItem = new LinkedHashMap<>();
+        for (OrderItemRequest item : items) {
+            mergedItem.merge(item.getSku(), item, (a, b) -> {
+                a.setQuantity(a.getQuantity() + b.getQuantity());
+                return a;
+            });
+        }
+        return new ArrayList<>(mergedItem.values());
     }
 }

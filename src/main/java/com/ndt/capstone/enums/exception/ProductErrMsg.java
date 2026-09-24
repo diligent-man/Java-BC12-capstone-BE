@@ -14,7 +14,9 @@ import com.ndt.capstone.exception.ErrorMsg;
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 public enum ProductErrMsg implements ErrorMsg {
-    NOT_FOUND(HttpStatus.NOT_FOUND, "Product not found"),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "Product not found"),
+    PRODUCT_VARIANT_NOT_FOUND(HttpStatus.NOT_FOUND, "Product variant not found"),
+    OUT_OF_STOCK(HttpStatus.UNPROCESSABLE_CONTENT, "Out of stock"),
     ;
 
     private final HttpStatusCode httpStatusCode;

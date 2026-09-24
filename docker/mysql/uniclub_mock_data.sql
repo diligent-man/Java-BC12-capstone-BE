@@ -63,11 +63,7 @@ VALUES
     ('XL'),
     ('XXL')
 ;
-INSERT INTO payment_status (id, name) VALUES
-                                          (1, 'PENDING'),
-                                          (2, 'PAID'),
-                                          (3, 'PUBLISHED'),
-                                          (4, 'CANCELED');
+
 
 INSERT INTO
     product(name, description, information, price, id_brand)
@@ -384,9 +380,9 @@ VALUES
     (5, 1, 2, 'adicolor_classics_3-stripes_cargo_pants_black_1.jpg, adicolor_classics_3-stripes_cargo_pants_black_2.jpg, adicolor_classics_3-stripes_cargo_pants_black_3.jpg, adicolor_classics_3-stripes_cargo_pants_black_4.jpg, adicolor_classics_3-stripes_cargo_pants_black_5.jpg, adicolor_classics_3-stripes_cargo_pants_black_6.jpg', RAND() * 10, 88.61),
     (5, 1, 3, 'adicolor_classics_3-stripes_cargo_pants_black_1.jpg, adicolor_classics_3-stripes_cargo_pants_black_2.jpg, adicolor_classics_3-stripes_cargo_pants_black_3.jpg, adicolor_classics_3-stripes_cargo_pants_black_4.jpg, adicolor_classics_3-stripes_cargo_pants_black_5.jpg, adicolor_classics_3-stripes_cargo_pants_black_6.jpg', RAND() * 10, 88.61),
 
-    (6, 10, 1, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND() * 10, 32.00),
-    (6, 10, 2, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND() * 10, 32.00),
-    (6, 10, 3, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', RAND() * 10, 32.00),
+    (6, 10, 1, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', 3, 1.00),
+    (6, 10, 2, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', 3, 1.00),
+    (6, 10, 3, 'nike_sportswear_dark_grey_heather_1.jpg, nike_sportswear_dark_grey_heather_10.jpg, nike_sportswear_dark_grey_heather_2.jpg, nike_sportswear_dark_grey_heather_3.jpg, nike_sportswear_dark_grey_heather_4.jpg, nike_sportswear_dark_grey_heather_5.jpg, nike_sportswear_dark_grey_heather_6.jpg, nike_sportswear_dark_grey_heather_7.jpg, nike_sportswear_dark_grey_heather_8.jpg, nike_sportswear_dark_grey_heather_9.jpg', 3, 1.00),
 
     (7, 1, 1, 'nike_dri-fit_black_1.jpg, nike_dri-fit_black_2.jpg, nike_dri-fit_black_3.jpg, nike_dri-fit_black_4.jpg, nike_dri-fit_black_5.jpg, nike_dri-fit_black_6.jpg, nike_dri-fit_black_7.jpg', RAND() * 10, 35.00),
     (7, 1, 2, 'nike_dri-fit_black_1.jpg, nike_dri-fit_black_2.jpg, nike_dri-fit_black_3.jpg, nike_dri-fit_black_4.jpg, nike_dri-fit_black_5.jpg, nike_dri-fit_black_6.jpg, nike_dri-fit_black_7.jpg', RAND() * 10, 35.00),
@@ -458,7 +454,17 @@ VALUES
     ('bank transfer', 'Credit transfers allow customers to push funds from their bank account to yours. You provide customers with the bank account information they should send funds to.'),
     ('digital wallet', 'Wallets are linked to a card or bank account, but can also store monetary value. Wallets typically require customer verification (e.g., biometrics, SMS, passcode) to complete a payment.'),
     ('card', 'Cards are linked to a debit or credit account at a bank. To complete a payment online, customers enter their card information at checkout.'),
-    ('cash-based vouchers', 'With cash-based vouchers, customers receive a scannable voucher with a transaction reference number that they can then bring to an ATM, bank, convenience store, or supermarket to complete the payment in cash.')
+    ('cash-based voucher', 'With cash-based vouchers, customers receive a scannable voucher with a transaction reference number that they can then bring to an ATM, bank, convenience store, or supermarket to complete the payment in cash.')
+;
+
+
+INSERT INTO
+    payment_status (name)
+VALUES
+    ('PENDING'),
+    ('PAID'),
+    ('PUBLISHED'),
+    ('CANCELED')
 ;
 
 

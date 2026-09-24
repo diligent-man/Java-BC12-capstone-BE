@@ -1,14 +1,24 @@
 package com.ndt.capstone.payload.request.payment;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import java.math.BigDecimal;
+
+
+import jakarta.validation.constraints.*;
+
+
+import lombok.Data;
+
+
 @Data
 public class OrderItemRequest {
-    @NotNull(message = "skuVariant không được để trống")
-    private Long skuVariant;
-    @NotNull(message = "quantity không được để trống")
+    @NotNull
+    private Long sku;
+
+    @NotNull
     private Integer quantity;
-    @NotNull(message = "price không được để trống")
+
+    @NotNull
+    @Min(value = 0)
+    @Digits(integer = 9, fraction = 2)
     private BigDecimal price;
 }

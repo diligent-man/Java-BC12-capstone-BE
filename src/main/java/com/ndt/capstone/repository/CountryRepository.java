@@ -1,9 +1,16 @@
 package com.ndt.capstone.repository;
 
-import com.ndt.capstone.entity.CountryEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
+import com.ndt.capstone.entity.CountryEntity;
+
 
 @Repository
 public interface CountryRepository extends JpaRepository<CountryEntity, Integer> {
+    Optional<CountryEntity> findByIso(String iso);
 }

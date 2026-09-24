@@ -2,7 +2,6 @@ package com.ndt.capstone.service;
 
 import java.util.*;
 import java.time.Duration;
-import java.util.stream.Collectors;
 
 
 import com.ndt.capstone.mapper.product.*;
@@ -32,7 +31,7 @@ import com.ndt.capstone.spec.ProductSpec;
 import com.ndt.capstone.enums.exception.ProductErrMsg;
 
 import com.ndt.capstone.repository.ProductRepository;
-import com.ndt.capstone.repository.VariantRepository;
+import com.ndt.capstone.repository.ProductVariantRepository;
 
 import com.ndt.capstone.service.contract.FileService;
 import com.ndt.capstone.service.contract.ProductService;
@@ -51,7 +50,7 @@ import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
-    private final VariantRepository variantRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     private final FileService fileService;
 
@@ -75,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
 
     public ProductServiceImpl(
         ProductRepository productRepository,
-        VariantRepository variantRepository,
+        ProductVariantRepository productVariantRepository,
         FileService fileService,
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
@@ -86,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
         @Value(value = "${cache.product.all.cache-duration:60000}") Integer cacheDuration
     ) {
         this.productRepository = productRepository;
-        this.variantRepository = variantRepository;
+        this.productVariantRepository = productVariantRepository;
         this.fileService = fileService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
@@ -154,7 +153,7 @@ public class ProductServiceImpl implements ProductService {
             // No cache -> Read db
             List<ProductVariantRow> rows = productRepository.findProductDetailByName(name);
             if (rows.isEmpty()) {
-                throw new ProductException(ProductErrMsg.NOT_FOUND, String.format("Product (%s) not found: ", name));
+                throw new ProductException(ProductErrMsg.PRODUCT_NOT_FOUND, String.format("Product (%s) not found: ", name));
             }
 
             List<ProductVariantDetailDTO> variants = ProductVariantDetailMapper.toDTO(rows, defaultImage, imageSeparator);
@@ -223,6 +222,6 @@ public class ProductServiceImpl implements ProductService {
         variantProduct.setSize(size);
         variantProduct.setImages(productRequest.getFile().getOriginalFilename()); // lấy tên hình để lưu vào bảng variant
 
-        variantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
+        productVariantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
     }
 }

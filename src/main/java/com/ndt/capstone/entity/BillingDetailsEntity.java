@@ -2,9 +2,12 @@ package com.ndt.capstone.entity;
 
 import jakarta.persistence.*;
 
+
+import java.time.LocalDateTime;
+
+
 import lombok.*;
 
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -51,6 +54,6 @@ public class BillingDetailsEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(name = "create_date")
-    private Timestamp createDate;
+    @Column(name = "create_date", insertable = false)
+    private LocalDateTime createDate;
 }

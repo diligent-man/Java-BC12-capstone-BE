@@ -1,34 +1,42 @@
 package com.ndt.capstone.job;
 
+import java.util.List;
+import java.time.LocalDateTime;
+
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
+
+import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Scheduled;
+
+
 import com.ndt.capstone.entity.OutboxEventEntity;
 import com.ndt.capstone.entity.PaymentStatusEntity;
+
+import com.ndt.capstone.service.KafkaProducerService;
+
 import com.ndt.capstone.repository.OutboxEventRepository;
 import com.ndt.capstone.repository.PaymentStatusRepository;
-import com.ndt.capstone.service.KafkaProducerService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class OutboxPublisherJob {
-
     private final OutboxEventRepository outboxEventRepository;
+
     private final KafkaProducerService kafkaProducerService;
+
     private final PaymentStatusRepository paymentStatusRepository;
+
 
     // Cứ 15 giây "bác đưa thư" lại kiểm tra hòm thư outbox 1 lần
     @Scheduled(fixedDelay = 15000)
     public void publishPendingEvents() {
-
         // 1. Lấy tối đa 50 event CHƯA GỬI, sắp xếp cũ nhất trước
-        List<OutboxEventEntity> pendingEvents =
-                outboxEventRepository.findTop50ByStatus_IdOrderByCreatedAtAsc(1);
+        List<OutboxEventEntity> pendingEvents = outboxEventRepository.findTop50ByStatus_IdOrderByCreatedAtAsc(1);
 
         // 2. Nếu không có event nào thì bỏ qua, không log gì cả
         if (pendingEvents.isEmpty()) {
@@ -46,13 +54,13 @@ public class OutboxPublisherJob {
 
                 // 3b. Gửi thành công → Đánh dấu PUBLISHED + ghi thời điểm gửi
                 PaymentStatusEntity publishedStatus = paymentStatusRepository.findById(3)
-                        .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
                 event.setStatus(publishedStatus);
                 event.setPublishedAt(LocalDateTime.now());
                 outboxEventRepository.save(event);
 
                 log.info("[Outbox] Đã publish event #{} cho đơn hàng #{} lên topic '{}'",
-                        event.getId(), event.getAggregateId(), event.getTopic());
+                    event.getId(), event.getAggregateId(), event.getTopic());
 
             } catch (Exception e) {
                 // 3c. Gửi thất bại → Tăng retryCount, log lỗi, KHÔNG đánh dấu PUBLISHED
@@ -61,7 +69,7 @@ public class OutboxPublisherJob {
                 outboxEventRepository.save(event);
 
                 log.error("[Outbox] Lỗi khi publish event #{}: {}",
-                        event.getId(), e.getMessage());
+                    event.getId(), e.getMessage());
             }
         }
     }

@@ -14,7 +14,7 @@ public class KafkaProducerService {
     public void sendRegistrationEmailEvent(String email) {
         String topicName = "user_registration_email";
         kafkaTemplate.send(topicName, email); // gui message bao gom topic va noi dung len broker
-        System.out.println("Producer da gui message yeu cau gui mail cho " + email + "vao kafka");
+        System.out.println("Producer da gui message yeu cau gui mail cho " + email + " vao kafka");
     }
     
     public void send(String topic, String payload) {

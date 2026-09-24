@@ -1,7 +1,8 @@
 package com.ndt.capstone.entity;
 
-import java.sql.Timestamp;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 
 import jakarta.persistence.*;
 
@@ -37,6 +38,6 @@ public class OrderEntity {
     @JoinColumn(name = "id_user")
     private UserEntity user;
 
-    @Column(name = "create_date")
-    private Timestamp createDate;
+    @Column(name = "create_date", insertable = false)
+    private LocalDateTime createDate;
 }

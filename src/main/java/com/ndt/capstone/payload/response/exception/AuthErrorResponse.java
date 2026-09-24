@@ -1,8 +1,6 @@
 package com.ndt.capstone.payload.response.exception;
 
-import java.time.Instant;
-
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 import lombok.Builder;
@@ -16,5 +14,5 @@ public class AuthErrorResponse extends ApiErrorResponse {
     private String path;
 
     @Builder.Default
-    private Timestamp timestamp = Timestamp.from(Instant.now());
+    private LocalDateTime timestamp = LocalDateTime.now();
 }

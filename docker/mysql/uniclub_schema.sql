@@ -5,9 +5,9 @@ USE uniclub;
 
 CREATE TABLE color
 (
-    id   int auto_increment primary key,
-    name varchar(20) NOT NULL,
-    hexcode char(7) NOT NULL,
+    id      int auto_increment primary key,
+    name    varchar(20) NOT NULL,
+    hexcode char(7)     NOT NULL,
 
     CONSTRAINT UQ_color_name UNIQUE (name)
 );
@@ -31,7 +31,7 @@ CREATE TABLE variant
     images      text,
     quantity    int       NOT NULL,
     price       decimal(11, 2),
-    create_date timestamp NOT NULL default now()
+    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -54,7 +54,7 @@ CREATE TABLE orders
     id_status   int            not null default 1,
     id_payment  int            not null,
     id_user     bigint         not null,
-    create_date timestamp default now()
+    create_date timestamp               default CURRENT_TIMESTAMP
 );
 
 
@@ -72,7 +72,7 @@ CREATE TABLE billing_details
     zip_code     varchar(50)  not null,
     phone        varchar(12)  not null,
     email        varchar(255) not null,
-    create_date  timestamp default now(),
+    create_date  timestamp default CURRENT_TIMESTAMP,
 
     CONSTRAINT billing_details_id_order UNIQUE (id_order)
 );
@@ -103,7 +103,7 @@ CREATE TABLE user
     email     varchar(50)  not null,
     password  varchar(255) not null,
     full_name varchar(255) not null,
-    role_id   int          not null,
+    role_id   int          not null default 2,
     status    varchar(20)  not null default 'ACTIVE',
 
     CONSTRAINT UQ_user_email UNIQUE (email),
@@ -127,7 +127,7 @@ CREATE TABLE review
     id_user     bigint,
     star        int,
     content     text,
-    create_date timestamp default now(),
+    create_date timestamp default CURRENT_TIMESTAMP,
     images      text
 );
 
@@ -139,7 +139,7 @@ CREATE TABLE comment
     id_post     int,
     id_reply    int,
     content     text,
-    create_date timestamp default now()
+    create_date timestamp default CURRENT_TIMESTAMP
 );
 
 
@@ -147,7 +147,7 @@ CREATE TABLE post
 (
     id          int auto_increment primary key,
     content     text,
-    create_date timestamp default now()
+    create_date timestamp default CURRENT_TIMESTAMP
 );
 
 
@@ -159,7 +159,7 @@ CREATE TABLE product
     information text,
     price       decimal(11, 2) NOT NULL,
     id_brand    int            NOT NULL,
-    create_date timestamp default now()
+    create_date timestamp default CURRENT_TIMESTAMP
 );
 
 
@@ -228,25 +228,28 @@ CREATE TABLE IF NOT EXISTS country
     phone_code int(5)      NOT NULL
 ) DEFAULT CHARSET = utf8mb4;
 
-CREATE TABLE outbox_event(
+
+CREATE TABLE outbox_event
+(
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     aggregate_id BIGINT       NOT NULL, # ID đơn hàng liên quan (orderId)
-    event_type   VARCHAR(100) NOT NULL, #Tên sự kiện
-    topic        VARCHAR(200) NOT NULL, #Tên Kafka topic
-    payload      TEXT         NOT NULL, #Nội dung JSON đầy đủ (tên KH, sản phẩm, tổng tiền...)
-    id_status    int  NOT NULL DEFAULT 1, #trạng thái pending / published
+    event_type   VARCHAR(100) NOT NULL, # Tên sự kiện
+    topic        VARCHAR(200) NOT NULL, # Tên Kafka topic
+    payload      TEXT         NOT NULL, # Nội dung JSON đầy đủ (tên KH, sản phẩm, tổng tiền...)
+    id_status    int          NOT NULL DEFAULT 1,
     retry_count  INT          NOT NULL DEFAULT 0,
-    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    published_at DATETIME     NULL
+    created_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    published_at TIMESTAMP
 );
 
 
-CREATE TABLE payment_status (
+CREATE TABLE payment_status
+(
     id   INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL UNIQUE
+    name VARCHAR(50) NOT NULL UNIQUE,
+
+    CONSTRAINT CK_payment_status_name CHECK ( name IN ('PENDING', 'PAID', 'PUBLISHED', 'CANCELED'))
 );
-
-
 
 
 ALTER TABLE variant ADD CONSTRAINT FK_id_product_variant FOREIGN KEY (id_product) REFERENCES product (id);
@@ -296,11 +299,8 @@ ALTER TABLE product_tag ADD CONSTRAINT FK_id_category_product_tag FOREIGN KEY (i
 
 ALTER TABLE user ADD CONSTRAINT FK_role_id_user_role FOREIGN KEY (role_id) REFERENCES role (id);
 
-ALTER TABLE orders
-    ADD CONSTRAINT FK_orders_payment_status
-        FOREIGN KEY (id_status) REFERENCES payment_status(id);
 
-ALTER TABLE outbox_event
-    ADD CONSTRAINT FK_outbox_payment_status
-        FOREIGN KEY (id_status) REFERENCES payment_status(id);
+ALTER TABLE orders ADD CONSTRAINT FK_orders_payment_status FOREIGN KEY (id_status) REFERENCES payment_status (id);
 
+
+ALTER TABLE outbox_event ADD CONSTRAINT FK_outbox_payment_status FOREIGN KEY (id_status) REFERENCES payment_status (id);

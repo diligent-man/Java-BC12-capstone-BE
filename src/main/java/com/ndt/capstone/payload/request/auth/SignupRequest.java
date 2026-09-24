@@ -16,10 +16,6 @@ public class SignupRequest {
     @NotBlank
     private String password;
 
-
     @NotBlank
     private String fullName;
-
-    @NotNull
-    private Integer roleId;
 }

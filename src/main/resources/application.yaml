@@ -52,7 +52,7 @@ server:
 
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
-#    expiration: 900000 # 15 mins
+    #    expiration: 900000 # 15 mins
     expiration: 86400000 # 15 mins
 
 auth:
@@ -78,6 +78,19 @@ cache:
         all:
             cache-duration: 900000 # 15 mins
 
+    country:
+        prefix: country
+        all:
+            cache-duration: 900000 # 15 mins
+
+    payment:
+        method:
+            prefix: payment_method
+            all:
+                cache-duration: 900000 # 15 mins
+
+        exchange:
+            prefix: exchange_rate
     account:
         prefix: account
 
@@ -89,7 +102,20 @@ management:
     endpoint:
         health:
             show-details: always
-vietqr:
-    bank-id: ${VIETQR_BANK_ID}
-    account-no: ${VIETQR_ACCOUNT_NO}
-    account-name: ${VIETQR_ACCOUNT_NAME}
+
+payment:
+    bank-transfer:
+        bank-id: ${VIETQR_BANK_ID}
+        account-no: ${VIETQR_ACCOUNT_NO}
+        account-name: ${VIETQR_ACCOUNT_NAME}
+
+    exchange:
+        base-currency: USD
+        fallback-rate: 27000
+        refresh-interval: 7200000  # 1 day
+        api-url: https://api.exchangerate-api.com/v4/latest/
+
+    vietqr:
+        url: https://img.vietqr.io/image
+
+    pending-timeout: 120  # seconds

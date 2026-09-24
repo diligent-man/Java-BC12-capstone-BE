@@ -29,7 +29,7 @@ public class BrandServiceImpl implements BrandService {
 
     private final ObjectMapper objectMapper;
 
-    private final Integer cacheDuration;
+    private final Integer allCacheDuration;
 
 
     public BrandServiceImpl(
@@ -37,12 +37,12 @@ public class BrandServiceImpl implements BrandService {
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
         @Value(value = "${cache.brand.prefix:brand}") String cacheKeyPrefix,
-        @Value(value = "${cache.brand.all.cache-duration:60000}") Integer cacheDuration
+        @Value(value = "${cache.brand.all.cache-duration:60000}") Integer allCacheDuration
     ) {
         this.brandRepository = brandRepository;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
-        this.cacheDuration = cacheDuration;
+        this.allCacheDuration = allCacheDuration;
 
         // post-setup
         this.brandAllCacheKey = cacheKeyPrefix + ":all";
@@ -75,7 +75,7 @@ public class BrandServiceImpl implements BrandService {
             redisTemplate.opsForValue().set(
                 brandAllCacheKey,
                 objectMapper.writeValueAsString(brands),
-                Duration.ofMillis(cacheDuration)
+                Duration.ofMillis(allCacheDuration)
             );
 
             return brands;

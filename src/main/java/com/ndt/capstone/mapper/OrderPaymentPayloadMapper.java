@@ -1,33 +1,40 @@
 package com.ndt.capstone.mapper;
 
-import com.ndt.capstone.entity.*;
-
-import org.springframework.stereotype.Component;
-import java.time.format.DateTimeFormatter;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+
+
+import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import com.ndt.capstone.entity.*;
+
+import com.ndt.capstone.utils.PhoneUtils;
+import com.ndt.capstone.exception.payment.PaymentException;
+
+import com.ndt.capstone.enums.payment.PaymentMethod;
+import com.ndt.capstone.enums.exception.PaymentErrMsg;
+
 
 @Component
-
 public class OrderPaymentPayloadMapper {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    public String buildPayload(OrderEntity order, BillingDetailsEntity billing,
-                               List<OrderVariantEntity> orderItems){
 
+
+    public String buildPayload(
+        OrderEntity order,
+        BillingDetailsEntity billing,
+        List<OrderVariantEntity> orderItems
+    ) {
         // 1. Thông tin khách hàng
-        //xử lý SĐT khách hàng 4 3 3
         String phone = billing.getPhone();
-        // Tách số điện thoại 10 số thành định dạng 4 - 3 - 3 (Ví dụ: 0901 234 567)
-        if (phone != null && phone.trim().length() == 10) {
-            String clean = phone.trim();
-            phone = clean.substring(0, 4) + " " + clean.substring(4, 7) + " " + clean.substring(7);
-        }
+        if (phone != null)
+            phone = PhoneUtils.formatPhoneNumber(phone);
+
         Map<String, Object> customerMap = new HashMap<>();
         customerMap.put("name", billing.getFirstName() + " " + billing.getLastName());
         customerMap.put("email", billing.getEmail());
@@ -41,33 +48,35 @@ public class OrderPaymentPayloadMapper {
         for (OrderVariantEntity ov : orderItems) {
             ProductVariantEntity variant = ov.getVariant();
             Map<String, Object> itemMap = new HashMap<>();
+
             itemMap.put("productName", variant.getProduct().getName());
             itemMap.put("color", variant.getColor().getName());
             itemMap.put("size", variant.getSize().getName());
             itemMap.put("quantity", ov.getQuantity());
             itemMap.put("unitPrice", ov.getPrice());
+
             itemsList.add(itemMap);
         }
 
         // 3. Ngày giao dự kiến
-        LocalDateTime orderDate = order.getCreateDate().toLocalDateTime();
-        LocalDateTime estimatedDelivery = orderDate.plusDays(2);
+        LocalDateTime orderDate = order.getCreateDate();
+        LocalDateTime estimatedDelivery = orderDate.plusDays(2);  // temp hard-coded
+
         // Format ngày đặt: yyyy-MM-dd HH:mm:ss (bỏ chữ T)
         String formattedOrderDate = orderDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
         // Format ngày giao dự kiến: chỉ lấy ngày yyyy-MM-dd (bỏ giờ)
         String formattedEstimatedDelivery = estimatedDelivery.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-
-
-        //lấy ra ten của phương thức thanh toán
+        // lấy ra ten của phương thức thanh toán
         String paymentMethodName = "Không xác định";
         if (order.getPayment() != null) {
-            paymentMethodName = switch (order.getPayment().getId()) {
-                case 1 -> "Thanh toán tiền mặt (COD)";
-                case 2 -> "Chuyển khoản ngân hàng";
-                case 3 -> "Ví điện tử";
-                case 4 -> "Thẻ tín dụng / Ghi nợ";
-                default -> order.getPayment().getName();
+            paymentMethodName = switch (PaymentMethod.fromName(order.getPayment().getName())) {
+                case PaymentMethod.CASH_BASED -> "Thanh toán tiền mặt (COD)";
+                case PaymentMethod.BANK_TRANSFER -> "Chuyển khoản ngân hàng";
+                case PaymentMethod.DIGITAL_WALLET -> "Ví điện tử";
+                case PaymentMethod.CARD -> "Thẻ tín dụng / Ghi nợ";
+                default -> throw new PaymentException(PaymentErrMsg.METHOD_NOT_FOUND);
             };
         }
 
@@ -80,6 +89,7 @@ public class OrderPaymentPayloadMapper {
         payloadMap.put("orderDate", formattedOrderDate);
         payloadMap.put("estimatedDelivery", formattedEstimatedDelivery);
         payloadMap.put("paymentMethod", paymentMethodName);
+
         try {
             return objectMapper.writeValueAsString(payloadMap);
         } catch (Exception e) {

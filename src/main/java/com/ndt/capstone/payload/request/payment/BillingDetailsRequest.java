@@ -1,28 +1,49 @@
 package com.ndt.capstone.payload.request.payment;
 
-import com.ndt.capstone.entity.CountryEntity;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
+
+
 import lombok.Data;
+
+
 @Data
 public class BillingDetailsRequest {
-    @NotBlank(message = "firstName không được để trống")
+    @NotBlank
+    @Size(max = 50)
     private String firstName;
-    @NotBlank(message = "lastName không được để trống")
+
+    @NotBlank
+    @Size(max = 50)
     private String lastName;
+
+    @NotBlank
+    @Size(max = 50)
     private String companyName;
-    @NotNull(message = "countryId không được để trống")
-    private int countryId;
-    @NotBlank(message = "address không được để trống")
+
+    @NotNull
+    @Size(max = 2)
+    private String countryIso;
+
+    @NotBlank
     private String address;
-    @NotBlank(message = "town không được để trống")
+
+    @NotBlank
+    @Size(max = 50)
     private String town;
-    @NotBlank(message = "state không được để trống")
+
+    @NotBlank
+    @Size(max = 50)
     private String state;
-    @NotBlank(message = "zipCode không được để trống")
+
+    @NotBlank
+    @Size(max = 50)
     private String zipCode;
-    @NotBlank(message = "phone không được để trống")
+
+    @NotBlank
+    @Size(max = 12)
     private String phone;
-    @NotBlank(message = "email không được để trống")
+
+    @Email
+    @NotBlank
     private String email;
 }

@@ -1,41 +1,70 @@
 package com.ndt.capstone.job;
 
-import com.ndt.capstone.entity.OrderEntity;
-import com.ndt.capstone.entity.PaymentStatusEntity;
-import com.ndt.capstone.repository.OrderRepository;
-import com.ndt.capstone.repository.PaymentStatusRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+
+
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.ndt.capstone.entity.*;
+import com.ndt.capstone.repository.*;
+
+import com.ndt.capstone.enums.payment.PaymentStatus;
+import com.ndt.capstone.enums.exception.PaymentErrMsg;
+
+import com.ndt.capstone.exception.payment.PaymentException;
+
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class OrderTimeoutJob {
+    @Value("${payment.pending-timeout:120}")
+    private Integer pendingTimeout;
 
-    private final OrderRepository orderRepository;
-    private final PaymentStatusRepository paymentStatusRepository;
+    private final OrderRepository orderRepo;
 
-    // fixedDelay = 15000: Cứ 15 giây bác bảo vệ lại đi tuần tra 1 lần
-    @Scheduled(fixedDelay = 15000)
+    private final OrderVariantRepository orderVariantRepo;
+
+    private final PaymentStatusRepository paymentStatusRepo;
+
+    private final ProductVariantRepository productVariantRepo;
+
+
     @Transactional
+    @Scheduled(cron = "*/${payment.pending-timeout:120} * * * * *")
     public void scanAndCancelExpiredOrders() {
-        // 1. Lấy các đơn hàng đã tạo quá 60 giây do MySQL tự tính
-        List<OrderEntity> expiredOrders = orderRepository.findExpiredOrders();
-        // 2. Nếu có thì mới hủy
+        List<OrderEntity> expiredOrders = orderRepo.findPendingOlderThan(pendingTimeout);
         if (!expiredOrders.isEmpty()) {
             for (OrderEntity order : expiredOrders) {
-                PaymentStatusEntity canceledStatus = paymentStatusRepository.findById(4)
-                        .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
-                order.setStatus(canceledStatus);
-                orderRepository.save(order);
-                log.info("Đơn hàng #{} đã quá 1 phút chưa chuyển tiền -> Tự động chuyển sang CANCELLED_PAYMENT", order.getId());
+                PaymentStatusEntity canceledStatus = paymentStatusRepo
+                    .findByName(PaymentStatus.CANCELED.name())
+                    .orElseThrow(() -> new PaymentException(PaymentErrMsg.STATUS_NOT_FOUND));
+
+                /*
+                    The job loads an order as PENDING. Meanwhile confirmPayment marks it PAID and commits.
+                    The job then sets it to CANCELED and restocks, so a paid order ends up canceled
+                 */
+                if (orderRepo.cancelIfPending(order.getId(), canceledStatus) == 1) {
+                    for (OrderVariantEntity ov : orderVariantRepo.findByOrder_Id(order.getId()))
+                        productVariantRepo.increaseQuantity(ov.getVariant().getSku(), ov.getQuantity());
+
+                    order.setStatus(canceledStatus);
+
+                    log.info(
+                        "Đơn hàng #{} đã quá {} giây chưa chuyển tiền -> Tự động chuyển sang {}",
+                        order.getId(),
+                        pendingTimeout,
+                        PaymentStatus.CANCELED.name()
+                    );
+                }
             }
         }
     }
