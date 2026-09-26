@@ -51,7 +51,8 @@ public class CheckoutMapper {
     public static BillingDetailsEntity toBillingDetailsEntity(
         CheckoutRequest req,
         OrderEntity order,
-        CountryEntity country
+        CountryEntity country,
+        UserEntity user
     ) {
         BillingDetailsEntity billingDetails = new BillingDetailsEntity();
 
@@ -65,7 +66,7 @@ public class CheckoutMapper {
         billingDetails.setState(req.getBilling().getState());
         billingDetails.setZipCode(req.getBilling().getZipCode());
         billingDetails.setPhone(req.getBilling().getPhone());
-        billingDetails.setEmail(req.getBilling().getEmail());
+        billingDetails.setEmail(user.getEmail());
         return billingDetails;
     }
 

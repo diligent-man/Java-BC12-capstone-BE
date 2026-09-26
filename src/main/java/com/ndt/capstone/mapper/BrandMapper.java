@@ -15,6 +15,7 @@ public class BrandMapper {
 
         BrandDTO dto = new BrandDTO();
 
+        dto.setId(obj.getId());
         dto.setName(obj.getName());
         return dto;
     }

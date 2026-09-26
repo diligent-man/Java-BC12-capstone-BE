@@ -42,5 +42,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
     List<ProductVariantRow> findProductDetailByName(@Param("name") String name);
 
 
-    Optional<ProductEntity> findByNameContainingIgnoreCase(String name);
+    List<ProductEntity> findByNameContainingIgnoreCase(String name);
 }

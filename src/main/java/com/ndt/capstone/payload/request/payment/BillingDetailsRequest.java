@@ -43,7 +43,4 @@ public class BillingDetailsRequest {
     @Size(max = 12)
     private String phone;
 
-    @Email
-    @NotBlank
-    private String email;
 }

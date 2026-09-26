@@ -2,7 +2,6 @@ package com.ndt.capstone.payload.request.product;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -10,8 +9,6 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 public class InsertProductRequest {
-    private MultipartFile file;
-
     private String name;
 
     private String information;
@@ -21,10 +18,4 @@ public class InsertProductRequest {
     private BigDecimal price;
 
     private int idBrand;
-
-    private int idSize;
-
-    private int idColor;
-
-    private int quantity;
 }

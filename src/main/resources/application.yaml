@@ -78,6 +78,16 @@ cache:
         all:
             cache-duration: 900000 # 15 mins
 
+    color:
+        prefix: color
+        all:
+            cache-duration: 900000 # 15 mins
+
+    size:
+        prefix: size
+        all:
+            cache-duration: 900000 # 15 mins
+
     country:
         prefix: country
         all:

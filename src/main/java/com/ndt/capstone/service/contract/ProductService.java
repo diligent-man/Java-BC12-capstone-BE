@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import com.ndt.capstone.dto.product.ProductDetailDTO;
+import com.ndt.capstone.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,6 +25,9 @@ public interface ProductService {
 
     Page<ProductDTO> filterProduct(ProductFilterRequest request, Pageable pageable);
 
+    List<ProductDTO> searchByName(String name);
 
-    void insertProduct(InsertProductRequest productRequest);
+    Long insertProduct(InsertProductRequest productRequest);
+
+    void insertVariant(InsertVariantRequest variantRequest);
 }

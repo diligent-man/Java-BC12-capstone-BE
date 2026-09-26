@@ -5,6 +5,7 @@ import java.time.Duration;
 
 
 import com.ndt.capstone.mapper.product.*;
+import com.ndt.capstone.payload.request.product.InsertVariantRequest;
 import jakarta.persistence.*;
 
 import jakarta.transaction.Transactional;
@@ -48,6 +49,7 @@ import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
 
     private final ProductVariantRepository productVariantRepository;
@@ -196,32 +198,50 @@ public class ProductServiceImpl implements ProductService {
             .map(ele -> ProductMapper.toDTO(ele, defaultImage));
     }
 
+    @Override
+    public List<ProductDTO> searchByName(String name) {
+        return productRepository
+                .findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(p -> ProductMapper.toDTO(p, defaultImage))
+                .toList();
+    }
 
     @Override
     @Transactional
     // biến nguyên hàm được đặt trên thành 1 giao dịch, nếu cả hàm chạy thành công thì mới thực hiện truy vấn tới database
-    public void insertProduct(InsertProductRequest productRequest) {
-        fileService.save(productRequest.getFile()); // lưu hình
-
+    public Long insertProduct(InsertProductRequest productRequest) {
         ProductEntity product = new ProductEntity();
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
+        product.setInformation(productRequest.getInformation());
         product.setPrice(productRequest.getPrice());
-
         BrandEntity brand = entityManager.getReference(BrandEntity.class, productRequest.getIdBrand());
         product.setBrand(brand);
-        ProductEntity productInserted = productRepository.save(product); // luu bang product
-        // jpa mặc định sẽ trả ra dòng dữ liệu vừa insert để có thể tiếp tục lấy id product để truy vấn vào bảng variant, nếu làm chay phải lấy truy vấn lấy id max
+        ProductEntity saved = productRepository.save(product);
+        return saved.getId();   // trả về id để FE dùng ở bước 2
+    }
 
-        ColorEntity color = entityManager.getReference(ColorEntity.class, productRequest.getIdColor());
-        SizeEntity size = entityManager.getReference(SizeEntity.class, productRequest.getIdSize());
+    @Override
+    @Transactional
+    public void insertVariant(InsertVariantRequest variantRequest) {
+        fileService.save(variantRequest.getFile()); // lưu file ảnh
 
-        ProductVariantEntity variantProduct = new ProductVariantEntity();
-        variantProduct.setProduct(productInserted);
-        variantProduct.setColor(color);
-        variantProduct.setSize(size);
-        variantProduct.setImages(productRequest.getFile().getOriginalFilename()); // lấy tên hình để lưu vào bảng variant
+        ProductEntity product = productRepository
+            .findById(variantRequest.getIdProduct())
+            .orElseThrow(() -> new RuntimeException("Product not found: " + variantRequest.getIdProduct()));
 
-        productVariantRepository.save(variantProduct); // luu bang varint, phai luu ca 2 bang cung luc
+        ColorEntity color = entityManager.getReference(ColorEntity.class, variantRequest.getIdColor());
+        SizeEntity  size  = entityManager.getReference(SizeEntity.class,  variantRequest.getIdSize());
+
+        ProductVariantEntity variant = new ProductVariantEntity();
+        variant.setProduct(product);
+        variant.setColor(color);
+        variant.setSize(size);
+        variant.setQuantity(variantRequest.getQuantity());
+        variant.setPrice(product.getPrice());
+        variant.setImages(variantRequest.getFile().getOriginalFilename());
+
+        productVariantRepository.save(variant);
     }
 }

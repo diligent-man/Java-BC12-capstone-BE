@@ -112,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
             orderVariantRepo.save(CheckoutMapper.toOrderVariantEntity(savedOrder, item, variant));
         }
 
-        billingDetailsRepo.save(CheckoutMapper.toBillingDetailsEntity(req, savedOrder, country));
+        billingDetailsRepo.save(CheckoutMapper.toBillingDetailsEntity(req, savedOrder, country, user));
 
         BigDecimal amount = req
             .getTotalAmount()

@@ -24,7 +24,8 @@ import com.ndt.capstone.payload.response.ApiResponse;
 import com.ndt.capstone.payload.response.PageResponse;
 
 import com.ndt.capstone.payload.request.product.ProductFilterRequest;
-
+import com.ndt.capstone.payload.request.product.InsertProductRequest;
+import com.ndt.capstone.payload.request.product.InsertVariantRequest;
 
 @RestController
 @RequestMapping("/product")
@@ -90,15 +91,33 @@ public class ProductController {
         );
     }
 
-    // @PostMapping("/insert")
-    // public ResponseEntity<?> insertProduct(InsertProductRequest request) {
-    //     productService.insertProduct(request);
-    //
-    //     ApiResponse baseResponse = ApiResponse.builder()
-    //         .code(HttpStatus.OK.toString())
-    //         .message("insert created")
-    //         .build();
-    //
-    //     return ResponseEntity.ok(baseResponse);
-    // }
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse> searchProducts(@RequestParam String name) {
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .data(productService.searchByName(name))
+                        .build()
+        );
+    }
+
+    @PostMapping(value = "/insert")
+    public ResponseEntity<ApiResponse> insertProduct(@RequestBody InsertProductRequest request) {
+        Long productId = productService.insertProduct(request);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("Product created successfully")
+                        .data(productId)   // trả về id để FE dùng ở bước 2
+                        .build()
+        );
+    }
+
+    @PostMapping(value = "/variant/insert", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse> insertVariant(@ModelAttribute InsertVariantRequest request) {
+        productService.insertVariant(request);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .message("Variant added successfully")
+                        .build()
+        );
+    }
 }
