@@ -47,4 +47,18 @@ public class OrderController {
         orderService.confirmPayment(req);
         return ResponseEntity.ok(ApiResponse.builder().build());
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse> getOrderHistory(
+            Authentication auth,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Long userId = Long.parseLong(auth.getName());
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .data(orderService.getOrderHistory(userId, page, size))
+                        .build()
+        );
+    }
 }

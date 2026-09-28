@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 
@@ -39,8 +40,13 @@ import com.ndt.capstone.service.contract.external.ExchangeRateService;
 
 import com.ndt.capstone.dto.checkout.CheckoutDTO;
 import com.ndt.capstone.service.contract.OrderService;
-
-
+import com.ndt.capstone.dto.order.OrderHistoryDTO;
+import com.ndt.capstone.mapper.order.OrderHistoryMapper;
+import com.ndt.capstone.payload.response.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -72,6 +78,76 @@ public class OrderServiceImpl implements OrderService {
     private final OutboxEventRepository outboxEventRepo;
 
     private final OrderPaymentPayloadMapper orderPaymentPayloadMapper;
+
+    @Override
+    @Transactional
+    public PageResponse<OrderHistoryDTO> getOrderHistory(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Query 1: Lấy danh sách Order của user theo trang
+        Page<OrderEntity> orderPage = orderRepo.findByUserIdWithStatusAndPayment(userId, pageable);
+
+        if (orderPage.isEmpty()) {
+            return PageResponse.from(orderPage.map(o -> null));
+        }
+
+        // Gom toàn bộ orderId của trang hiện tại
+        // Lấy danh sách các đơn hàng từ trang hiện tại
+        List<OrderEntity> orderList = orderPage.getContent();
+        //Tạo một danh sách rỗng để gom các id
+        List<Long> orderIds = new ArrayList<>();
+        //Duyệt qua từng đơn hàng và nhét id vào danh sách
+        for (OrderEntity order : orderList) {
+            Long id = order.getId();
+            orderIds.add(id);
+        }
+
+
+        //Lấy tất cả sản phẩm của các đơn hàng trong trang (1 câu query)
+        List<OrderVariantEntity> allItems = orderVariantRepo.findByOrderIdInWithDetails(orderIds);
+
+
+
+        // Phân loại sản phẩm vào từng mã đơn hàng
+        Map<Long, List<OrderVariantEntity>> itemsByOrderId = new HashMap<>();
+
+        for (OrderVariantEntity item : allItems) {
+            Long orderId = item.getOrder().getId();
+
+            // Nếu trong Map chưa có danh sách cho orderId này, ta tạo một danh sách mới
+            if (!itemsByOrderId.containsKey(orderId)) {
+                itemsByOrderId.put(orderId, new ArrayList<>());
+            }
+
+            // Nhét sản phẩm này vào đúng danh sách của orderId đó
+            itemsByOrderId.get(orderId).add(item);
+        }
+
+
+    //Ghép từng Đơn hàng với Sản phẩm tương ứng sang DTO
+        List<OrderHistoryDTO> dtoList = new ArrayList<>();
+
+        for (OrderEntity order : orderPage.getContent()) {
+            Long orderId = order.getId();
+
+            // Lấy ra danh sách sản phẩm thuộc về đơn hàng này
+            List<OrderVariantEntity> items = itemsByOrderId.get(orderId);
+
+            // Nếu đơn này vì lý do nào đó không có sản phẩm, tạo danh sách rỗng để không bị lỗi Null
+            if (items == null) {
+                items = new ArrayList<>();
+            }
+
+            // Gọi Mapper để tạo DTO
+            OrderHistoryDTO dto = OrderHistoryMapper.toDTO(order, items);
+            dtoList.add(dto);
+        }
+
+        //Đóng gói lại thành đối tượng Page và trả về
+        Page<OrderHistoryDTO> dtoPage = new PageImpl<>(dtoList, pageable, orderPage.getTotalElements());
+
+        return PageResponse.from(dtoPage);
+    }
 
 
     @Override
