@@ -4,8 +4,8 @@ import java.util.List;
 import java.time.Duration;
 
 
-import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 
 import org.springframework.stereotype.Service;
@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 
 import com.ndt.capstone.dto.SizeDTO;
+import com.ndt.capstone.mapper.SizeMapper;
 import com.ndt.capstone.repository.SizeRepository;
 import com.ndt.capstone.service.contract.SizeService;
 
@@ -66,12 +67,7 @@ public class SizeServiceImpl implements SizeService {
             List<SizeDTO> sizes = sizeRepository
                 .findAll()
                 .stream()
-                .map(s -> {
-                    SizeDTO dto = new SizeDTO();
-                    dto.setId(s.getId());
-                    dto.setName(s.getName());
-                    return dto;
-                })
+                .map(SizeMapper::toDTO)
                 .toList();
 
             // Caching

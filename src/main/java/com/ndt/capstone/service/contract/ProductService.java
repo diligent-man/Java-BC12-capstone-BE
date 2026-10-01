@@ -3,14 +3,14 @@ package com.ndt.capstone.service.contract;
 import java.util.List;
 
 
-import com.ndt.capstone.dto.product.ProductDetailDTO;
-import com.ndt.capstone.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 
-import com.ndt.capstone.dto.product.ProductDTO;
 import com.ndt.capstone.payload.request.product.*;
+
+import com.ndt.capstone.dto.product.ProductDTO;
+import com.ndt.capstone.dto.product.ProductDetailDTO;
 
 
 public interface ProductService {
@@ -23,11 +23,14 @@ public interface ProductService {
     Page<ProductDTO> getPagedProducts(Pageable pageable);
 
 
-    Page<ProductDTO> filterProduct(ProductFilterRequest request, Pageable pageable);
+    Page<ProductDTO> filterProduct(ProductFilterRequest req, Pageable pageable);
+
 
     List<ProductDTO> searchByName(String name);
 
-    Long insertProduct(InsertProductRequest productRequest);
 
-    void insertVariant(InsertVariantRequest variantRequest);
+    String insertProduct(InsertProductRequest req);
+
+
+    void insertVariant(InsertVariantRequest req);
 }

@@ -31,7 +31,9 @@ CREATE TABLE variant
     images      text,
     quantity    int       NOT NULL,
     price       decimal(11, 2),
-    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+    create_date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT UQ_VARIANT_PRODUCT_COLOR_SIZE UNIQUE (id_product, id_color, id_size)
 );
 
 

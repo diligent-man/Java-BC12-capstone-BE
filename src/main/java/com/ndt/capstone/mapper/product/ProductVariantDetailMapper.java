@@ -9,6 +9,9 @@ import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 import com.ndt.capstone.projection.product.ProductVariantRow;
 
 
+import static com.ndt.capstone.utils.ImageUtils.buildVariantImagePath;
+
+
 public class ProductVariantDetailMapper {
     private ProductVariantDetailMapper() {
     }
@@ -56,11 +59,5 @@ public class ProductVariantDetailMapper {
                     .build();
             })
             .toList();
-    }
-
-
-    private static String buildVariantImagePath(String brand, String productName, String image) {
-        productName = productName.replace(" ", "_");
-        return Paths.get(brand, productName, image).toString();
     }
 }

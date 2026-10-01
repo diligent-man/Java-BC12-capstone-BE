@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class ProductDTO {
-
     private Long id;
 
     private String name;
@@ -16,4 +15,6 @@ public class ProductDTO {
     private BigDecimal price;
 
     private String image;
+
+    private String brandName;
 }

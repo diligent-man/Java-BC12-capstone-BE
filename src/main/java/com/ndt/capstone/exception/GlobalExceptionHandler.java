@@ -1,5 +1,6 @@
 package com.ndt.capstone.exception;
 
+import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler implements BaseExceptionHandler {
     })
     public ResponseEntity<ApiErrorResponse> handleGenericException(GenericException ex) {
         return buildResponse(ex.getHttpStatusCode(), ex.getMessage());
+    }
+
+
+    @ExceptionHandler({
+        SQLException.class
+    })
+    public ResponseEntity<ApiErrorResponse> handleSqlException(SQLException ex) {
+        return buildResponse(GenericErrMsg.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
 

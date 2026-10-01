@@ -48,7 +48,8 @@ public class SecurityConfig {
                     authorizer.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
 
                     authorizer.requestMatchers(HttpMethod.GET, "/product/**").permitAll();
-                    authorizer.requestMatchers(HttpMethod.POST, "/product/**").permitAll();
+                    authorizer.requestMatchers(HttpMethod.POST, "/product/**").hasAuthority(Role.ROLE_ADMIN.name());
+
                     authorizer.requestMatchers(HttpMethod.GET, "/brand/**").permitAll();
                     authorizer.requestMatchers(HttpMethod.GET, "/color/**").permitAll();
                     authorizer.requestMatchers(HttpMethod.GET, "/size/**").permitAll();

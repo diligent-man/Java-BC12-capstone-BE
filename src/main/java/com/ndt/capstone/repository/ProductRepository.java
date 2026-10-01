@@ -1,9 +1,10 @@
 package com.ndt.capstone.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 
 import org.springframework.stereotype.Repository;
@@ -41,6 +42,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, J
         """)
     List<ProductVariantRow> findProductDetailByName(@Param("name") String name);
 
-
     List<ProductEntity> findByNameContainingIgnoreCase(String name);
+
+    Page<ProductEntity> findAllByVariantsIsNotEmpty(Pageable pageable);
+
+    boolean existsByNameContainingIgnoreCaseAndBrand_Id(String name, Integer brandId);
 }

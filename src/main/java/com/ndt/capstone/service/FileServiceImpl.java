@@ -1,5 +1,6 @@
 package com.ndt.capstone.service;
 
+import java.io.File;
 import java.nio.file.*;
 
 import java.util.Objects;
@@ -47,18 +48,20 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    public void save(MultipartFile file, String relativePath) {
-        Path dst = Paths.get(relativePath, Objects.requireNonNull(file.getOriginalFilename()));
-
+    public void save(MultipartFile file, String... relativePath) {
         try {
+            Path dst = Paths.get(root.toString(), relativePath);
+            Files.createDirectories(dst);
+            Objects.requireNonNull(file.getOriginalFilename());  // check null later
+
             Files.copy(
                 file.getInputStream(),
-                root.resolve(dst),
+                dst.resolve(file.getOriginalFilename()),
                 StandardCopyOption.REPLACE_EXISTING
             );
         } catch (FileAlreadyExistsException e) {
             throw new FileException(FileErrMsg.FILE_EXISTED);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new FileException(
                 FileErrMsg.FILE_UPLOAD_FAILED,
                 String.format("Could not save %s file to %s", file.getOriginalFilename(), root)

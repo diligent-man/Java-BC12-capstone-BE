@@ -10,7 +10,6 @@ import com.ndt.capstone.payload.request.payment.*;
 import jakarta.transaction.Transactional;
 
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
@@ -94,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 
         CountryEntity country = countryRepository
             .findByIso(req.getBilling().getCountryIso())
-            .orElseThrow(() -> new CountryException(CountryErrMsg.NOT_FOUND));
+            .orElseThrow(() -> new CountryException(CountryErrMsg.COUNTRY_NOT_FOUND));
 
         PaymentStatusEntity paymentStatus = paymentStatusRepo
             .findByName(PaymentStatus.PENDING.name())
@@ -107,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ProductException(ProductErrMsg.PRODUCT_VARIANT_NOT_FOUND));
 
             if (productVariantRepo.decreaseQuantity(variant.getSku(), item.getQuantity()) == 0)
-                throw new ProductException(ProductErrMsg.OUT_OF_STOCK);
+                throw new ProductException(ProductErrMsg.VARIANT_OUT_OF_STOCK);
 
             orderVariantRepo.save(CheckoutMapper.toOrderVariantEntity(savedOrder, item, variant));
         }

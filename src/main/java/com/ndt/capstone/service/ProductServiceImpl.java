@@ -1,14 +1,22 @@
 package com.ndt.capstone.service;
 
 import java.util.*;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import java.time.Duration;
+import java.util.stream.Collectors;
 
-
-import com.ndt.capstone.mapper.product.*;
-import com.ndt.capstone.payload.request.product.InsertVariantRequest;
-import jakarta.persistence.*;
 
 import jakarta.transaction.Transactional;
+
+
+import lombok.extern.slf4j.Slf4j;
+
+
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 
 import org.springframework.data.domain.*;
@@ -19,40 +27,51 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.core.type.TypeReference;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
+
 
 
 import com.ndt.capstone.entity.*;
+import com.ndt.capstone.repository.*;
+import com.ndt.capstone.dto.product.*;
+import com.ndt.capstone.mapper.product.*;
+import com.ndt.capstone.enums.exception.*;
+import com.ndt.capstone.exception.product.*;
+import com.ndt.capstone.payload.request.product.*;
 
-import com.ndt.capstone.dto.product.ProductDTO;
 import com.ndt.capstone.spec.ProductSpec;
-
-
-import com.ndt.capstone.enums.exception.ProductErrMsg;
-
-import com.ndt.capstone.repository.ProductRepository;
-import com.ndt.capstone.repository.ProductVariantRepository;
+import com.ndt.capstone.enums.file.UploadImageType;
+import com.ndt.capstone.projection.product.ProductVariantRow;
 
 import com.ndt.capstone.service.contract.FileService;
 import com.ndt.capstone.service.contract.ProductService;
-
-import com.ndt.capstone.exception.product.ProductException;
-import com.ndt.capstone.projection.product.ProductVariantRow;
-
-import com.ndt.capstone.payload.request.product.ProductFilterRequest;
-import com.ndt.capstone.payload.request.product.InsertProductRequest;
 
 import com.ndt.capstone.dto.product.ProductDetailDTO;
 import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 
 
+@Slf4j
 @Service
 public class ProductServiceImpl implements ProductService {
+    private final TagRepository tagRepo;
 
-    private final ProductRepository productRepository;
+    private final SizeRepository sizeRepo;
 
-    private final ProductVariantRepository productVariantRepository;
+    private final BrandRepository brandRepo;
+
+    private final ColorRepository colorRepo;
+
+    private final ProductRepository productRepo;
+
+    private final CategoryRepository categoryRepo;
+
+    private final ProductTagRepository productTagRepo;
+
+    private final ProductVariantRepository productVariantRepo;
+
+    private final ProductCategoryRepository productCategoryRepo;
 
     private final FileService fileService;
 
@@ -62,6 +81,8 @@ public class ProductServiceImpl implements ProductService {
 
     private final String defaultImage;
 
+    private final String uploadImagePath;
+
     private final String imageSeparator;
 
     private final String productAllCacheKey;
@@ -70,36 +91,49 @@ public class ProductServiceImpl implements ProductService {
 
     private final Integer cacheDuration;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
 
     public ProductServiceImpl(
-        ProductRepository productRepository,
-        ProductVariantRepository productVariantRepository,
+        TagRepository tagRepo,
+        SizeRepository sizeRepo,
+        BrandRepository brandRepo,
+        ColorRepository colorRepo,
+        ProductRepository productRepo,
+        CategoryRepository categoryRepo,
+        ProductTagRepository productTagRepo,
+        ProductVariantRepository productVariantRepo,
+        ProductCategoryRepository productCategoryRepo,
         FileService fileService,
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
-        EntityManager entityManager,
         @Value(value = "${file.upload.image.default-image-name:default_cloth.jpg}") String defaultImage,
+        @Value(value = "${file.upload.image.path:./data/upload/images}") String uploadImagePath,
         @Value(value = "${file.upload.image.default-image-separator:, }") String imageSeparator,
         @Value(value = "${cache.product.prefix:product}") String cacheKeyPrefix,
         @Value(value = "${cache.product.all.cache-duration:60000}") Integer cacheDuration
     ) {
-        this.productRepository = productRepository;
-        this.productVariantRepository = productVariantRepository;
+        this.tagRepo = tagRepo;
+        this.sizeRepo = sizeRepo;
+        this.brandRepo = brandRepo;
+        this.colorRepo = colorRepo;
+        this.productRepo = productRepo;
+        this.categoryRepo = categoryRepo;
+        this.productTagRepo = productTagRepo;
+        this.productVariantRepo = productVariantRepo;
+        this.productCategoryRepo = productCategoryRepo;
+
         this.fileService = fileService;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
-        this.entityManager = entityManager;
 
         this.defaultImage = defaultImage;
+        this.uploadImagePath = uploadImagePath;
         this.imageSeparator = imageSeparator;
         this.cacheDuration = cacheDuration;
 
         // post-setup
         this.productAllCacheKey = cacheKeyPrefix + ":all";
         this.productDetailCacheKey = cacheKeyPrefix + ":detail:";
+
     }
 
 
@@ -118,7 +152,7 @@ public class ProductServiceImpl implements ProductService {
             }
 
             // No cache -> Read db
-            List<ProductDTO> products = productRepository
+            List<ProductDTO> products = productRepo
                 .findAll()
                 .stream()
                 .map(ele -> ProductMapper.toDTO(ele, defaultImage))
@@ -138,6 +172,7 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+
     @Override
     public ProductDetailDTO getProductDetail(String name) {
         try {
@@ -153,7 +188,7 @@ public class ProductServiceImpl implements ProductService {
             }
 
             // No cache -> Read db
-            List<ProductVariantRow> rows = productRepository.findProductDetailByName(name);
+            List<ProductVariantRow> rows = productRepo.findProductDetailByName(name);
             if (rows.isEmpty()) {
                 throw new ProductException(ProductErrMsg.PRODUCT_NOT_FOUND, String.format("Product (%s) not found: ", name));
             }
@@ -178,8 +213,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductDTO> getPagedProducts(Pageable pageable) {
-        return productRepository
-            .findAll(pageable)
+        return productRepo
+            .findAllByVariantsIsNotEmpty(pageable)
             .map(ele -> ProductMapper.toDTO(ele, defaultImage));
     }
 
@@ -193,55 +228,130 @@ public class ProductServiceImpl implements ProductService {
             req.getBrands(),
             req.getPriceRanges()
         );
-        return productRepository
+        return productRepo
             .findAll(spec, pageable)
             .map(ele -> ProductMapper.toDTO(ele, defaultImage));
     }
 
+
     @Override
     public List<ProductDTO> searchByName(String name) {
-        return productRepository
-                .findByNameContainingIgnoreCase(name)
-                .stream()
-                .map(p -> ProductMapper.toDTO(p, defaultImage))
-                .toList();
+        return productRepo
+            .findByNameContainingIgnoreCase(name)
+            .stream()
+            .map(p -> ProductMapper.toDTO(p, defaultImage))
+            .toList();
     }
+
 
     @Override
     @Transactional
-    // biến nguyên hàm được đặt trên thành 1 giao dịch, nếu cả hàm chạy thành công thì mới thực hiện truy vấn tới database
-    public Long insertProduct(InsertProductRequest productRequest) {
-        ProductEntity product = new ProductEntity();
-        product.setName(productRequest.getName());
-        product.setDescription(productRequest.getDescription());
-        product.setInformation(productRequest.getInformation());
-        product.setPrice(productRequest.getPrice());
-        BrandEntity brand = entityManager.getReference(BrandEntity.class, productRequest.getIdBrand());
-        product.setBrand(brand);
-        ProductEntity saved = productRepository.save(product);
-        return saved.getId();   // trả về id để FE dùng ở bước 2
+    public String insertProduct(InsertProductRequest req) {
+        BrandEntity brand = brandRepo
+            .findByNameContainingIgnoreCase(req.getBrandName())
+            .orElseThrow(() -> new BrandException(BrandErrMsg.BRAND_NOT_FOUND));
+
+        if (productRepo.existsByNameContainingIgnoreCaseAndBrand_Id(req.getName(), brand.getId()))
+            throw new ProductException(ProductErrMsg.PRODUCT_EXISTED_BY_BRAND);
+
+        ProductEntity saved = productRepo.save(ProductMapper.toEntity(req, brand));
+
+        Set<CategoryEntity> categories = req.getCategoryNames()
+            .stream()
+            .map(ele -> categoryRepo
+                .findByName(ele)
+                .orElseThrow(() -> new CategoryException(CategoryErrMsg.CATEGORY_NOT_FOUND))
+            )
+            .collect(Collectors.toSet());
+
+        productCategoryRepo.saveAll(
+            categories.stream()
+                .map(c -> new ProductCategoryEntity(saved, c))
+                .toList()
+        );
+
+        Set<TagEntity> tags = req.getTagNames()
+            .stream()
+            .map(ele -> tagRepo
+                .findByName(ele)
+                .orElseThrow(() -> new TagException(TagErrMsg.TAG_NOT_FOUND))
+            )
+            .collect(Collectors.toSet());
+
+        productTagRepo.saveAll(
+            tags.stream()
+                .map(c -> new ProductTagEntity(saved, c))
+                .toList()
+        );
+
+        evictAfterCommit(productAllCacheKey);
+        return saved.getName();
     }
+
 
     @Override
     @Transactional
-    public void insertVariant(InsertVariantRequest variantRequest) {
-        fileService.save(variantRequest.getFile()); // lưu file ảnh
+    public void insertVariant(InsertVariantRequest req) {
+        ProductEntity product = productRepo
+            .findById(req.getIdProduct())
+            .orElseThrow(() -> new ProductException(ProductErrMsg.PRODUCT_NOT_FOUND));
 
-        ProductEntity product = productRepository
-            .findById(variantRequest.getIdProduct())
-            .orElseThrow(() -> new RuntimeException("Product not found: " + variantRequest.getIdProduct()));
+        ColorEntity color = colorRepo
+            .findByNameContainingIgnoreCase(req.getColorName())
+            .orElseThrow(() -> new ColorException(ColorErrMsg.COLOR_NOT_FOUND));
 
-        ColorEntity color = entityManager.getReference(ColorEntity.class, variantRequest.getIdColor());
-        SizeEntity  size  = entityManager.getReference(SizeEntity.class,  variantRequest.getIdSize());
+        SizeEntity size = sizeRepo
+            .findByNameContainingIgnoreCase(req.getSizeName())
+            .orElseThrow(() -> new SizeException(SizeErrMsg.SIZE_NOT_FOUND));
+
+        if (productVariantRepo.existsByProductIdAndColorIdAndSizeId(product.getId(), color.getId(), size.getId()))
+            throw new ProductException(ProductErrMsg.VARIANT_EXISTED);
+
+        List<String> uploadedURIs = new ArrayList<>();
+        for (MultipartFile file : req.getFiles()) {
+            Path dst = Paths.get(
+                uploadImagePath,
+                UploadImageType.PRODUCT.getFolder(),
+                req.getBrandName(),
+                product.getName()
+            );
+
+            fileService.save(file, dst.toString());
+            uploadedURIs.add(file.getOriginalFilename());
+        }
 
         ProductVariantEntity variant = new ProductVariantEntity();
         variant.setProduct(product);
         variant.setColor(color);
         variant.setSize(size);
-        variant.setQuantity(variantRequest.getQuantity());
-        variant.setPrice(product.getPrice());
-        variant.setImages(variantRequest.getFile().getOriginalFilename());
+        variant.setQuantity(req.getQuantity());
+        variant.setPrice(req.getPrice());
+        variant.setImages(String.join(imageSeparator, uploadedURIs));
 
-        productVariantRepository.save(variant);
+        productVariantRepo.save(variant);
+        evictAfterCommit(productAllCacheKey, productDetailCacheKey + product.getName());
+    }
+
+
+    private void evictAfterCommit(String... keys) {
+        Runnable evict = () -> {
+            try {
+                redisTemplate.delete(Arrays.asList(keys));
+            } catch (Exception e) {
+                // A failed eviction must not fail the request; the TTL will clean up eventually.
+                log.warn("Cache eviction failed for keys {}", Arrays.toString(keys), e);
+            }
+        };
+
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    evict.run();
+                }
+            });
+        } else {
+            evict.run();
+        }
     }
 }

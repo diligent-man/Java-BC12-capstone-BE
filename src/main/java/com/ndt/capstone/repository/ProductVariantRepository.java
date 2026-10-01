@@ -20,6 +20,9 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
     Optional<ProductVariantEntity> findBySku(@NotNull Long sku);
 
 
+    boolean existsByProductIdAndColorIdAndSizeId(Long productId, Integer colorId, Integer sizeId);
+
+
     @Modifying
     @Query("""
             UPDATE variant v

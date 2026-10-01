@@ -12,7 +12,7 @@ public interface FileService {
     void init();
 
 
-    void save(MultipartFile file, String relativePath);
+    void save(MultipartFile file, String... relativePath);
 
 
     Resource load(String filename, String... relativePath);

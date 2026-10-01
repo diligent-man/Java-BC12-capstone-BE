@@ -4,8 +4,8 @@ import java.util.List;
 import java.time.Duration;
 
 
-import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 
 import com.ndt.capstone.dto.ColorDTO;
-import com.ndt.capstone.entity.ColorEntity;
+import com.ndt.capstone.mapper.ColorMapper;
 import com.ndt.capstone.repository.ColorRepository;
 import com.ndt.capstone.service.contract.ColorService;
 
@@ -23,7 +23,7 @@ import com.ndt.capstone.service.contract.ColorService;
 public class ColorServiceImpl implements ColorService {
     private final String colorAllCacheKey;
 
-    private final ColorRepository colorRepository;
+    private final ColorRepository colorRepo;
 
     private final StringRedisTemplate redisTemplate;
 
@@ -33,13 +33,13 @@ public class ColorServiceImpl implements ColorService {
 
 
     public ColorServiceImpl(
-        ColorRepository colorRepository,
+        ColorRepository colorRepo,
         StringRedisTemplate redisTemplate,
         ObjectMapper objectMapper,
         @Value(value = "${cache.color.prefix:color}") String cacheKeyPrefix,
         @Value(value = "${cache.color.all.cache-duration:60000}") Integer allCacheDuration
     ) {
-        this.colorRepository = colorRepository;
+        this.colorRepo = colorRepo;
         this.redisTemplate = redisTemplate;
         this.objectMapper = objectMapper;
         this.allCacheDuration = allCacheDuration;
@@ -64,15 +64,10 @@ public class ColorServiceImpl implements ColorService {
             }
 
             // No cache -> Read db
-            List<ColorDTO> colors = colorRepository
+            List<ColorDTO> colors = colorRepo
                 .findAll()
                 .stream()
-                .map(c -> {
-                    ColorDTO dto = new ColorDTO();
-                    dto.setId(c.getId());
-                    dto.setName(c.getName());
-                    return dto;
-                })
+                .map(ColorMapper::toDTO)
                 .toList();
 
             // Caching

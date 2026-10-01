@@ -11,7 +11,7 @@ import com.ndt.capstone.validation.FileValidator;
 
 
 @Documented
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = FileValidator.class)
 public @interface ValidFile {
@@ -24,7 +24,7 @@ public @interface ValidFile {
     Class<? extends Payload>[] payload() default {};
 
 
-    // Default: 5MB
+    // Default: 10MB
     long maxSize() default 5242880;
 
 

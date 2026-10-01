@@ -10,6 +10,7 @@ import lombok.*;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "product_tag")
 @IdClass(ProductTagEntity.class)
 public class ProductTagEntity {

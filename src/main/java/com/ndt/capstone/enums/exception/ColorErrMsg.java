@@ -13,8 +13,8 @@ import com.ndt.capstone.exception.ErrorMsg;
 @Getter
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-public enum CountryErrMsg implements ErrorMsg {
-    COUNTRY_NOT_FOUND(HttpStatus.NOT_FOUND, "Country not found"),
+public enum ColorErrMsg implements ErrorMsg {
+    COLOR_NOT_FOUND(HttpStatus.NOT_FOUND, "Color not found"),
     ;
 
     private final HttpStatusCode httpStatusCode;

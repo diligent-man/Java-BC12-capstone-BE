@@ -1,12 +1,17 @@
 package com.ndt.capstone.mapper.product;
 
 import java.util.*;
-import java.nio.file.Paths;
 
+
+import org.jspecify.annotations.NonNull;
+
+
+import com.ndt.capstone.entity.*;
 
 import com.ndt.capstone.dto.product.ProductDTO;
-import com.ndt.capstone.entity.ProductEntity;
-import com.ndt.capstone.entity.ProductVariantEntity;
+import com.ndt.capstone.payload.request.product.InsertProductRequest;
+
+import static com.ndt.capstone.utils.ImageUtils.buildVariantImagePath;
 
 
 public class ProductMapper {
@@ -14,9 +19,10 @@ public class ProductMapper {
     }
 
 
-    public static ProductDTO toDTO(ProductEntity obj, String defaultImage) {
-        if (obj == null)
-            return null;
+    public static ProductDTO toDTO(
+        @NonNull ProductEntity obj,
+        String defaultImage
+    ) {
 
         ProductDTO dto = new ProductDTO();
 
@@ -24,8 +30,11 @@ public class ProductMapper {
         dto.setName(obj.getName());
         dto.setPrice(obj.getPrice());
 
-        Set<ProductVariantEntity> variants = obj.getVariants();
+        if (Objects.nonNull(obj.getBrand())) {
+            dto.setBrandName(obj.getBrand().getName());
+        }
 
+        Set<ProductVariantEntity> variants = obj.getVariants();
         // always retrieve the first variant of specific product
         if (!variants.isEmpty()) {
             dto.setImage(
@@ -62,8 +71,13 @@ public class ProductMapper {
     }
 
 
-    private static String buildVariantImagePath(String brand, String productName, String image) {
-        productName = productName.replace(" ", "_");
-        return Paths.get(brand, productName, image).toString();
+    public static ProductEntity toEntity(InsertProductRequest obj, BrandEntity brand) {
+        ProductEntity entity = new ProductEntity();
+        entity.setName(obj.getName());
+        entity.setDescription(obj.getDescription());
+        entity.setInformation(obj.getInformation());
+        entity.setPrice(obj.getPrice());
+        entity.setBrand(brand);
+        return entity;
     }
 }

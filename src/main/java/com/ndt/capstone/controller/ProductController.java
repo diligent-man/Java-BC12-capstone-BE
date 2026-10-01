@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.web.PageableDefault;
@@ -26,6 +27,7 @@ import com.ndt.capstone.payload.response.PageResponse;
 import com.ndt.capstone.payload.request.product.ProductFilterRequest;
 import com.ndt.capstone.payload.request.product.InsertProductRequest;
 import com.ndt.capstone.payload.request.product.InsertVariantRequest;
+
 
 @RestController
 @RequestMapping("/product")
@@ -91,33 +93,35 @@ public class ProductController {
         );
     }
 
+
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> searchProducts(@RequestParam String name) {
         return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .data(productService.searchByName(name))
-                        .build()
+            ApiResponse.builder()
+                .data(productService.searchByName(name))
+                .build()
         );
     }
+
 
     @PostMapping(value = "/insert")
-    public ResponseEntity<ApiResponse> insertProduct(@RequestBody InsertProductRequest request) {
-        Long productId = productService.insertProduct(request);
+    public ResponseEntity<ApiResponse> insertProduct(@Valid @RequestBody InsertProductRequest req) {
         return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .message("Product created successfully")
-                        .data(productId)   // trả về id để FE dùng ở bước 2
-                        .build()
+            ApiResponse.builder()
+                .message("Product created successfully")
+                .data(productService.insertProduct(req))
+                .build()
         );
     }
 
-    @PostMapping(value = "/variant/insert", consumes = "multipart/form-data")
-    public ResponseEntity<ApiResponse> insertVariant(@ModelAttribute InsertVariantRequest request) {
-        productService.insertVariant(request);
+
+    @PostMapping(value = "/variant/insert", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> insertVariant(@Valid @ModelAttribute InsertVariantRequest req) {
+        productService.insertVariant(req);
         return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .message("Variant added successfully")
-                        .build()
+            ApiResponse.builder()
+                .message("Variant added successfully")
+                .build()
         );
     }
 }

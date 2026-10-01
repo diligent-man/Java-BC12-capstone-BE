@@ -1,12 +1,14 @@
 package com.ndt.capstone.controller;
 
-import com.ndt.capstone.service.contract.ColorService;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.ResponseEntity;
+
+
 import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.service.contract.ColorService;
 
 
 @RestController
@@ -14,6 +16,7 @@ import com.ndt.capstone.payload.response.ApiResponse;
 @RequiredArgsConstructor
 public class ColorController {
     private final ColorService colorService;
+
 
     @GetMapping
     public ResponseEntity<ApiResponse> getColors() {

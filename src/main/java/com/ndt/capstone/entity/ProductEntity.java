@@ -40,7 +40,7 @@ public class ProductEntity {
     private BrandEntity brand;
 
 
-    @Column(name = "create_date")
+    @Column(name = "create_date", insertable = false)
     private LocalDateTime createDate;
 
 
