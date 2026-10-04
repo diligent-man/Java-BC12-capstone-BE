@@ -1,12 +1,22 @@
+server:
+    address: ${APPLICATION_ADDRESS}
+    port: ${APPLICATION_PORT}
+
+    # performance tuning
+    tomcat:
+        threads:
+            max: 200       # Max worker threads
+            min-spare: 10  # Min idle threads
+        max-connections: 10000
+        accept-count: 100
+        connection-timeout: 20000
+
 spring:
     application:
         name: capstone
 
-    config:
-        import: "optional:file:.env[.properties]"
-
     datasource:
-        url: jdbc:mysql://localhost:${MYSQL_PORT}/${MYSQL_DATABASE}?connectionTimeZone=Asia/Ho_Chi_Minh&forceConnectionTimeZoneToSession=true
+        url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?connectionTimeZone=Asia/Ho_Chi_Minh&forceConnectionTimeZoneToSession=true
         username: ${MYSQL_USER}
         password: ${MYSQL_PASSWORD}
 
@@ -17,11 +27,11 @@ spring:
             connection-timeout: 30000
     jpa:
         show-sql: false
-        generate-ddl: true
+        generate-ddl: false
         open-in-view: false  # Disable OSIV — prevents lazy loading in views
 
         hibernate:
-            ddl-auto: none
+            ddl-auto: validate
 
         properties:
             hibernate:
@@ -66,21 +76,10 @@ spring:
         problemdetails:
             enabled: true
 
-server:
-    address: localhost
-    port: ${APPLICATION_PORT}
 
-    # performance tuning
-    tomcat:
-        threads:
-            max: 200       # Max worker threads
-            min-spare: 10  # Min idle threads
-        max-connections: 10000
-        accept-count: 100
-        connection-timeout: 20000
 
 jwt:
-    secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
+    secret: ${JWT_SIGN}
     #    expiration: 900000 # 15 mins
     expiration: 86400000 # 15 mins
 

@@ -10,31 +10,50 @@
 	</parent>
 	<groupId>com.ndt.capstone</groupId>
 	<artifactId>be</artifactId>
-	<version>0.0.1</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-
+	<version>0.1.0</version>
+	<name>Uniclub Back-end</name>
+	<description>A back-end server for Uniclub project from Cybersoft</description>
+    <url/>
+    <licenses>
+        <license>
+            <name>MIT License, Version 2.0</name>
+            <url>https://mit-license.org/</url>
+        </license>
+    </licenses>
     <developers>
-		<developer/>
+        <developer>
+            <name>Nguyen Duc Trong</name>
+            <email>trongnd02@gmail.com</email>
+            <!-- <organization></organization> -->
+            <!-- <organizationUrl></organizationUrl> -->
+        </developer>
+        <developer>
+            <name>Thai Minh Dat</name>
+            <email>bominhdat05@gmail.com</email>
+            <!-- <organization></organization> -->
+            <!-- <organizationUrl></organizationUrl> -->
+        </developer>
+        <developer>
+            <name>Lam Hoang Dung</name>
+            <email>hoanglamdung13092005@gmail.com</email>
+            <!-- <organization></organization> -->
+            <!-- <organizationUrl></organizationUrl> -->
+        </developer>
 	</developers>
 
     <scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
+		<url>https://github.com/diligent-man/Java-BC12-capstone-BE</url>
 	</scm>
 
     <properties>
 		<java.version>21</java.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
-        <!-- Spring framework -->
+        <!-- Spring boot starter -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -59,12 +78,27 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- Spring framework -->
+        <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!-- Spring framework test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -124,19 +158,6 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
 
 		<!-- thư viện lettuce này lấy trên manven để có thể áp được cho các ngôn ngữ khác,
 		nêu chỉ khai báo thư viện starter-data-redis thì nó mặc đỉnh chỉ áp dụng được cho JAVA-->
@@ -153,6 +174,7 @@
 	</dependencies>
 
 	<build>
+        <finalName>be</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -169,6 +191,9 @@
             <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <parameters>true</parameters>
+                </configuration>
 				<executions>
 					<execution>
 						<id>default-compile</id>

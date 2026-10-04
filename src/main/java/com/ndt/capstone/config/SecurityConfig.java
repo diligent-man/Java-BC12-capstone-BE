@@ -47,7 +47,8 @@ public class SecurityConfig {
             .addFilterBefore(authenFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(
                 authorizer -> {
-                    authorizer.requestMatchers("/api/jwt/*").permitAll();
+                    authorizer.requestMatchers("/api/jwt/**").permitAll();
+                    authorizer.requestMatchers("/actuator/health/**").permitAll();
                     authorizer.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
 
                     authorizer.requestMatchers(HttpMethod.GET, "/product/**").permitAll();
@@ -63,6 +64,8 @@ public class SecurityConfig {
                     authorizer.requestMatchers("/error").permitAll(); // Cho phép Spring Boot hiển thị đúng mã lỗi thực sự (VD: 400, 500) thay vì bị chặn thành 403
 
                     authorizer.requestMatchers("/api/admin/**").hasAuthority(Role.ROLE_ADMIN.name());
+
+
 
                     authorizer.anyRequest().authenticated();
                 }

@@ -1,8 +1,3 @@
 #!/bin/bash
-PROJECT_ROOT="$(pwd)/../../.."
 
-docker compose down \
-    --remove-orphans \
-    --force-recreate \
-    --build \
-    --detach
+docker compose -p java_bc12_capstone down --remove-orphans

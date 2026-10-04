@@ -1,11 +1,11 @@
 #!/bin/bash
 
-PROJECT_ROOT=../../..
-DOCKER_ROOT="docker"
-CONTEXT_PATH="$PROJECT_ROOT/${DOCKER_ROOT}/be"
+PROJECT_ROOT=../../../..
+CONTEXT_PATH="$PROJECT_ROOT/"
+APP_VERSION="$(cd "$PROJECT_ROOT" && ./mvnw -q -DforceStdout help:evaluate -Dexpression=project.version)"
 
 docker build \
-    --tag java_bc12_capstone/be:1.0.0 \
+    --tag java_bc12_capstone/be:${APP_VERSION} \
     --platform linux/amd64 \
     --file "$CONTEXT_PATH/Dockerfile" \
     $CONTEXT_PATH

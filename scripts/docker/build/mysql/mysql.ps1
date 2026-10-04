@@ -1,4 +1,4 @@
-$PROJECT_ROOT = "../../.."
+$PROJECT_ROOT = "../../../.."
 $DOCKER_ROOT = "docker"
 
 $CONTEXT_PATH = "$PROJECT_ROOT/$DOCKER_ROOT/mysql"
