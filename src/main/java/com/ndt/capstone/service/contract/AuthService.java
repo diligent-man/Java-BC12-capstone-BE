@@ -1,7 +1,7 @@
 package com.ndt.capstone.service.contract;
 
-import com.ndt.capstone.payload.request.auth.LoginRequest;
-import com.ndt.capstone.payload.request.auth.SignupRequest;
+import com.ndt.capstone.payload.req.auth.LoginRequest;
+import com.ndt.capstone.payload.req.auth.SignupRequest;
 
 
 /** Handles credentials and token issuance. Lock state (Redis keys, TTLs, counters, admin vs. automatic locks) is its own concern */

@@ -36,5 +36,5 @@ build/
 .env**
 
 kafka_data/
-data/
+data*/
 jmeter.log

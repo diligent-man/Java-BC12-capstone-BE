@@ -10,9 +10,15 @@ spring:
         username: ${MYSQL_USER}
         password: ${MYSQL_PASSWORD}
 
+        # performance tuning
+        hikari:
+            maximum-pool-size: 20
+            minimum-idle: 5
+            connection-timeout: 30000
     jpa:
         show-sql: false
         generate-ddl: true
+        open-in-view: false  # Disable OSIV — prevents lazy loading in views
 
         hibernate:
             ddl-auto: none
@@ -22,6 +28,12 @@ spring:
                 format_sql: true
                 highlight_sql: true
 
+                # performance tuning
+                default_batch_fetch_size: 16
+
+                jdbc:
+                    batch_size: 50
+                generate_statistics: false  # Enable for debugging, disable in prod
     devtools:
         restart:
             enabled: true
@@ -42,18 +54,30 @@ spring:
             max-file-size: 10MB
             max-request-size: 100MB
 
-#    cache:
-#        type:
-#            redis:
-#                time-to-live: 100000        # ms — entries auto-expire after 10 min
-#                cache-null-values: false
-#                key-prefix: "products::"
-#                use-key-prefix: true
+    #    cache:
+    #        type:
+    #            redis:
+    #                time-to-live: 100000        # ms — entries auto-expire after 10 min
+    #                cache-null-values: false
+    #                key-prefix: "products::"
+    #                use-key-prefix: true
 
+    mvc:
+        problemdetails:
+            enabled: true
 
 server:
     address: localhost
     port: ${APPLICATION_PORT}
+
+    # performance tuning
+    tomcat:
+        threads:
+            max: 200       # Max worker threads
+            min-spare: 10  # Min idle threads
+        max-connections: 10000
+        accept-count: 100
+        connection-timeout: 20000
 
 jwt:
     secret: LTKw1Ba/s6nM6PoClDdEwk68UZ7cMBuqNGARAGIFowU=
@@ -70,7 +94,8 @@ file:
     upload:
         image:
             path: ${UPLOAD_IMAGE_PATH}
-            default-image-name: ${DEFAULT_VARIANT_IMAGE_NAME}
+            default-image: ${DEFAULT_VARIANT_IMAGE_NAME}
+            default-separator: ", "
 
 cache:
     product:
@@ -104,8 +129,6 @@ cache:
             all:
                 cache-duration: 900000 # 15 mins
 
-        exchange:
-            prefix: exchange_rate
     account:
         prefix: account
 
@@ -127,8 +150,9 @@ payment:
     exchange:
         base-currency: USD
         fallback-rate: 27000
-        refresh-interval: 7200000  # 1 day
+        refresh-interval: 7200000  # 2 hours
         api-url: https://api.exchangerate-api.com/v4/latest/
+        cache-prefix: exchange_rate
 
     vietqr:
         url: https://img.vietqr.io/image

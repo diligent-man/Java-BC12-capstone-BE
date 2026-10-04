@@ -1,17 +1,22 @@
 package com.ndt.capstone.mapper.order;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import com.ndt.capstone.dto.order.OrderHistoryDTO;
+
 import com.ndt.capstone.dto.order.OrderItemDTO;
+import com.ndt.capstone.dto.order.OrderHistoryDTO;
+
 import com.ndt.capstone.entity.OrderEntity;
+import com.ndt.capstone.entity.ProductEntity;
 import com.ndt.capstone.entity.OrderVariantEntity;
 import com.ndt.capstone.entity.ProductVariantEntity;
-import com.ndt.capstone.entity.ProductEntity;
 
 
 public class OrderHistoryMapper {
+    private OrderHistoryMapper() {
+    }
+
 
     public static OrderHistoryDTO toDTO(OrderEntity order, List<OrderVariantEntity> items) {
         OrderHistoryDTO dto = new OrderHistoryDTO();
@@ -38,7 +43,6 @@ public class OrderHistoryMapper {
             itemDTOs.add(itemDTO);
         }
         dto.setItems(itemDTOs);
-
         return dto;
     }
 
@@ -93,7 +97,6 @@ public class OrderHistoryMapper {
                 itemDTO.setProductName(product.getName());
             }
         }
-
         return itemDTO;
     }
 }

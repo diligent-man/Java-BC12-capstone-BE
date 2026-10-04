@@ -27,8 +27,8 @@ import com.ndt.capstone.service.contract.FileService;
 import com.ndt.capstone.enums.file.UploadImageType;
 import com.ndt.capstone.enums.exception.FileErrMsg;
 
-import com.ndt.capstone.payload.response.ApiResponse;
-import com.ndt.capstone.payload.request.file.ProductImageRequest;
+import com.ndt.capstone.payload.resp.ApiResponse;
+import com.ndt.capstone.payload.req.file.ProductImageRequest;
 
 
 @RestController

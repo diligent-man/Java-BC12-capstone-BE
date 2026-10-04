@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import com.ndt.capstone.entity.*;
-import com.ndt.capstone.repository.*;
+import com.ndt.capstone.repo.*;
 
 import com.ndt.capstone.enums.payment.PaymentStatus;
 import com.ndt.capstone.enums.exception.PaymentErrMsg;
@@ -29,13 +29,13 @@ public class OrderTimeoutJob {
     @Value("${payment.pending-timeout:120}")
     private Integer pendingTimeout;
 
-    private final OrderRepository orderRepo;
+    private final OrderRepo orderRepo;
 
-    private final OrderVariantRepository orderVariantRepo;
+    private final OrderVariantRepo orderVariantRepo;
 
-    private final PaymentStatusRepository paymentStatusRepo;
+    private final PaymentStatusRepo paymentStatusRepo;
 
-    private final ProductVariantRepository productVariantRepo;
+    private final ProductVariantRepo productVariantRepo;
 
 
     @Transactional
@@ -45,7 +45,7 @@ public class OrderTimeoutJob {
         if (!expiredOrders.isEmpty()) {
             for (OrderEntity order : expiredOrders) {
                 PaymentStatusEntity canceledStatus = paymentStatusRepo
-                    .findByName(PaymentStatus.CANCELED.name())
+                    .findByNameIgnoringCase(PaymentStatus.CANCELED.name())
                     .orElseThrow(() -> new PaymentException(PaymentErrMsg.STATUS_NOT_FOUND));
 
                 /*

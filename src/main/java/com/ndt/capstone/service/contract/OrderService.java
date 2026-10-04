@@ -2,9 +2,9 @@ package com.ndt.capstone.service.contract;
 
 import com.ndt.capstone.dto.checkout.CheckoutDTO;
 import com.ndt.capstone.dto.order.OrderHistoryDTO;
-import com.ndt.capstone.payload.request.payment.CheckoutRequest;
-import com.ndt.capstone.payload.request.payment.OrderConfirmRequest;
-import com.ndt.capstone.payload.response.PageResponse;
+import com.ndt.capstone.payload.req.payment.CheckoutRequest;
+import com.ndt.capstone.payload.req.payment.OrderConfirmRequest;
+import com.ndt.capstone.payload.resp.PageResponse;
 
 
 public interface OrderService {

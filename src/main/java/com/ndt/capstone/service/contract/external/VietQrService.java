@@ -1,6 +1,6 @@
 package com.ndt.capstone.service.contract.external;
 
-import com.ndt.capstone.payload.response.vietqr.VietQrResponse;
+import com.ndt.capstone.payload.resp.vietqr.VietQrResponse;
 
 
 public interface VietQrService {

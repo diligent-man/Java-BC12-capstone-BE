@@ -1,6 +1,6 @@
 package com.ndt.capstone.controller;
 
-import com.ndt.capstone.payload.request.payment.OrderConfirmRequest;
+import com.ndt.capstone.payload.req.payment.OrderConfirmRequest;
 import jakarta.validation.Valid;
 
 
@@ -13,16 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 
-import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.resp.ApiResponse;
 import com.ndt.capstone.service.contract.OrderService;
-import com.ndt.capstone.payload.request.payment.CheckoutRequest;
+import com.ndt.capstone.payload.req.payment.CheckoutRequest;
 
 
 @RestController
 @RequestMapping("/api/order")
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService orderService;
 
 

@@ -3,14 +3,26 @@ package com.ndt.capstone.mapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
+import com.ndt.capstone.dto.UserDto;
+
 import com.ndt.capstone.entity.RoleEntity;
 import com.ndt.capstone.entity.UserEntity;
 
-import com.ndt.capstone.payload.request.auth.SignupRequest;
+import com.ndt.capstone.payload.req.auth.SignupRequest;
 
 
 public class UserMapper {
     private UserMapper() {
+    }
+
+
+    public static UserDto toDTO(UserEntity user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setFullName(user.getFullName());
+        dto.setRoleName(user.getRole().getName());
+        return dto;
     }
 
 

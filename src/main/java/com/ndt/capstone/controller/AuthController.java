@@ -14,11 +14,11 @@ import org.springframework.http.ResponseEntity;
 import com.ndt.capstone.enums.exception.AuthErrMsg;
 import com.ndt.capstone.service.contract.AuthService;
 
-import com.ndt.capstone.payload.request.auth.LoginRequest;
-import com.ndt.capstone.payload.request.auth.SignupRequest;
+import com.ndt.capstone.payload.req.auth.LoginRequest;
+import com.ndt.capstone.payload.req.auth.SignupRequest;
 
-import com.ndt.capstone.payload.response.ApiResponse;
-import com.ndt.capstone.payload.response.auth.AuthResponse;
+import com.ndt.capstone.payload.resp.ApiResponse;
+import com.ndt.capstone.payload.resp.auth.AuthResponse;
 
 
 @RestController

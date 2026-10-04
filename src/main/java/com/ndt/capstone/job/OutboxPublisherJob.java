@@ -15,28 +15,28 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.ndt.capstone.entity.OutboxEventEntity;
 import com.ndt.capstone.entity.PaymentStatusEntity;
 
-import com.ndt.capstone.service.KafkaProducerService;
+import com.ndt.capstone.service.impl.KafkaProducerService;
 
-import com.ndt.capstone.repository.OutboxEventRepository;
-import com.ndt.capstone.repository.PaymentStatusRepository;
+import com.ndt.capstone.repo.OutboxEventRepo;
+import com.ndt.capstone.repo.PaymentStatusRepo;
 
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OutboxPublisherJob {
-    private final OutboxEventRepository outboxEventRepository;
+    private final OutboxEventRepo outboxEventRepo;
 
     private final KafkaProducerService kafkaProducerService;
 
-    private final PaymentStatusRepository paymentStatusRepository;
+    private final PaymentStatusRepo paymentStatusRepo;
 
 
     // Cứ 15 giây "bác đưa thư" lại kiểm tra hòm thư outbox 1 lần
     @Scheduled(fixedDelay = 15000)
     public void publishPendingEvents() {
         // 1. Lấy tối đa 50 event CHƯA GỬI, sắp xếp cũ nhất trước
-        List<OutboxEventEntity> pendingEvents = outboxEventRepository.findTop50ByStatus_IdOrderByCreatedAtAsc(1);
+        List<OutboxEventEntity> pendingEvents = outboxEventRepo.findTop50ByStatus_IdOrderByCreatedAtAsc(1);
 
         // 2. Nếu không có event nào thì bỏ qua, không log gì cả
         if (pendingEvents.isEmpty()) {
@@ -53,11 +53,11 @@ public class OutboxPublisherJob {
                 kafkaProducerService.send(event.getTopic(), event.getPayload());
 
                 // 3b. Gửi thành công → Đánh dấu PUBLISHED + ghi thời điểm gửi
-                PaymentStatusEntity publishedStatus = paymentStatusRepository.findById(3)
+                PaymentStatusEntity publishedStatus = paymentStatusRepo.findById(3)
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy payment status!"));
                 event.setStatus(publishedStatus);
                 event.setPublishedAt(LocalDateTime.now());
-                outboxEventRepository.save(event);
+                outboxEventRepo.save(event);
 
                 log.info("[Outbox] Đã publish event #{} cho đơn hàng #{} lên topic '{}'",
                     event.getId(), event.getAggregateId(), event.getTopic());
@@ -66,7 +66,7 @@ public class OutboxPublisherJob {
                 // 3c. Gửi thất bại → Tăng retryCount, log lỗi, KHÔNG đánh dấu PUBLISHED
                 //     Lần chạy sau (15 giây nữa) sẽ thử gửi lại
                 event.setRetryCount(event.getRetryCount() + 1);
-                outboxEventRepository.save(event);
+                outboxEventRepo.save(event);
 
                 log.error("[Outbox] Lỗi khi publish event #{}: {}",
                     event.getId(), e.getMessage());

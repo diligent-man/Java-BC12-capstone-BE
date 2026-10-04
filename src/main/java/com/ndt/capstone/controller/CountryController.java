@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 
-import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.resp.ApiResponse;
 import com.ndt.capstone.service.contract.CountryService;
 
     
@@ -23,7 +23,7 @@ public class CountryController {
     public ResponseEntity<ApiResponse> getAllCountries() {
         return ResponseEntity.ok(
             ApiResponse.builder()
-                .data(countryService.getAllCountries())
+                .data(countryService.getAll())
                 .build()
         );
     }

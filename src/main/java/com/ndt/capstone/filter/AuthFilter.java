@@ -34,7 +34,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
-import com.ndt.capstone.service.JwtServiceImpl;
+import com.ndt.capstone.service.impl.JwtServiceImpl;
 import com.ndt.capstone.enums.exception.AuthErrMsg;
 import com.ndt.capstone.exception.auth.AuthException;
 import com.ndt.capstone.service.contract.LoginAttemptService;

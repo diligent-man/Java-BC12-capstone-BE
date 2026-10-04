@@ -8,5 +8,5 @@ import com.ndt.capstone.dto.payment.PaymentMethodDTO;
 
 
 public interface PaymentService {
-    List<PaymentMethodDTO> getPaymentMethods();
+    List<PaymentMethodDTO> getAll();
 }

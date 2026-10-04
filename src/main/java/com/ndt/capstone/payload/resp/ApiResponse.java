@@ -1,0 +1,22 @@
+package com.ndt.capstone.payload.resp;
+
+import lombok.*;
+
+import lombok.experimental.SuperBuilder;
+
+
+import org.springframework.http.HttpStatus;
+
+
+@Setter
+@Getter
+@SuperBuilder
+public class ApiResponse {
+    @Builder.Default
+    protected String code = String.valueOf(HttpStatus.OK.value());
+
+    @Builder.Default
+    protected String message = "success";
+
+    protected Object data;
+}

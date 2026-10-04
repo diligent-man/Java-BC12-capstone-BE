@@ -21,12 +21,12 @@ import static com.ndt.capstone.utils.PageableUtils.withDefaultSort;
 
 import com.ndt.capstone.service.contract.ProductService;
 
-import com.ndt.capstone.payload.response.ApiResponse;
-import com.ndt.capstone.payload.response.PageResponse;
+import com.ndt.capstone.payload.resp.ApiResponse;
+import com.ndt.capstone.payload.resp.PageResponse;
 
-import com.ndt.capstone.payload.request.product.ProductFilterRequest;
-import com.ndt.capstone.payload.request.product.InsertProductRequest;
-import com.ndt.capstone.payload.request.product.InsertVariantRequest;
+import com.ndt.capstone.payload.req.product.ProductFilterRequest;
+import com.ndt.capstone.payload.req.product.InsertProductRequest;
+import com.ndt.capstone.payload.req.product.InsertVariantRequest;
 
 
 @RestController

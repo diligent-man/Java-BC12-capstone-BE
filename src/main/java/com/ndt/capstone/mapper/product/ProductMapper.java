@@ -9,9 +9,9 @@ import org.jspecify.annotations.NonNull;
 import com.ndt.capstone.entity.*;
 
 import com.ndt.capstone.dto.product.ProductDTO;
-import com.ndt.capstone.payload.request.product.InsertProductRequest;
+import com.ndt.capstone.payload.req.product.InsertProductRequest;
 
-import static com.ndt.capstone.utils.ImageUtils.buildVariantImagePath;
+import static com.ndt.capstone.utils.ImageUtils.buildVariantImageReadPath;
 
 
 public class ProductMapper {
@@ -57,7 +57,7 @@ public class ProductMapper {
                                 .toList()
                                 .stream()
                                 .findFirst()
-                                .map(image -> buildVariantImagePath(
+                                .map(image -> buildVariantImageReadPath(
                                         variant.getProduct().getBrand().getName(),
                                         variant.getProduct().getName(),
                                         image
@@ -66,6 +66,8 @@ public class ProductMapper {
                         }
                     ).orElse(defaultImage)
             );
+        } else {
+            dto.setImage(defaultImage);
         }
         return dto;
     }

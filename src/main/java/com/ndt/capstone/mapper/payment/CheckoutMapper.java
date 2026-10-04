@@ -7,8 +7,8 @@ import com.ndt.capstone.entity.*;
 
 import com.ndt.capstone.dto.checkout.CheckoutDTO;
 
-import com.ndt.capstone.payload.request.payment.CheckoutRequest;
-import com.ndt.capstone.payload.request.payment.OrderItemRequest;
+import com.ndt.capstone.payload.req.payment.CheckoutRequest;
+import com.ndt.capstone.payload.req.payment.OrderItemRequest;
 
 
 public class CheckoutMapper {

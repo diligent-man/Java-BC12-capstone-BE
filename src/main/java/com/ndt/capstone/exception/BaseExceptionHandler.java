@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import org.springframework.http.*;
 
 
-import com.ndt.capstone.payload.response.exception.ApiErrorResponse;
+import com.ndt.capstone.payload.resp.exception.ApiErrorResponse;
 
 
 public interface BaseExceptionHandler {

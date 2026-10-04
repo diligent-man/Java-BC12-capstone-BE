@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 
 import com.ndt.capstone.service.contract.TagService;
-import com.ndt.capstone.payload.response.ApiResponse;
+import com.ndt.capstone.payload.resp.ApiResponse;
 
 
 @RestController

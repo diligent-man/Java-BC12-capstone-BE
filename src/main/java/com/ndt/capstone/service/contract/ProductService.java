@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 
-import com.ndt.capstone.payload.request.product.*;
+import com.ndt.capstone.payload.req.product.*;
 
 import com.ndt.capstone.dto.product.ProductDTO;
 import com.ndt.capstone.dto.product.ProductDetailDTO;

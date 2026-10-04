@@ -1,6 +1,5 @@
 package com.ndt.capstone.mapper.product;
 
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,7 +8,7 @@ import com.ndt.capstone.dto.product.ProductVariantDetailDTO;
 import com.ndt.capstone.projection.product.ProductVariantRow;
 
 
-import static com.ndt.capstone.utils.ImageUtils.buildVariantImagePath;
+import static com.ndt.capstone.utils.ImageUtils.buildVariantImageReadPath;
 
 
 public class ProductVariantDetailMapper {
@@ -43,7 +42,7 @@ public class ProductVariantDetailMapper {
 
                 Set<String> images = first.getImages() != null ?
                     Arrays.stream(first.getImages().split(imageSeparator))
-                        .map(image -> buildVariantImagePath(first.getBrand(), first.getName(), image))
+                        .map(image -> buildVariantImageReadPath(first.getBrand(), first.getName(), image))
                         .collect(Collectors.toSet()) :
                     Set.of(defaultImage);
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.ndt.capstone.exception.BaseException;
 import com.ndt.capstone.exception.BaseExceptionHandler;
-import com.ndt.capstone.payload.response.exception.ApiErrorResponse;
+import com.ndt.capstone.payload.resp.exception.ApiErrorResponse;
 
 
 @RestControllerAdvice
